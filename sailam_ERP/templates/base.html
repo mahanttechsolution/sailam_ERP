@@ -19,6 +19,7 @@
     <!-- App CSS -->
     <link rel="stylesheet" href="{% static '/assets/css/app-light.css' %}" id="lightTheme">
     <link rel="stylesheet" href="{% static '/assets/css/app-dark.css' %}" id="darkTheme" disabled>
+    {%block header_files %} {%endblock header_files %}
   </head>
   <body class="vertical  light  ">
     <div class="wrapper">
@@ -504,6 +505,7 @@
     <script src="{% static '/assets/js/tinycolor-min.js' %}"></script>
     <script src="{% static '/assets/js/config.js' %}"></script>
     <script src="{% static '/assets/js/apps.js' %}"></script>
+    {%block footer_files %} {%endblock footer_files %}
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-56159088-1"></script>
     <script>
