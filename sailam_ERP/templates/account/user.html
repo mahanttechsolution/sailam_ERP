@@ -1,4 +1,4 @@
-{% extends 'account/base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 
 {% block title%}
@@ -6,5 +6,5 @@ Sailam Dashboard
 {% endblock title%}
 
 {%block content%}
-   <p>Welcome {{user}} to user dashboard</p>
+   <p>Welcome {{user}} to user dashboard and role is {{user.role.role_name}}</p>
 {%endblock content%}

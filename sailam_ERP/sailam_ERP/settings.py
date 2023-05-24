@@ -56,6 +56,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'sailam_ERP.urls'
+AUTH_USER_MODEL = 'account.User'
 
 TEMPLATES = [
     {
