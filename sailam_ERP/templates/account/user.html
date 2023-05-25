@@ -5,6 +5,12 @@
 Sailam Dashboard
 {% endblock title%}
 
+{%block header_files%}
+<script src="{% static 'js/jquery.min.js'%}"></script>
+<script src="{% static 'js/instascan.min.js'%}"></script>
+{%endblock header_files%}
+
 {%block content%}
    <p>Welcome {{user}} to user dashboard and role is {{user.role.role_name}}</p>
+   <b><a href="/scanner">Scann QR Code</a></b>
 {%endblock content%}

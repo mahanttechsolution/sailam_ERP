@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title%}
+Sailam Dashboard
+{% endblock title%}
+
+{%block header_files%}
+<script src="{% static 'js/jquery.min.js'%}"></script>
+<script src="{% static 'js/instascan.min.js'%}"></script>
+{%endblock header_files%}
+
+{%block content%}
+<video id="preview"></video>
+   <script type="text/javascript">
+     let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
+     scanner.addListener('scan', function (content) {
+        window.location.href=content;
+     });
+     Instascan.Camera.getCameras().then(function (cameras) {
+       if (cameras.length > 0) {
+         scanner.start(cameras[0]);
+       } else {
+         console.error('No cameras found.');
+       }
+     }).catch(function (e) {
+       console.error(e);
+     });
+   </script>
+{%endblock content%}
