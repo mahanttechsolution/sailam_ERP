@@ -69,6 +69,24 @@ Diamond Data
 
 {% block content %}
 
+{% if message%}
+<div  class="col-12  alert alert-success alert-dismissible fade show" role="alert">
+  {{message}}
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+{% endif %}
+
+{% if errormessage%}
+<div class="col-12  alert alert-danger alert-dismissible fade show" role="alert">
+  {{errormessage}}
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+{% endif %}
+
 {% comment %} Card to take input of GIA number {% endcomment %}
 <div class="col-sm-12">
 <form id="gia_form">
@@ -85,17 +103,7 @@ Diamond Data
 </div>
 
 {% comment %} card to take input of diamond data {% endcomment %}
-    {% if message%}
-    <div class="alert alert-success" role="alert">
-      {{message}}
-    </div>
-    {% endif %}
 
-    {% if errormessage%}
-    <div class="alert alert-danger" role="alert">
-      {{errormessage}}
-    </div>
-    {% endif %}
     
 <div class="col-sm-12">
 <form id="diamond_form" method="POST">
@@ -227,9 +235,7 @@ Diamond Data
       <div style="margin-right:15px">
        <button type="submit" class="btn btn-primary" id="namebutton">Upload Data</button>
       </div>
-      <div>
-       <button type="button" class="btn btn-primary" id="qrbutton">Get QR</button>
-      </div>
+      
     </div>
     
     

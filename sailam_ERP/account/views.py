@@ -45,7 +45,7 @@ def register(request):
           if password!=confirmpassword:
              return render(request,'account/register.html',{"message":"Password and Confirm Password is not matching"})
           else:
-           created = User.objects._create_user(email=email,firstname=firstname,lastname=lastname,password=password)
+           created = User.objects.create_user(email=email,firstname=firstname,lastname=lastname,password=password)
            auth_login(request,created)
            context={
                 created:created
