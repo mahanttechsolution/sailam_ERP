@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title%}
-Sailam Dashboard
+Sailam QR Code Scanner
 {% endblock title%}
 
 {%block header_files%}
@@ -11,15 +11,22 @@ Sailam Dashboard
 {%endblock header_files%}
 
 {%block content%}
-<video id="preview"></video>
+<div>
+<b><p>QR Code Scanner</p></b><br>
+</div><br>
+<div>
+<video id="preview"></video></div>
    <script type="text/javascript">
      let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
      scanner.addListener('scan', function (content) {
         window.location.href=content;
      });
      Instascan.Camera.getCameras().then(function (cameras) {
-       if (cameras.length > 0) {
-         scanner.start(cameras[0]);
+       if (cameras.length > 1) {
+         scanner.start(cameras[1]);
+       }
+       else if(cameras.length > 0){
+        scanner.start(cameras[0]);
        } else {
          console.error('No cameras found.');
        }

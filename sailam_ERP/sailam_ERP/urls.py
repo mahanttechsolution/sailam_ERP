@@ -21,6 +21,7 @@ from account import urls
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('account.urls'),name='account'),
+    path('inventory/',include('inventory.urls'),name='inventory'),
     path('scanner/',views.scanner,name="scanner"),
 ]
 

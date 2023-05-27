@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title%}
+Diamond Stock
+{% endblock title%}
+
+{% block content%}
+<table class="table table-hover table-borderless border-v">
+    <thead class="thead-dark">
+      <tr>
+        <th>GIA No</th>
+        <th>Stock No</th>
+        <th>Stock Id</th>
+        <th>Size</th>
+        <th>Caret</th>
+        <th>Price</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for stock in stocks %}
+      <tr class="accordion-toggle collapsed" id="c-{{stock.Id}}" data-toggle="collapse" data-parent="#c-{{stock.Id}}" href="#collap-{{stock.Id}}">
+        <td>{{stock.GIA_NO}}</td>
+        <td>{{stock.STK_NO}}</td>
+        <td>{{stock.STK_ID}}</td>
+        <td>{{stock.SIZE}}</td>
+        <td>{{stock.CRT}}</td>
+        <td>{{stock.PRICE}}</td>
+        <td><button class="btn btn-sm dropdown-toggle more-horizontal" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="text-muted sr-only">Action</span>
+          </button>
+          <div class="dropdown-menu dropdown-menu-right">
+            <a class="dropdown-item" href="#">Edit</a>
+            <a class="dropdown-item" href="#">Remove</a>
+            <a class="dropdown-item" href="#">Assign</a>
+          </div>
+        </td>
+      </tr>
+      <tr id="collap-{{stock.Id}}" class="collapse show in p-3 bg-light">
+        <td colspan="16">
+          <dl class="row mb-0 mt-1">
+            <dt class="col-sm-1">Mesurement</dt>
+            <dd class="col-sm-2">{{stock.MESUREMNT}}</dd>
+            <dt class="col-sm-1">Color</dt>
+            <dd class="col-sm-2">{{stock.COLOR}}</dd>
+            <dt class="col-sm-1">Polish</dt>
+            <dd class="col-sm-2">{{stock.POL}}</dd>
+            <dt class="col-sm-1 ">Symmetry</dt>
+            <dd class="col-sm-2">{{stock.SYM}}</dd>
+            <dt class="col-sm-1 ">Cut</dt>
+            <dd class="col-sm-2">{{stock.CUT}}</dd>
+            <dt class="col-sm-1 ">Clarity</dt>
+            <dd class="col-sm-2">{{stock.CLARITY}}</dd>
+            <dt class="col-sm-1 ">Fluorescence Color</dt>
+            <dd class="col-sm-2">{{stock.FLO_COL}}</dd>
+            <dt class="col-sm-1 ">Remarks</dt>
+            <dd class="col-sm-2 text-truncate">{{stock.REMARK}}</dd>
+          </dl>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock content%}

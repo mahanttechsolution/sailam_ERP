@@ -1,0 +1,38 @@
+from django.db import models
+
+# Create your models here.
+class inventory(models.Model):
+    Id=models.AutoField(primary_key=True)
+    STK_NO=models.IntegerField(null=False)
+    SIZE=models.IntegerField()
+    SHAPE=models.CharField(max_length=100)
+    COLOR=models.CharField(max_length=100)
+    CLARITY=models.CharField(max_length=100)
+    POL=models.CharField(max_length=100)
+    SYM=models.CharField(max_length=100)
+    CUT=models.CharField(max_length=100)
+    FLO_COL=models.CharField(max_length=100)
+    MESUREMNT=models.CharField(max_length=100)
+    DEPTH=models.FloatField()
+    TABLE=models.FloatField()
+    GIA_NO=models.CharField(max_length=100)
+    REMARK=models.CharField(max_length=500)
+    PHOTO=models.CharField(max_length=1000)
+    VIDEO=models.CharField(max_length=1000)
+    PRICE=models.FloatField()
+    STK_ID=models.CharField(max_length=100)
+    CRT=models.FloatField()
+    PURITY=models.CharField(max_length=100)
+    DESCRIPTION=models.TextField(blank=True)
+    CretedBy=models.ForeignKey("account.User", on_delete=models.CASCADE,related_name='inventory_created_by')
+    CreatedOn=models.DateTimeField(auto_now_add=True)
+    UpdatedBy=models.ForeignKey("account.User", on_delete=models.CASCADE,related_name='inventory_updated_by',blank=True,null=True)
+    UpdatedOn=models.DateTimeField(auto_now=True)
+    Scan_Id=models.IntegerField(blank=True,null=True)
+
+class ActivityLog(models.Model):
+    Log_Id=models.AutoField(primary_key=True)
+    User=models.ForeignKey("account.User", on_delete=models.CASCADE)
+    TimeStamp=models.DateTimeField(auto_now_add=True)
+    Log_message=models.TextField()
+    Notified=models.BooleanField(default=False)

@@ -1,0 +1,239 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{%block footer_files%}
+<script>
+$(document).ready(function () {
+  $('#gia_form').submit(function (event) {
+    var data=document.getElementById("gianumber");
+    if(data.value=="")
+    {
+      alert("Report Number Can not be null");
+      data.style.borderColor="red";
+      return false;
+    }
+    else{
+      data.style.borderColor="initial"
+    }
+    event.preventDefault();
+    var shape=document.getElementById("shape");
+    var color=document.getElementById("color");
+    var clarity=document.getElementById("clarity");
+    var polish=document.getElementById("polish");
+    var symmetry=document.getElementById("symmetry");
+    var cut=document.getElementById("cut");
+    var fluorescence=document.getElementById("fluorescence");
+    var mesurement=document.getElementById("mesurement");
+    var depth=document.getElementById("depth");
+    var table=document.getElementById("table");
+    var giano=document.getElementById("giano");
+    var remark=document.getElementById("remark");
+    var photo=document.getElementById("photo");
+    var video=document.getElementById("video");
+    var price=document.getElementById("price");
+    var stkid=document.getElementById("stkid");
+    var crt=document.getElementById("crt");
+    var purity=document.getElementById("purity");
+    var description=document.getElementById("desc");
+
+    $.ajax({
+        data: $(this).serialize(),
+        type: "POST",
+        url: "{% url 'giadata' %}",
+        success: function (response) {
+          shape.value=response.data.getReport.results.shape_and_cutting_style;
+          color.value=response.data.getReport.results.color_grade;
+          clarity.value=response.data.getReport.results.clarity_grade;
+          polish.value=response.data.getReport.results.polish;
+          symmetry.value=response.data.getReport.results.symmetry;
+          cut.value=response.data.getReport.results.data.cut;
+          fluorescence.value=response.data.getReport.results.fluorescence;
+          mesurement.value=response.data.getReport.results.measurements;
+          depth.value=response.data.getReport.results.proportions.depth_pct;
+          table.value=response.data.getReport.results.proportions.table_pct;
+          giano.value=response.data.getReport.report_number;
+          remark.value=response.data.getReport.results.report_comments;
+          photo.value=response.data.getReport.links.polished_image;
+          video.value=response.data.getReport.links.polished_image;
+          crt.value=parseFloat(response.data.getReport.results.carat_weight);
+        }
+      });
+    });
+  });
+    </script>
+{%endblock footer_files%}
+
+{% block title%}
+Diamond Data
+{% endblock title%}
+
+{% block content %}
+
+{% comment %} Card to take input of GIA number {% endcomment %}
+<div class="col-sm-12">
+<form id="gia_form">
+  {% csrf_token %}
+<div class="card">
+    <h5 class="card-header">To Upload GIA Graded Diamond</h5>
+    <div class="card-body">
+      <h5 class="card-title">Please Enter GIA Report Number</h5>
+      <p class="card-text"><input type="Text" class="form-control" id="gianumber" name="gianumber"  placeholder="GIA Report Number"></p>
+      <input type="submit" class="btn btn-primary" value="Fetch Data">
+    </div>
+  </div>
+</form>
+</div>
+
+{% comment %} card to take input of diamond data {% endcomment %}
+    {% if message%}
+    <div class="alert alert-success" role="alert">
+      {{message}}
+    </div>
+    {% endif %}
+
+    {% if errormessage%}
+    <div class="alert alert-danger" role="alert">
+      {{errormessage}}
+    </div>
+    {% endif %}
+    
+<div class="col-sm-12">
+<form id="diamond_form" method="POST">
+  {% csrf_token %}
+<div class="card" style="margin-top:20px">
+  <h5 class="card-header">Upload Diamond Information</h5>
+  
+  <div class="card-body ">
+
+    <div class="form-row">
+      <div class="col-md-4 mb-3">
+          <label for="formGroupExampleInput">Stock Number</label>
+          <input type="text" class="form-control" id="stkno" name="stkno" required="" value="">
+      </div>
+      
+      <div class="col-sm-4 mb-3">
+          <label for="formGroupExampleInput">Size</label>
+          <input type="text" class="form-control" id="size" name="size" required="" value="">
+      </div>
+       
+      <div class="col-sm-4 mb-3">
+          <label for="formGroupExampleInput">Shape</label>
+          <input type="text" class="form-control" id="shape" name="shape" required="" value="">
+      </div>  
+    </div>
+
+    <div class="form-row">
+      <div class="col-md-4 mb-3">
+          <label for="formGroupExampleInput">Color</label>
+          <input type="text" class="form-control" id="color" name="color" required="" value="">
+      </div>
+      
+      <div class="col-sm-4 mb-3">
+          <label for="formGroupExampleInput">Clarity</label>
+          <input type="text" class="form-control" id="clarity" name="clarity" required="" value="">
+      </div>
+       
+      <div class="col-sm-4 mb-3">
+          <label for="formGroupExampleInput">Polish</label>
+          <input type="text" class="form-control" id="polish" name="polish" required="" value="">
+      </div>  
+    </div>
+
+    <div class="form-row">
+      <div class="col-md-4 mb-3">
+          <label for="formGroupExampleInput">Symmetry</label>
+          <input type="text" class="form-control" id="symmetry" name="symmetry" required="" value="">
+      </div>
+      
+      <div class="col-sm-4 mb-3">
+          <label for="formGroupExampleInput">Cut</label>
+          <input type="text" class="form-control" id="cut" name="cut" required="" value="">
+      </div>
+       
+      <div class="col-sm-4 mb-3">
+          <label for="formGroupExampleInput">Fluorescence Color</label>
+          <input type="text" class="form-control" id="fluorescence" name="fluorescence" required="" value="">
+      </div>  
+    </div>
+
+    <div class="form-row">
+      <div class="col-md-4 mb-3">
+          <label for="formGroupExampleInput">Mesurement</label>
+          <input type="text" class="form-control" id="mesurement" name="mesurement" required="" value="">
+      </div>
+      
+      <div class="col-sm-4 mb-3">
+          <label for="formGroupExampleInput">Depth</label>
+          <input type="text" class="form-control" id="depth" name="depth" required="" value="">
+      </div>
+       
+      <div class="col-sm-4 mb-3">
+          <label for="formGroupExampleInput">Table</label>
+          <input type="text" class="form-control" id="table" name="table" required="" value="">
+      </div>  
+    </div>
+
+    <div class="form-row">
+      <div class="col-md-4 mb-3">
+          <label for="formGroupExampleInput">GIA No</label>
+          <input type="text" class="form-control" id="giano" name="giano" required="" value="">
+      </div>
+      
+      <div class="col-sm-4 mb-3">
+          <label for="formGroupExampleInput">Remark</label>
+          <input type="text" class="form-control" id="remark" name="remark" required="" value="">
+      </div>
+       
+      <div class="col-sm-4 mb-3">
+          <label for="formGroupExampleInput">Photo</label>
+          <input type="file" class="form-control" id="photo" name="photo" accept="image/png,image/jpeg" required="" value="">
+      </div>  
+    </div>
+
+    <div class="form-row">
+      <div class="col-md-4 mb-3">
+          <label for="formGroupExampleInput">Video</label>
+          <input type="file" class="form-control" id="video" name="video" accept="video/*" required="" value="">
+      </div>
+      
+      <div class="col-sm-4 mb-3">
+          <label for="formGroupExampleInput">Price</label>
+          <input type="number" step="any" class="form-control" id="price" name="price" required="" value="">
+      </div>
+       
+      <div class="col-sm-4 mb-3">
+          <label for="formGroupExampleInput">Stock Id</label>
+          <input type="number" class="form-control" id="stkid" name="stkid" required="" value="">
+      </div>  
+    </div>
+  
+    <div class="form-row">
+      <div class="col-md-4 mb-3">
+          <label for="formGroupExampleInput">Caret</label>
+          <input type="number" step="any" class="form-control" id="crt" name="crt" required="" value="">
+      </div>
+      
+      <div class="col-sm-4 mb-3">
+          <label for="formGroupExampleInput">Purity</label>
+          <input type="text" class="form-control" id="purity" name="purity" required="" value="">
+      </div>
+       
+      <div class="col-sm-4 mb-3">
+          <label for="formGroupExampleInput">Description</label>
+          <input type="text" class="form-control" id="desc" name="desc" required="" value="">
+      </div>  
+    </div>
+    <div class="d-flex justify-content-center">
+      <div style="margin-right:15px">
+       <button type="submit" class="btn btn-primary" id="namebutton">Upload Data</button>
+      </div>
+      <div>
+       <button type="button" class="btn btn-primary" id="qrbutton">Get QR</button>
+      </div>
+    </div>
+    
+    
+  </div>
+</form>
+</div>
+{% endblock content %}
