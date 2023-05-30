@@ -11,16 +11,35 @@ Sailam QR Code Scanner
 {%endblock header_files%}
 
 {%block content%}
-<div>
-<b><p>QR Code Scanner</p></b><br>
-</div><br>
-<div>
-<video id="preview"></video></div>
-   <script type="text/javascript">
-     let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
-     scanner.addListener('scan', function (content) {
-        window.location.href=content;
-     });
+<div class="card" style="width: 18rem">
+  <button class="btn btn-primary" type="button" id="toggleButton" name="toggleButton">Start Camera</button>
+  <video id="preview"></video></div>
+</div>
+  <div class="card-body">
+    <h5 class="card-title">Scan QR Code</h5>
+    <div class="input-group">
+      <input class="form-control" type="text" placeholder="Enter GIA or URL" id="gianum" name="gianum">
+      <button class="btn btn-primary" type="button">Get Report</button>
+    </div>
+  </div>
+  
+
+  <script>
+    var scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
+    var isCameraOn = false;
+    scanner.addListener('scan', function (content) {
+      document.getElementById("gianum").value=content;
+   });
+
+    document.getElementById('toggleButton').addEventListener('click', function() {
+        if (!isCameraOn) {
+            startCamera();
+        } else {
+            stopCamera();
+        }
+    });
+
+    function startCamera() {
      Instascan.Camera.getCameras().then(function (cameras) {
        if (cameras.length > 1) {
          scanner.start(cameras[1]);
@@ -30,8 +49,24 @@ Sailam QR Code Scanner
        } else {
          console.error('No cameras found.');
        }
-     }).catch(function (e) {
-       console.error(e);
-     });
-   </script>
+        isCameraOn = true;
+        document.getElementById('toggleButton').textContent = 'Stop Camera';
+        }).catch(function(e) {
+            console.error(e);
+        });
+    }
+
+    function stopCamera() {
+      Instascan.Camera.getCameras().then(function (cameras) {
+      if (cameras.length > 1) {
+        scanner.stop(cameras[1]);
+      }
+      else if(cameras.length > 0){
+       scanner.stop(cameras[0]);
+      }
+    });
+        isCameraOn = false;
+        document.getElementById('toggleButton').textContent = 'Start Camera';
+    }
+</script>
 {%endblock content%}
