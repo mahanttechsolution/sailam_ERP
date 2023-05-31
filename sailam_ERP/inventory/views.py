@@ -59,7 +59,7 @@ def insertDiamond(request):
        if inventory.objects.last()==None:
         scan=encrypt(1)
        else:
-        scan=encrypt(inventory.objects.last().Id)
+        scan=encrypt(inventory.objects.last().Id+1)
        print(scan)
        exist=inventory.objects.filter(GIA_NO=giano).values()
        if not exist:
@@ -117,3 +117,25 @@ def encrypt(data):
 
 def decrypt(data):
    return data>>19
+
+def scanner(request):
+    return render(request,"inventory/scanner.html")
+
+def getMemoData(request,scanid):
+   data=inventory.objects.filter(Scan_Id=scanid).values()|inventory.objects.filter(GIA_NO=scanid).values()
+   if data:
+    print(data[0]["STK_ID"])
+    result={
+        'stk_id':data[0]["STK_ID"],
+        'desc':'color:'+data[0]["COLOR"]+', clarity:'+data[0]["CLARITY"]+', shape:'+data[0]["SHAPE"],
+        'weight':data[0]["CRT"],
+        'remark':data[0]["REMARK"],
+        'price':data[0]["PRICE"]
+    }
+    # print(result)
+    return HttpResponse(json.dumps(result, indent = 4)) 
+   else :
+      result={
+         'stk_id':'null',
+      }
+      return HttpResponse(json.dumps(result, indent = 4))

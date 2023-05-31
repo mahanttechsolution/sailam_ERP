@@ -19,6 +19,12 @@
     <!-- App CSS -->
     <link rel="stylesheet" href="{% static '/assets/css/app-light.css' %}" id="lightTheme">
     <link rel="stylesheet" href="{% static '/assets/css/app-dark.css' %}" id="darkTheme" disabled>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap4.min.css" integrity="sha512-PT0RvABaDhDQugEbpNMwgYBCnGCiTZMh9yOzUsJHDgl/dMhD9yjHAwoumnUk3JydV3QTcIkNDuN40CJxik5+WQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="{% static '/assets/js/popper.min.js' %}"></script>
+    <script src="{% static '/assets/js/jquery.min.js' %}"></script>
+    <script src="{% static '/assets/js/bootstrap.min.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js" integrity="sha512-BkpSL20WETFylMrcirBahHfSnY++H2O1W+UnEEO4yNIl+jI2+zowyoGJpbtk6bx97fBXf++WJHSSK2MV4ghPcg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap4.min.js" integrity="sha512-OQlawZneA7zzfI6B1n1tjUuo3C5mtYuAWpQdg+iI9mkDoo7iFzTqnQHf+K5ThOWNJ9AbXL4+ZDwH7ykySPQc+A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     {%block header_files %} {%endblock header_files %}
   </head>
   <body class="vertical  light  ">
@@ -98,7 +104,7 @@
               </a>
             </li>
             <li class="nav-item w-100">
-              <a class="nav-link" href="/scanner">
+              <a class="nav-link" href="/inventory/scanner">
                 <i class="fe fe-layers fe-16"></i>
                 <span class="ml-3 item-text">Scan QR Code</span>
                 {% comment %} <span class="badge badge-pill badge-primary">New</span> {% endcomment %}
@@ -252,10 +258,7 @@
         </div>
       </main> <!-- main -->
     </div> <!-- .wrapper -->
-    <script src="{% static '/assets/js/jquery.min.js' %}"></script>
-    <script src="{% static '/assets/js/popper.min.js' %}"></script>
     <script src="{% static '/assets/js/moment.min.js' %}"></script>
-    <script src="{% static '/assets/js/bootstrap.min.js' %}"></script>
     <script src="{% static '/assets/js/simplebar.min.js' %}"></script>
     <script src="{% static '/assets/js/daterangepicker.js' %}"></script>
     <script src="{% static '/assets/js/jquery.stickOnScroll.js' %}"></script>

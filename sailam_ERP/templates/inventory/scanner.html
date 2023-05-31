@@ -1,0 +1,306 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title%}
+Sailam QR Code Scanner
+{% endblock title%}
+
+{%block header_files%}
+<script src="{% static 'js/instascan.min.js'%}"></script>
+<style>
+  table.display {
+    margin: 0 auto;
+    width: 100%;
+    clear: both;
+    border-collapse: collapse;
+    table-layout: fixed;          
+    word-wrap:break-word;        
+  }
+</style>
+{%endblock header_files%}
+
+{%block content%}
+<div class="card" style="width: 18rem">
+  <button class="btn btn-primary" type="button" id="toggleButton" name="toggleButton">Start Camera</button>
+  <video id="preview"></video></div>
+</div>
+
+<div class="card" style="margin-top:15px">
+  <div class="card-body">
+    <h5 class="card-title">Scan QR Code</h5>
+    <div class="input-group">
+      <input class="form-control" type="text" placeholder="Enter GIA or URL" id="gianum" name="gianum">
+      <button class="btn btn-primary" type="button" id="getreport" name="getreport">Get Report</button>
+    </div>
+    <div style="margin-top:15px" class="d-flex justify-content-center">
+      <div class="form-check form-check-inline">
+        <input type="radio" class="btn-check" name="radiogroup1" id="check3" autocomplete="off" style="visibility: hidden">
+        <label class="btn btn-primary" for="check3">Hide</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input type="radio" class="btn-check" name="radiogroup1" id="check1" autocomplete="off" style="visibility: hidden">
+        <label class="btn btn-primary" for="check1">Memo</label><br>
+      </div>
+      <div class="form-check form-check-inline">
+        <input type="radio" class="btn-check" name="radiogroup1" id="check2" autocomplete="off" style="visibility: hidden">
+        <label class="btn btn-primary" for="check2">Invoice</label><br>
+      </div>
+      <div class="form-check form-check-inline">
+        <input type="radio" class="btn-check" name="radiogroup1" id="check4" autocomplete="off" style="visibility: hidden">
+        <label class="btn btn-primary" for="check4">Sell</label><br>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <div class="card" style="margin-top:15px">
+    <div class="card-body">
+        <div id="memo" class="container" >
+          <table id="memo_table" class="display table table-striped table-bordered" cellspacing="0" width="100%">
+            <thead>
+            <tr>
+            <th>Stock Id</th>
+            <th>Description</th>
+            <th>Weight</th>
+            <th>Remark</th>
+            <th>Rate</th>
+            <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+            </table>
+        </div>
+
+        <div id="invoice" class="container" >
+          <p>Invoice</p>
+        </div>
+
+        <div id="general" class="container">
+          <p>General</p>
+        </div>
+        
+
+        
+
+    </div>
+  </div>
+  <div class="modal fade" id="memoModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Edit Memo Data</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input class="form-control  my-3" type="text" id="desc-input" placeholder="Description"/>
+          <input class="form-control  my-3" type="text" id="weight-input" placeholder="Weight"/>
+          <input class="form-control  my-3" type="text" id="remark-input" placeholder="Remark"/>
+          <input class="form-control  my-3" type="text" id="rate-input" placeholder="Rate"/>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button id="save-button" class="btn btn-primary">Update</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
+  <script>
+    var dataTable;
+    $(document).ready(function () {
+      $('#memo').hide();
+      dataTable=$("#memo_table").DataTable();
+      $('#invoice').hide();
+      $('#general').hide();
+
+      $("#check1").change(
+      function(){
+        $('#memo').show();
+        $('#invoice').hide();
+        $('#general').hide();
+      });
+
+      $("#check2").change(
+        function(){
+          $('#memo').hide();
+          $('#invoice').show();
+          $('#general').hide();
+        });
+      
+        $("#check3,#check4").change(
+          function(){
+            $('#memo').hide();
+            $('#invoice').hide();
+            $('#general').show();
+          });
+    });
+    
+    
+    $(document).ready(function () {
+      $('#getreport').click(
+         function()
+         {
+            if(!$('#gianum').val())
+            {
+              alert("please write GIA Number");
+              $('#gianum').css("border-color","red");
+              return false;
+            }  
+            else{
+              $('#gianum').css("border-color","black");
+            }
+            
+            if($('#check1').is(':checked')) 
+            {
+                var value= $('#gianum').val()
+                var request = new XMLHttpRequest();
+                var json = "{% url 'memo_data' scanid=0 %}".replace('0', value)
+                request.onload = function() {
+                  if ( request.readyState === 4 && request.status === 200 ) {
+                    var JSONObject = JSON.parse(request.responseText);
+                    updatememoTable(JSONObject);
+                  } else if(request.status == 400) { console.log("Error", request.status);}
+                };
+                  request.open("GET", json, true);
+                  request.send();
+            }
+
+
+         }
+      );
+    });
+
+    function isRowExists(dataTable, rowData) {
+      var rows = dataTable.rows().data().toArray();
+      for (var i = 0; i < rows.length; i++) {
+         if (rows[i][0] === rowData[0]) {
+            return true;
+         }
+      }
+      return false;
+   }
+
+     function updatememoTable(data)
+     {
+        if(data.stk_id != "null")
+        {
+              var rowData = [];
+              rowData.push(data.stk_id);
+              rowData.push(data.desc);
+              rowData.push(data.weight);
+              rowData.push(data.remark);
+              rowData.push(data.price);
+              rowData.push('<button type="button" class="btn btn-primary btn-xs dt-edit mr-3" id="edit-button" ><span class="fe fe-edit fe-16" aria-hidden="true"></span></button><button type="button" class="btn btn-danger btn-xs dt-delete"><span class="fe fe-trash-2 fe-16" aria-hidden="true"></span></button>');
+              if(!isRowExists(dataTable,rowData))
+              {
+                  dataTable.row.add(rowData).draw();
+
+                $('.dt-delete').off('click');
+                $('.dt-delete').each(function () {
+                  $(this).on('click', function(evt){
+                    $this = $(this);
+                    var dtRow = $this.parents('tr');
+                    if(confirm("Are you sure to delete this row?")){
+                      dataTable.row(dtRow[0].rowIndex-1).remove().draw( false );
+                    }
+                  });
+                });
+              }
+              else{
+                alert('Data Already Exist');
+              }
+              
+        }
+      else{
+        alert("Data For Given GIA Is Not Available ");
+      }
+    }
+
+    $(document).ready(function() {
+      var modal = $('#memoModal');
+      var closeButton = $('.close');
+      var saveButton = $('#save-button');
+    
+      var tbrow;
+      $(document).on('click','#edit-button',function() {
+        var row = $(this).closest('tr');
+        tbrow=row;
+        var desc = row.find('td:eq(1)').text();
+        console.log(desc)
+        var weight = row.find('td:eq(2)').text();
+        var remark = row.find('td:eq(3)').text();
+        var rate = row.find('td:eq(4)').text();
+        $('#edit-button').modal('show');
+        modal.modal({ show: true });
+        $('#desc-input').val(desc);
+        $('#weight-input').val(weight);
+        $('#remark-input').val(remark);
+        $('#rate-input').val(rate);
+      });
+    
+      $(document).on('click','#save-button',function() {
+        var desc = $('#desc-input').val();
+        var weight = $('#weight-input').val();
+        var remark = $('#remark-input').val();
+        var rate = $('#rate-input').val();
+        console.log(rate);
+        tbrow.find('td:eq(1)').text(desc);
+        tbrow.find('td:eq(2)').text(weight);
+        tbrow.find('td:eq(3)').text(remark);
+        tbrow.find('td:eq(4)').text(rate);
+        modal.modal('hide');
+        $('.modal-backdrop').remove();
+      });
+    });
+    </script>
+  
+  <script>
+    var scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
+    var isCameraOn = false;
+    scanner.addListener('scan', function (content) {
+      document.getElementById("gianum").value=content;
+   });
+
+    document.getElementById('toggleButton').addEventListener('click', function() {
+        if (!isCameraOn) {
+            startCamera();
+        } else {
+            stopCamera();
+        }
+    });
+
+    function startCamera() {
+     Instascan.Camera.getCameras().then(function (cameras) {
+       if (cameras.length > 1) {
+         scanner.start(cameras[1]);
+       }
+       else if(cameras.length > 0){
+        scanner.start(cameras[0]);
+       } else {
+         console.error('No cameras found.');
+       }
+        isCameraOn = true;
+        document.getElementById('toggleButton').textContent = 'Stop Camera';
+        }).catch(function(e) {
+            console.error(e);
+        });
+    }
+
+    function stopCamera() {
+      Instascan.Camera.getCameras().then(function (cameras) {
+      if (cameras.length > 1) {
+        scanner.stop(cameras[1]);
+      }
+      else if(cameras.length > 0){
+       scanner.stop(cameras[0]);
+      }
+    });
+        isCameraOn = false;
+        document.getElementById('toggleButton').textContent = 'Start Camera';
+    }
+  </script>
+{%endblock content%}
