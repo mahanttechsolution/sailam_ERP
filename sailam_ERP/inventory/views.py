@@ -8,6 +8,8 @@ from .forms import VideoForm
 import qrcode
 import os
 from io import BytesIO
+import qrcode
+from PIL import Image, ImageDraw, ImageFont
 
 # Create your views here.
 
@@ -98,8 +100,18 @@ def insertDiamond(request):
                     video.id_inv = stock
                     video.save()
                     form = VideoForm()
+                    # sid, weight, shape, color, purity
                     #    generating qr code
-                    path = generate_qr_code(scan)
+                    path = generate_sticker(
+                        scan,
+                        sid=stkid,
+                        weight=crt,
+                        shape=shape,
+                        color=color,
+                        purity=clarity,
+                        gia=giano,
+                    )
+                    # path = generate_qr_code(scan)
                     return render(
                         request,
                         "inventory/inventory.html",
@@ -137,6 +149,69 @@ def viewStock(request):
     return render(request, "inventory/viewinventory.html", context)
 
 
+# def generate_qr_code(data):
+#     qr = qrcode.QRCode(
+#         version=1,
+#         error_correction=qrcode.constants.ERROR_CORRECT_L,
+#         box_size=10,
+#         border=4,
+#     )
+#     qr.add_data(data)
+#     qr.make(fit=True)
+#     qr_img = qr.make_image(fill_color="black", back_color="white")
+
+#     # Save the QR code image
+#     url = f"/media/qr/" + str(data) + ".png"
+#     file_path = f"{BASE_DIR}{url}"
+#     print(file_path)
+#     qr_img.save(file_path)
+#     return url
+
+
+def generate_text(sid, weight, shape, color, purity):
+    width, height = 200, 150
+    background_color = (255, 255, 255)
+    img1 = Image.new("RGB", (width, height), background_color)
+    draw = ImageDraw.Draw(img1)
+    text_color = (0, 0, 0)
+    font_size = 15
+    if len(shape) > 20:
+        s = shape
+        shape = f"""{s[:int(len(s)/2)]}
+              {s[int(len(s)/2):]}"""
+
+    text = f"""SID : {sid}
+Weight: {weight}
+Shape: {shape}
+Colour: {color}
+Purity: {purity}
+    """
+    font_path = "static/fonts/Roboto-Medium.ttf"
+    font = ImageFont.truetype(font_path, font_size)
+    text_width, text_height = draw.textsize(text, font=font)
+    x = (width - text_width) // 50
+    y = (height - text_height) // 6
+    draw.text((x, y), text, font=font, fill=text_color)
+    return img1
+
+
+def generate_footer(width, gia):
+    text = f"""SAILAM .LTD               GIA: {gia}"""
+    width, height = width, 10
+    background_color = (255, 255, 255)
+    footer = Image.new("RGB", (width, height), background_color)
+    draw = ImageDraw.Draw(footer)
+    text_color = (0, 0, 0)
+    font_size = 9
+    font_path = "static/fonts/Roboto-Medium.ttf"
+    font = ImageFont.truetype(font_path, font_size)
+    text_width, text_height = draw.textsize(text, font=font)
+    x = (width - text_width) // 5
+    y = (height - text_height) // 2
+    draw.text((x, y), text, font=font, fill=text_color)
+    return footer
+
+
 def generate_qr_code(data):
     qr = qrcode.QRCode(
         version=1,
@@ -146,13 +221,30 @@ def generate_qr_code(data):
     )
     qr.add_data(data)
     qr.make(fit=True)
-    qr_img = qr.make_image(fill_color="black", back_color="white")
-
-    # Save the QR code image
+    qr_image = qr.make_image(fill_color="black", back_color="white")
     url = f"/media/qr/" + str(data) + ".png"
     file_path = f"{BASE_DIR}{url}"
-    print(file_path)
-    qr_img.save(file_path)
+    qr_image.save(file_path)
+    img2 = Image.open(file_path)
+    return img2, file_path, url
+
+
+def generate_sticker(data, sid, weight, shape, color, purity, gia):
+    image1, file_path, url = generate_qr_code(data)
+    image2 = generate_text(sid, weight, shape, color, purity)
+    print(image1.height)
+    last_height = int(image1.height / 3)
+    height = last_height + 10
+    image1 = image1.resize((int(image1.width * height / image1.height), height))
+    image2 = image2.resize((int(image2.width * height / image2.height), height))
+    width = image1.width + image2.width
+    footer = generate_footer(width, gia)
+    merged_image = Image.new("RGB", (width, height))
+    merged_image.paste(image1, (0, 0))
+    merged_image.paste(image2, (image1.width, 0))
+    merged_image.paste(footer, (0, last_height))
+    # print(merged_image.height, merged_image.width)
+    merged_image.save(file_path)
     return url
 
 
