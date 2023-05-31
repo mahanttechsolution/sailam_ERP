@@ -70,6 +70,7 @@ Sailam QR Code Scanner
             <tbody>
             </tbody>
             </table>
+            <button class="btn btn-info" id="submitmemo" >Generate Memo</button>
         </div>
 
         <div id="invoice" class="container" >
@@ -85,24 +86,54 @@ Sailam QR Code Scanner
 
     </div>
   </div>
+
   <div class="modal fade" id="memoModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="exampleModalLongTitle">Edit Memo Data</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="m1close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <label for="desc-input">Description</label>
+          <input class="form-control  mb-3" type="text" id="desc-input" placeholder="Description"/>
+          <label for="weight-input">Weight</label>
+          <input class="form-control  mb-3" type="text" id="weight-input" placeholder="Weight"/>
+          <label for="remark-input">Remark</label>
+          <input class="form-control  mb-3" type="text" id="remark-input" placeholder="Remark"/>
+          <label for="rate-input">Rate</label>
+          <input class="form-control  mb-3" type="text" id="rate-input" placeholder="Rate"/>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" id="m11close">Close</button>
+          <button id="save-button" class="btn btn-primary">Update</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="clientmemoModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Enter Client Data</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-          <input class="form-control  my-3" type="text" id="desc-input" placeholder="Description"/>
-          <input class="form-control  my-3" type="text" id="weight-input" placeholder="Weight"/>
-          <input class="form-control  my-3" type="text" id="remark-input" placeholder="Remark"/>
-          <input class="form-control  my-3" type="text" id="rate-input" placeholder="Rate"/>
+          <label for="desc-input">Client Name</label>
+          <input class="form-control  my-3" type="text" id="clientname" placeholder="Name"/>
+          <label for="weight-input">Client Comapany</label>
+          <input class="form-control  my-3" type="text" id="clientcompany" placeholder="Company"/>
+          <label for="remark-input">Company Address</label>
+          <textarea class="form-control  my-3"  id="companyaddress" placeholder="Address"></textarea>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button id="save-button" class="btn btn-primary">Update</button>
+          <button id="getmemo" class="btn btn-info">Get Memo</button>
         </div>
       </div>
     </div>
@@ -173,7 +204,10 @@ Sailam QR Code Scanner
          }
       );
     });
+  </script>
 
+  <script>
+    //script for memo
     function isRowExists(dataTable, rowData) {
       var rows = dataTable.rows().data().toArray();
       for (var i = 0; i < rows.length; i++) {
@@ -183,7 +217,7 @@ Sailam QR Code Scanner
       }
       return false;
    }
-
+   //functions related to memo
      function updatememoTable(data)
      {
         if(data.stk_id != "null")
@@ -219,13 +253,13 @@ Sailam QR Code Scanner
         alert("Data For Given GIA Is Not Available ");
       }
     }
-
+     //handles updation of memo
     $(document).ready(function() {
       var modal = $('#memoModal');
       var closeButton = $('.close');
       var saveButton = $('#save-button');
-    
       var tbrow;
+
       $(document).on('click','#edit-button',function() {
         var row = $(this).closest('tr');
         tbrow=row;
@@ -256,7 +290,56 @@ Sailam QR Code Scanner
         $('.modal-backdrop').remove();
       });
     });
-    </script>
+
+    $(document).on('click','#m11close',function() {
+      $('.modal-backdrop').remove();
+    });
+
+    $(document).on('click','#m1close',function() {
+      $('.modal-backdrop').remove();
+    });
+
+    $(document).on('click','#submitmemo',function(){
+      var modal = $('#clientmemoModal');
+       if(dataTable.data().count()>0)
+       {
+        modal.modal({ show: true });
+       }
+       else{
+        alert('Select At least Single Entry for Memo')
+       }
+    });
+
+    $(document).on('click','#getmemo',function(){
+      var clientname=$('#clientname').val();
+      var clientcompany=$('#clientcompany').val();
+      var address=$('textarea#companyaddress').val();
+      var data= dataTable.rows().data();
+      var memo={};
+      var client={};
+      client['name']=clientname;
+      console.log(client['name']);
+      client['company']=clientcompany;
+      console.log(client['company']);
+      client['address']=address;
+      console.log(client['address']);
+      memo['diamond']=[];
+      for(var i=0;i<data.length;i++)
+      {
+        var diamond = {};
+        var row=data[i];
+        diamond['stk_no']=row[0];
+        diamond['description']=row[1];
+        diamond['weight']=row[2];
+        diamond['remark']=row[3];
+        diamond['rate']=row[4];
+        memo['diamond'].push(diamond);
+      }
+      memo['client']=client;
+      var resp=JSON.stringify(memo);
+      alert(resp);
+    })
+  </script>
   
   <script>
     var scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
