@@ -24,6 +24,7 @@ class inventory(models.Model):
     UpdatedBy=models.ForeignKey("account.User", on_delete=models.CASCADE,related_name='inventory_updated_by',blank=True,null=True)
     UpdatedOn=models.DateTimeField(auto_now=True)
     Scan_Id=models.BigIntegerField(blank=True,null=True)
+    MemoMade=models.BooleanField(default=False)
 
 class ActivityLog(models.Model):
     Log_Id=models.AutoField(primary_key=True)

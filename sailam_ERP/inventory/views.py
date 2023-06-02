@@ -1,3 +1,5 @@
+import io
+import os
 from django.shortcuts import render
 from django.http import HttpResponse,FileResponse
 import requests
@@ -5,6 +7,7 @@ import json
 from django.conf import settings
 from .models import inventory,Client,Memo,MemoData
 from .forms import VideoForm
+from .constant import authorization,urlendpoint
 import qrcode
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph,Spacer
@@ -17,7 +20,6 @@ BASE_DIR = settings.BASE_DIR
 
 def loadGiaData(request):
     if request.method=="POST":
-        url_end_point = "https://api.reportresults.gia.edu/"
         report_number = request.POST.get("gianumber")
         file1=open('static/query/master.txt')
         content=file1.read()
@@ -31,10 +33,10 @@ def loadGiaData(request):
         headers = {
         "Accept": "application/json",
         "Content-Type": "application/json",
-        "Authorization": "64112d47-a247-4259-a9d0-a402e186f4a8"
+        "Authorization": authorization
         }
 
-        response = requests.post(url_end_point, data=json.dumps(query), headers=headers)
+        response = requests.post(urlendpoint, data=json.dumps(query), headers=headers)
         data = response.json()
     return HttpResponse(json.dumps(data),content_type="application/json")
     
@@ -64,7 +66,12 @@ def insertDiamond(request):
        else:
         scan=encrypt(inventory.objects.last().Id+1)
        print(scan)
-       exist=inventory.objects.filter(GIA_NO=giano).values()
+       exist=None
+       print(giano)
+       if not giano:
+        exist=inventory.objects.filter(STK_ID=stkid).values()
+       else:
+        exist=inventory.objects.filter(GIA_NO=giano).values()
        if not exist:
         stock=inventory.objects.create(SHAPE=shape,COLOR=color,CLARITY=clarity,POL=polish,SYM=symmetry,CUT=cut,FLO_COL=fluorescence,MESUREMNT=mesurement,DEPTH=depth,TABLE=table,GIA_NO=giano,REMARK=remark,PRICE=price,STK_ID=stkid,CRT=crt,DESCRIPTION=desc,CretedBy=user,Scan_Id=scan)
         if stock:
@@ -125,7 +132,7 @@ def scanner(request):
     return render(request,"inventory/scanner.html")
 
 def getMemoData(request,scanid):
-   data=inventory.objects.filter(Scan_Id=scanid).values()|inventory.objects.filter(GIA_NO=scanid).values()
+   data=inventory.objects.filter(Scan_Id=scanid,MemoMade=False).values()|inventory.objects.filter(GIA_NO=scanid,MemoMade=False).values()
    if data:
     result={
         'stk_id':data[0]["STK_ID"],
@@ -163,15 +170,18 @@ def setMemoData(request):
           remark=row['remark']
           rate=row['rate']
           inv=inventory.objects.filter(STK_ID=stk_id).first()
+          inv.MemoMade=True
+          inv.save()
           MemoData.objects.create(memo=memo,stk_no=inv,desc=description,weight=weight,rate=rate,remark=remark)
-          gen_report(data,memo)
-        # printMemo(memo)
-    return HttpResponse('done')
+        response=gen_report(request,data,memo)
+        return response
       
 
-def gen_report(data,memo):
-
-    doc = SimpleDocTemplate("approval_memo.pdf", pagesize=letter)
+def gen_report(request,data,memo):
+    file_name="memo_"+str(memo.id_memo)+".pdf"
+    url = f'/media/memopdf/'+file_name
+    file_path = f'{BASE_DIR}{url}'
+    doc = SimpleDocTemplate(file_path, pagesize=letter)
     elements = []
     
     # Header
@@ -184,50 +194,51 @@ def gen_report(data,memo):
     
     # Company details
     company_details = [
-        "SAILAM LIMITED",
+        "<b>SAILAM LIMITED</b>",
         "ROOM 1428, BEVERELY COMMERCIAL CENTER,",
-        "87 CHATHAM ROAD SOUTH, TSIM SHA SUI",
-        "HONGKONG",
-        "TELEPHONE : 852-24241425 , 852-24241427",
-        "Wechat ID: sailamsam",
-        "Mobile : 852 9122 4906",
-        "email: sailamltdhk@hotmail.com",
-        "RAP NET ID : 89199",
+        "87 CHATHAM ROAD SOUTH, TSIM SHA SUI HONGKONG",
+        "<b>TELEPHONE :</b> 852-24241425 , 852-24241427",
+        "<b>Wechat ID: </b>sailamsam",
+        "<b>Mobile :</b> 852 9122 4906",
+        "<b>email:</b> sailamltdhk@hotmail.com",
+        "<b>RAP NET ID</b> : 89199",
     ]
+
     company_style = getSampleStyleSheet()["Normal"]
-    company = [Paragraph(line, company_style) for line in company_details]
 
     client_details=[
-       "Memo No: "+str(memo.id_memo),
-       "Date: "+str(memo.CreatedOn).split(" ")[0],
-       "To:",
-       "Name: "+data['client']['name'],
-       "Company: "+data['client']['company'],
-       "Address: "+data['client']['address'],
+       "<b>Memo No:</b> "+str(memo.id_memo),
+       "<b>Date: </b>"+str(memo.CreatedOn).split(" ")[0],
+       "<b>To: </b>",
+       "<b>Name: </b>"+data['client']['name'],
+       "<b>Company:</b> "+data['client']['company'],
+       "<b>Address: </b>"+data['client']['address'],
     ]
-
-    client = [Paragraph(line, company_style) for line in client_details]
-    max_length = max(len(company), len(client))
-    # Create a table with two columns
-    para = []
-    for i in range(max_length):
-        col1 =company[i] if i < len(company) else None
-        col2 = client[i] if i < len(client) else None
-        para.append([col1, col2])
+    
+    styles = getSampleStyleSheet()
+    paragraph_style = styles["Normal"]
+    client = [Paragraph(line, paragraph_style) for line in client_details]
+    company= [Paragraph(line, paragraph_style) for line in company_details]
+    data_company = [[para] for para in company]
+    data_client= [[para] for para in client]
 
     table_style = [
-        ("LEFTPADDING", (0, 0), (-1, -1), 5),
-        ("RIGHTPADDING", (0, 0), (-1, -1), 20),
-        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ("FONTSIZE", (0, 1), (-1, -1), 5), 
     ]
-
-    table = Table(para,style=table_style)
-    elements.append(table)
+    company_table=Table(data_company,style=table_style)
+    client_table=Table(data_client,style=table_style) 
+    
+    parent_table_data = [[company_table, client_table]]
+    parent_table = Table(parent_table_data,colWidths=[200,300])
+    parent_table_style = TableStyle([
+    ('VALIGN', (0, 0), (-1, -1), 'TOP'),  
+    ])
+    parent_table.setStyle(parent_table_style)
+    elements.append(parent_table)
     elements.append(Spacer(1, 20))
 
     inst_text="The goods described and valued as below are delivered to you for examinations and  inspection and inspection only and remain our property subject to ourorder and shall returned to SAILAM LIMTED on demand. Such merchandise until returned to us and actually recieved,are at you risk from all hazards. No right or power is given to you to sell, pledge, hypothecate or otherwise dispose of this merchandise regardless of prior transaction. A sale of this merchandise can only be effected and title will pass only if, as and when we the said owner shall agree to such sale and a  bill of sale rendered therefor."
-    inst_style = getSampleStyleSheet()["Normal"]
-    instruction = Paragraph(inst_text, inst_style)
+    instruction = Paragraph(inst_text)
     elements.append(instruction)
     elements.append(Spacer(1, 20))
     # Table
@@ -271,11 +282,25 @@ def gen_report(data,memo):
     elements.append(footer)
     elements.append(Spacer(1, 20))
     
-    # Salesman and Signature
-    salesman_text = "Salesman:"
+    # Salesman 
+    salesman_text = "<b>Salesman: </b>"+request.user.first_name
     salesman_style = getSampleStyleSheet()["Normal"]
     salesman = Paragraph(salesman_text, salesman_style)
     elements.append(salesman)
     doc.build(elements)
 
+    response = HttpResponse(file_name)
+    return response
 
+
+def send_pdf_response(request, file_name):
+    url = f'/media/memopdf/'+file_name
+    file_path = f'{BASE_DIR}{url}'
+    print(file_path)
+    if os.path.exists(file_path):
+        f = open(file_path, "rb")
+        response = FileResponse(f, content_type='application/pdf')
+        response['Content-Disposition'] = 'inline; filename="{}"'.format(file_name)
+        return response
+    else:
+        return HttpResponse("File not found.")

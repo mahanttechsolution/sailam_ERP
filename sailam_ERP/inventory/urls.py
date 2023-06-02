@@ -8,4 +8,5 @@ urlpatterns = [
     path('scanner/',views.scanner,name="scanner"),
     path('getmemodata/<str:scanid>',views.getMemoData,name="memo_data"),
     path('setmemodata/',views.setMemoData,name="setmemo"),
+    path('pdf/<str:file_name>/',views.send_pdf_response, name='pdf_response'),
 ]

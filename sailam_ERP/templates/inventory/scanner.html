@@ -253,7 +253,7 @@ Sailam QR Code Scanner
               
         }
       else{
-        alert("Data For Given GIA Is Not Available ");
+        alert("Data For Given GIA Is Not Available Or Memo Is Already Prepared for this");
       }
     }
      //handles updation of memo
@@ -314,6 +314,7 @@ Sailam QR Code Scanner
     });
 
     $(document).on('click','#getmemo',function(){
+      var clientmodal=$('#clientmemoModal')
       var clientname=$('#clientname').val();
       var clientcompany=$('#clientcompany').val();
       var address=$('textarea#companyaddress').val();
@@ -341,6 +342,8 @@ Sailam QR Code Scanner
       memo['client']=client;
       var resp=JSON.stringify(memo);
       sendmemodata(resp);
+      clientmodal.modal('hide');
+      dataTable.clear().draw();
     });
    
     function sendmemodata(data){
@@ -350,8 +353,9 @@ Sailam QR Code Scanner
         url: "{% url 'setmemo' %}",
         data: data,
         contentType: 'application/json',
-        success: function(){
-          console.log("data send successfully!!");
+        success: function(response){
+          var filename=response
+          window.open("{% url 'pdf_response'  file_name=0 %}".replace('0', filename));
         },
       });
     }
