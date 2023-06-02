@@ -7,4 +7,5 @@ urlpatterns = [
     path('stock/',views.viewStock,name="stock"),
     path('scanner/',views.scanner,name="scanner"),
     path('getmemodata/<str:scanid>',views.getMemoData,name="memo_data"),
+    path('setmemodata/',views.setMemoData,name="setmemo"),
 ]

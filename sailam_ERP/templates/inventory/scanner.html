@@ -20,6 +20,9 @@ Sailam QR Code Scanner
 {%endblock header_files%}
 
 {%block content%}
+<div id="csrf">
+{% csrf_token %}
+</div>
 <div class="card" style="width: 18rem">
   <button class="btn btn-primary" type="button" id="toggleButton" name="toggleButton">Start Camera</button>
   <video id="preview"></video></div>
@@ -337,8 +340,21 @@ Sailam QR Code Scanner
       }
       memo['client']=client;
       var resp=JSON.stringify(memo);
-      alert(resp);
-    })
+      sendmemodata(resp);
+    });
+   
+    function sendmemodata(data){
+      $.ajax({
+        type: "POST",
+        headers: {'X-CSRFToken': document.getElementById('csrf').querySelector('input').value},
+        url: "{% url 'setmemo' %}",
+        data: data,
+        contentType: 'application/json',
+        success: function(){
+          console.log("data send successfully!!");
+        },
+      });
+    }
   </script>
   
   <script>
