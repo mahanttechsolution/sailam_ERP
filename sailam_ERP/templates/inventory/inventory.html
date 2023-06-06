@@ -3,56 +3,55 @@
 
 {%block footer_files%}
 <script>
-$(document).ready(function () {
-  $('#gia_form').submit(function (event) {
-    var data=document.getElementById("gianumber");
-    if(data.value=="")
-    {
-      alert("Report Number Can not be null");
-      data.style.borderColor="red";
-      return false;
-    }
-    else{
-      data.style.borderColor="initial"
-    }
-    event.preventDefault();
-    var shape=document.getElementById("shape");
-    var color=document.getElementById("color");
-    var clarity=document.getElementById("clarity");
-    var polish=document.getElementById("polish");
-    var symmetry=document.getElementById("symmetry");
-    var cut=document.getElementById("cut");
-    var fluorescence=document.getElementById("fluorescence");
-    var mesurement=document.getElementById("mesurement");
-    var depth=document.getElementById("depth");
-    var table=document.getElementById("table");
-    var giano=document.getElementById("giano");
-    var remark=document.getElementById("remark");
-    var photo=document.getElementById("id_image");
-    var video=document.getElementById("id_file");
-    var price=document.getElementById("price");
-    var stkid=document.getElementById("stkid");
-    var crt=document.getElementById("crt");
-    var description=document.getElementById("desc");
+  $(document).ready(function () {
+    $('#gia_form').submit(function (event) {
+      var data = document.getElementById("gianumber");
+      if (data.value == "") {
+        alert("Report Number Can not be null");
+        data.style.borderColor = "red";
+        return false;
+      }
+      else {
+        data.style.borderColor = "initial"
+      }
+      event.preventDefault();
+      var shape = document.getElementById("shape");
+      var color = document.getElementById("color");
+      var clarity = document.getElementById("clarity");
+      var polish = document.getElementById("polish");
+      var symmetry = document.getElementById("symmetry");
+      var cut = document.getElementById("cut");
+      var fluorescence = document.getElementById("fluorescence");
+      var mesurement = document.getElementById("mesurement");
+      var depth = document.getElementById("depth");
+      var table = document.getElementById("table");
+      var giano = document.getElementById("giano");
+      var remark = document.getElementById("remark");
+      var photo = document.getElementById("id_image");
+      var video = document.getElementById("id_file");
+      var price = document.getElementById("price");
+      var stkid = document.getElementById("stkid");
+      var crt = document.getElementById("crt");
+      var description = document.getElementById("desc");
 
-    $.ajax({
+      $.ajax({
         data: $(this).serialize(),
         type: "POST",
         url: "{% url 'giadata' %}",
         success: function (response) {
-          shape.value=response.data.getReport.results.shape_and_cutting_style;
-          color.value=response.data.getReport.results.color_grade;
-          clarity.value=response.data.getReport.results.clarity_grade;
-          polish.value=response.data.getReport.results.polish;
-          symmetry.value=response.data.getReport.results.symmetry;
-          cut.value=response.data.getReport.results.data.cut;
-          fluorescence.value=response.data.getReport.results.fluorescence;
-          mesurement.value=response.data.getReport.results.measurements;
-          depth.value=response.data.getReport.results.proportions.depth_pct;
-          table.value=response.data.getReport.results.proportions.table_pct;
-          giano.value=response.data.getReport.report_number;
-          remark.value=response.data.getReport.results.report_comments;
-          crt.value=parseFloat(response.data.getReport.results.carat_weight);
+          shape.value = response.data.getReport.results.shape_and_cutting_style;
+          color.value = response.data.getReport.results.color_grade;
+          clarity.value = response.data.getReport.results.clarity_grade;
+          polish.value = response.data.getReport.results.polish;
+          symmetry.value = response.data.getReport.results.symmetry;
+          cut.value = response.data.getReport.results.data.cut;
+          fluorescence.value = response.data.getReport.results.fluorescence;
+          mesurement.value = response.data.getReport.results.measurements;
+          depth.value = response.data.getReport.results.proportions.depth_pct;
+          table.value = response.data.getReport.results.proportions.table_pct;
+          giano.value = response.data.getReport.report_number;
+          remark.value = response.data.getReport.results.report_comments;
+          crt.value = parseFloat(response.data.getReport.results.carat_weight);
         }
       });
     });
@@ -61,7 +60,7 @@ $(document).ready(function () {
 
   function printImg(e) {
     var win = window.open('');
-    win.document.write('<img src="' +e.value + '" style="width:100%; height:100%;" onload="window.print();window.close()" />');
+    win.document.write('<img src="' + e.value + '" style="width:100%; height:100%;" onload="window.print();window.close()" />');
     win.document.write(`<style>
         html, body {
             width: 100%;
@@ -69,9 +68,9 @@ $(document).ready(function () {
             text-align: center;
         }
       </style>`)
-    win.focus();      
-    }
-    </script>
+    win.focus();
+  }
+</script>
 {%endblock footer_files%}
 
 {% block title%}
@@ -81,7 +80,7 @@ Diamond Data
 {% block content %}
 
 {% if message%}
-<div  class="col-12  alert alert-success alert-dismissible fade show" role="alert">
+<div class="col-12  alert alert-success alert-dismissible fade show" role="alert">
   {{message}}
   <button type="button" class="close" data-dismiss="alert" aria-label="Close">
     <span aria-hidden="true">&times;</span>
@@ -100,135 +99,145 @@ Diamond Data
 
 {% comment %} Card to take input of GIA number {% endcomment %}
 <div class="col-sm-12">
-<form id="gia_form">
-  {% csrf_token %}
-<div class="card">
-    <h5 class="card-header">To Upload GIA Graded Diamond</h5>
-    <div class="card-body">
-      <h5 class="card-title">Please Enter GIA Report Number</h5>
-      <p class="card-text"><input type="Text" class="form-control" id="gianumber" name="gianumber"  placeholder="GIA Report Number"></p>
-      <input type="submit" class="btn btn-primary" value="Fetch Data">
+  <form id="gia_form">
+    {% csrf_token %}
+    <div class="card">
+      <h5 class="card-header">To Upload GIA Graded Diamond</h5>
+      <div class="card-body">
+        <h5 class="card-title">Please Enter GIA Report Number</h5>
+        <p class="card-text"><input type="Text" class="form-control" id="gianumber" name="gianumber"
+            placeholder="GIA Report Number"></p>
+        <input type="submit" class="btn btn-primary" value="Fetch Data">
+      </div>
     </div>
-  </div>
-</form>
+  </form>
 </div>
 
 {% comment %} card to take input of diamond data {% endcomment %}
 
-    
+
 <div class="col-sm-12">
-<form id="diamond_form" method="POST" enctype="multipart/form-data">
-  {% csrf_token %}
-<div class="card" style="margin-top:20px">
-  <h5 class="card-header">Upload Diamond Information</h5>
-  
-  <div class="card-body ">
+  <form id="diamond_form" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="card" style="margin-top:20px">
+      <h5 class="card-header">Upload Diamond Information</h5>
 
-    <div class="form-row">
-      <div class="col-sm-3 mb-3">
-        <label for="formGroupExampleInput">Stock Id</label>
-        <input type="text" class="form-control" id="stkid" name="stkid" required="" value="">
-     </div> 
-     <div class="col-md-3 mb-3">
-      <label for="formGroupExampleInput">GIA No</label>
-      <input type="text" class="form-control" id="giano" name="giano"  value="">
-    </div> 
-    <div class="col-sm-3 mb-3">
-        <label for="formGroupExampleInput">Shape</label>
-        <input type="text" class="form-control" id="shape" name="shape" value="">
-    </div>  
-    <div class="col-md-3 mb-3">
-      <label for="formGroupExampleInput">Color</label>
-      <input type="text" class="form-control" id="color" name="color"  value="">
-    </div>
-  </div>
+      <div class="card-body ">
 
-    <div class="form-row">
-      <div class="col-sm-3 mb-3">
-          <label for="formGroupExampleInput">Clarity</label>
-          <input type="text" class="form-control" id="clarity" name="clarity"  value="">
+        <div class="form-row">
+          <div class="col-sm-3 mb-3">
+            <label for="formGroupExampleInput">Stock Id</label>
+            <input type="text" class="form-control" id="stkid" name="stkid" required="" value="">
+          </div>
+          <div class="col-md-3 mb-3">
+            <label for="formGroupExampleInput">GIA No</label>
+            <input type="text" class="form-control" id="giano" name="giano" value="">
+          </div>
+          <div class="col-sm-3 mb-3">
+            <label for="formGroupExampleInput">Shape</label>
+            <input type="text" class="form-control" id="shape" name="shape" value="">
+          </div>
+          <div class="col-md-3 mb-3">
+            <label for="formGroupExampleInput">Color</label>
+            <input type="text" class="form-control" id="color" name="color" value="">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="col-sm-3 mb-3">
+            <label for="formGroupExampleInput">Clarity</label>
+            <input type="text" class="form-control" id="clarity" name="clarity" value="">
+          </div>
+          <div class="col-sm-3 mb-3">
+            <label for="formGroupExampleInput">Polish</label>
+            <input type="text" class="form-control" id="polish" name="polish" value="">
+          </div>
+          <div class="col-md-3 mb-3">
+            <label for="formGroupExampleInput">Symmetry</label>
+            <input type="text" class="form-control" id="symmetry" name="symmetry" value="">
+          </div>
+          <div class="col-sm-3 mb-3">
+            <label for="formGroupExampleInput">Cut</label>
+            <input type="text" class="form-control" id="cut" name="cut" value="">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="col-sm-3 mb-3">
+            <label for="formGroupExampleInput">Fluorescence Color</label>
+            <input type="text" class="form-control" id="fluorescence" name="fluorescence" value="">
+          </div>
+          <div class="col-md-3 mb-3">
+            <label for="formGroupExampleInput">Mesurement</label>
+            <input type="text" class="form-control" id="mesurement" name="mesurement" value="">
+          </div>
+          <div class="col-sm-3 mb-3">
+            <label for="formGroupExampleInput">Depth</label>
+            <input type="text" class="form-control" id="depth" name="depth" value="">
+          </div>
+          <div class="col-sm-3 mb-3">
+            <label for="formGroupExampleInput">Table</label>
+            <input type="text" class="form-control" id="table" name="table" value="">
+          </div>
+        </div>
+
+        <div class="form-row">
+
+          <div class="col-md-3 mb-3">
+            <label for="formGroupExampleInput">Weight</label>
+            <input type="number" step="any" class="form-control" id="crt" name="crt" required="" value="">
+          </div>
+
+          <div class="col-sm-3 mb-3">
+            <label for="formGroupExampleInput">Photo</label>
+            {{form.image}}
+          </div>
+
+          <div class="col-md-3 mb-3">
+            <label for="formGroupExampleInput">Video</label>
+            {{form.file}}
+          </div>
+
+          <div class="col-md-3 mb-3">
+            <label for="formGroupExampleInput">Link</label>
+            {{form.link}}
+          </div>
+
+        </div>
+
+        <div class="form-row">
+
+          <div class="col-sm-6 mb-3">
+            <label for="formGroupExampleInput">Price</label>
+            <input type="number" step="any" class="form-control" id="price" name="price" required="" value="">
+          </div>
+
+
+          <div class="col-sm-6 mb-3">
+            <label for="formGroupExampleInput">Remark</label>
+            <input type="text" class="form-control" id="remark" name="remark" value="">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="col-sm-12 mb-3">
+            <label for="formGroupExampleInput">Description</label>
+            <input type="text" class="form-control" id="desc" name="desc" value="">
+          </div>
+        </div>
+        <div class="d-flex justify-content-center">
+          <div style="margin-right:15px">
+            <button type="submit" class="btn btn-primary" id="namebutton">Upload Data</button>
+          </div>
+        </div>
+
+        {% if qr_code_path %}
+        <h2>Generated QR Code:</h2>
+        <img src="{{qr_code_path}}" alt="QR Code">
+        <button value="{{qr_code_path}}" class="btn btn-primary" onClick="printImg(this)">Download File</button>
+        {% endif %}
       </div>
-      <div class="col-sm-3 mb-3">
-          <label for="formGroupExampleInput">Polish</label>
-          <input type="text" class="form-control" id="polish" name="polish"  value="">
-      </div> 
-      <div class="col-md-3 mb-3">
-        <label for="formGroupExampleInput">Symmetry</label>
-        <input type="text" class="form-control" id="symmetry" name="symmetry"  value="">
-    </div> 
-    <div class="col-sm-3 mb-3">
-      <label for="formGroupExampleInput">Cut</label>
-      <input type="text" class="form-control" id="cut" name="cut"  value="">
-    </div>
-  </div>
-
-    <div class="form-row">
-      <div class="col-sm-3 mb-3">
-          <label for="formGroupExampleInput">Fluorescence Color</label>
-          <input type="text" class="form-control" id="fluorescence" name="fluorescence"  value="">
-      </div>  
-      <div class="col-md-3 mb-3">
-        <label for="formGroupExampleInput">Mesurement</label>
-        <input type="text" class="form-control" id="mesurement" name="mesurement" value="">
-    </div>
-    <div class="col-sm-3 mb-3">
-      <label for="formGroupExampleInput">Depth</label>
-      <input type="text" class="form-control" id="depth" name="depth"  value="">
-    </div>
-    <div class="col-sm-3 mb-3">
-      <label for="formGroupExampleInput">Table</label>
-      <input type="text" class="form-control" id="table" name="table" value="">
-    </div> 
-  </div>
-
-  <div class="form-row">
-      
-      <div class="col-md-3 mb-3">
-        <label for="formGroupExampleInput">Weight</label>
-        <input type="number" step="any" class="form-control" id="crt" name="crt" required="" value="">
-       </div>
-
-      <div class="col-sm-3 mb-3">
-          <label for="formGroupExampleInput">Photo</label>
-          {{form.image}}
-      </div>  
-
-      <div class="col-md-3 mb-3">
-        <label for="formGroupExampleInput">Video</label>
-        {{form.file}}
-      </div>
-
-      <div class="col-sm-3 mb-3">
-        <label for="formGroupExampleInput">Price</label>
-        <input type="number" step="any" class="form-control" id="price" name="price" required="" value="">
-      </div>
-
-    </div>
-
-    <div class="form-row">
-      <div class="col-sm-6 mb-3">
-        <label for="formGroupExampleInput">Remark</label>
-        <input type="text" class="form-control" id="remark" name="remark" value="">
-      </div>
-      
-      <div class="col-sm-6 mb-3">
-          <label for="formGroupExampleInput">Description</label>
-          <input type="text" class="form-control" id="desc" name="desc" value="">
-      </div>  
-    </div>
-    <div class="d-flex justify-content-center">
-      <div style="margin-right:15px">
-       <button type="submit" class="btn btn-primary" id="namebutton">Upload Data</button>
-      </div>
-    </div>
-    
-    {% if qr_code_path %}
-    <h2>Generated QR Code:</h2>
-    <img  src="{{qr_code_path}}" alt="QR Code">
-    <button value="{{qr_code_path}}" class="btn btn-primary" onClick="printImg(this)">Download File</button>
-    {% endif %}
-  </div>
-</form>
+  </form>
 </div>
 
 {% endblock content %}

@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path
 from . import views
+
 urlpatterns = [
     path('loadgia/',views.loadGiaData,name="giadata"),
     path('insertdiamond/',views.insertDiamond,name="insertdiamond"),
@@ -13,4 +14,6 @@ urlpatterns = [
     path('preparedmemo/',views.preparedMemo,name="memo_prepared"),
     path('pdf/<str:file_name>/',views.send_pdf_response, name='pdf_response'),
     path('memodelete/<str:memo_id>',views.deleteMemo,name='memo_delete'),
+    path("diamond/", views.DiamondInfo, name="diamondinfo"),
 ]
+    
