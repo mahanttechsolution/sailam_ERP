@@ -3,7 +3,7 @@ from django.http import HttpResponse, FileResponse
 import requests
 import json
 from django.conf import settings
-from .models import inventory
+from .models import inventory, Video
 from .forms import VideoForm
 import qrcode
 import os
@@ -168,6 +168,15 @@ def viewStock(request):
 #     return url
 
 
+def DiamondInfo(request):
+    if request.method == "GET":
+        q = request.GET["q"]
+        info = inventory.objects.get(Scan_Id=q)
+        pics = Video.objects.get(id_inv=info.Id)
+        context = {"info": info, "pics": pics}
+        return render(request, "inventory/diamond_details.html", context=context)
+
+
 def generate_text(sid, weight, shape, color, purity):
     width, height = 200, 150
     background_color = (255, 255, 255)
@@ -219,7 +228,7 @@ def generate_qr_code(data):
         box_size=10,
         border=4,
     )
-    qr.add_data(data)
+    qr.add_data(f"http://127.0.0.1:8000/inventory/diamond?q={data}")
     qr.make(fit=True)
     qr_image = qr.make_image(fill_color="black", back_color="white")
     url = f"/media/qr/" + str(data) + ".png"
