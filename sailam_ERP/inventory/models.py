@@ -1,5 +1,6 @@
 from django.db import models
 
+
 # Create your models here.
 class inventory(models.Model):
     Id=models.BigAutoField(primary_key=True)
@@ -27,17 +28,19 @@ class inventory(models.Model):
     MemoMade=models.BooleanField(default=False)
 
 class ActivityLog(models.Model):
-    Log_Id=models.AutoField(primary_key=True)
-    User=models.ForeignKey("account.User", on_delete=models.CASCADE)
-    TimeStamp=models.DateTimeField(auto_now_add=True)
-    Log_message=models.TextField()
-    Notified=models.BooleanField(default=False)
+    Log_Id = models.AutoField(primary_key=True)
+    User = models.ForeignKey("account.User", on_delete=models.CASCADE)
+    TimeStamp = models.DateTimeField(auto_now_add=True)
+    Log_message = models.TextField()
+    Notified = models.BooleanField(default=False)
+
 
 class Video(models.Model):
-    id_inv=models.ForeignKey("inventory.inventory",on_delete=models.CASCADE)
-    file = models.FileField(upload_to='uploads/videos/',blank=True,null=True)
-    image = models.ImageField(upload_to='uploads/images/',blank=True,null=True)
+    id_inv = models.ForeignKey("inventory.inventory", on_delete=models.CASCADE)
+    file = models.FileField(upload_to="uploads/videos/", blank=True, null=True)
+    image = models.ImageField(upload_to="uploads/images/", blank=True, null=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
+    link = models.CharField(blank=True, null=True)
     
 class Memo(models.Model):
     id_memo=models.BigAutoField(primary_key=True)
