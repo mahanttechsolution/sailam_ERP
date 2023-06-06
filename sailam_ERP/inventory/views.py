@@ -10,6 +10,7 @@ import os
 from io import BytesIO
 import qrcode
 from PIL import Image, ImageDraw, ImageFont
+from urllib.request import urlretrieve
 
 # Create your views here.
 
@@ -91,6 +92,14 @@ def insertDiamond(request):
                     did = link[i + 1 : -4]
                 else:
                     did = link.split("=")[1]
+                ##image downloading
+                try:
+                    urlretrieve(
+                        f"https://diamondvid.blob.core.windows.net/diamond-vid/www/viewer3/RealImages/{did}.jpg",
+                        f"media/uploads/images/{did}.jpg",
+                    )
+                except Exception as e:
+                    print("------------------------->", e)
                 request.POST["link"] = did
                 # print(request.POST)
                 form = VideoForm(request.POST, request.FILES)

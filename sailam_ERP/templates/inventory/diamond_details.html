@@ -64,11 +64,12 @@
                     <div class="row justify-content-center">
                         <div>
                             <!-- <div class="column"> -->
+                            {%if pics.link != Null %}
                             <div class=" mb-4">
                                 <div class="card shadow">
                                     <div class="card-body" id="dvideo">
                                         <iframe
-                                            src="https://diamondvid.blob.core.windows.net/diamond-vid/www/viewer3/Vision360.html?d=S-884-6381181416-1.02"
+                                            src="https://diamondvid.blob.core.windows.net/diamond-vid/www/viewer3/Vision360.html?d={{pics.link}}"
                                             frameborder="0" height="600px" width="600px" scrolling="no"></iframe>
                                     </div> <!-- /.card-body -->
                                     <!-- /.card -->
@@ -77,11 +78,36 @@
                             <div class=" mb-4">
                                 <div class="card shadow">
                                     <div class="card-body" id="dimage">
-                                        <img src="{% static 'image/S-884-6381181416-1.02.jpg'%}" alt="" height="600px"
+                                        <img src="/media/uploads/images/{{pics.link}}.jpg" alt="" height="600px"
                                             width="600px">
                                     </div> <!-- /.card-body -->
                                 </div> <!-- /.card -->
                             </div> <!-- /. col -->
+                            {%endif%}
+                            <div class="row">
+                                {%if pics.image != Null %}
+                                <div class=" col-sm-6 mb-3">
+                                    <div class=" mb-4">
+                                        <div class="card shadow">
+                                            <div class="card-body">
+                                                <img src="/media/{{pics.image}}" alt="" height="250px" width="250px">
+                                            </div> <!-- /.card-body -->
+                                        </div> <!-- /.card -->
+                                    </div>
+                                </div>
+                                {%endif%}
+                                {%if pics.file != Null%}
+                                <div class=" col-sm-6 mb-3">
+                                    <div class=" mb-4">
+                                        <div class="card shadow">
+                                            <div class="card-body">
+                                                <video src="/media/{{pics.file}}" height="250px" width="250px"></video>
+                                            </div> <!-- /.card-body -->
+                                        </div> <!-- /.card -->
+                                    </div>
+                                </div>
+                                {%endif%}
+                            </div>
                         </div>
                     </div>
                 </div>
