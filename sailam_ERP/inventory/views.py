@@ -1,3 +1,4 @@
+import datetime
 import io
 import os
 from django.shortcuts import render
@@ -13,6 +14,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph,Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
+from reportlab.lib.units import inch
 
 # Create your views here.
 
@@ -132,7 +134,7 @@ def scanner(request):
     return render(request,"inventory/scanner.html")
 
 def getMemoData(request,scanid):
-   data=inventory.objects.filter(Scan_Id=scanid,MemoMade=False).values()|inventory.objects.filter(GIA_NO=scanid,MemoMade=False).values()
+   data=inventory.objects.filter(Scan_Id=scanid,MemoMade=False,IsSold=False).values()|inventory.objects.filter(GIA_NO=scanid,MemoMade=False,IsSold=False).values()
    if data:
     result={
         'stk_id':data[0]["STK_ID"],
@@ -190,7 +192,7 @@ def gen_report(request,data,memo):
     header_style.alignment = 1
     header = Paragraph(header_text, header_style)
     elements.append(header)
-    elements.append(Spacer(1, 20))
+    elements.append(Spacer(1, 10))
     
     # Company details
     company_details = [
@@ -227,23 +229,24 @@ def gen_report(request,data,memo):
     ]
     company_table=Table(data_company,style=table_style)
     client_table=Table(data_client,style=table_style) 
-    
-    parent_table_data = [[company_table, client_table]]
-    parent_table = Table(parent_table_data,colWidths=[200,300])
+    empty=[[" "],[" "],[" "],[" "],[" "],[" "]]
+    empty_table=Table(empty)
+    parent_table_data = [[company_table,empty_table, client_table]]
+    parent_table = Table(parent_table_data,colWidths=[200,150,200])
     parent_table_style = TableStyle([
     ('VALIGN', (0, 0), (-1, -1), 'TOP'),  
     ])
     parent_table.setStyle(parent_table_style)
     elements.append(parent_table)
-    elements.append(Spacer(1, 20))
+    elements.append(Spacer(1, 10))
 
     inst_text="The goods described and valued as below are delivered to you for examinations and  inspection and inspection only and remain our property subject to ourorder and shall returned to SAILAM LIMTED on demand. Such merchandise until returned to us and actually recieved,are at you risk from all hazards. No right or power is given to you to sell, pledge, hypothecate or otherwise dispose of this merchandise regardless of prior transaction. A sale of this merchandise can only be effected and title will pass only if, as and when we the said owner shall agree to such sale and a  bill of sale rendered therefor."
     instruction = Paragraph(inst_text)
     elements.append(instruction)
-    elements.append(Spacer(1, 20))
+    elements.append(Spacer(1, 10))
     # Table
     table_data = [
-        ["LOT NO.", "DESCRIPTION", "CARATS", "Rate per Crt HK$/US$", "PENDING", "RETURN", "CARATS SOLD", "REMARK"]
+        [Paragraph("LOT NO.", company_style), Paragraph("DESCRIPTION", company_style),Paragraph("CARATS", company_style) ,Paragraph("Rate per Crt HK$/US$", company_style) ,Paragraph("PENDING", company_style) , Paragraph("RETURN", company_style), Paragraph("CARATS SOLD", company_style), Paragraph("REMARK", company_style)]
     ]
     
     for item in data['diamond']:
@@ -257,7 +260,7 @@ def gen_report(request,data,memo):
             Paragraph("", company_style),
             Paragraph(item.get("remark", ""), company_style)
         ])
-    
+    colWidth=(0.9*inch,2.0*inch,0.9*inch,0.9*inch,0.9*inch,0.9*inch,0.9*inch,0.9*inch)
     table_style = TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
@@ -270,17 +273,17 @@ def gen_report(request,data,memo):
         ('WORDWRAP', (0, 0), (-1, -1), 'TRUE'),  
     ])
     
-    table = Table(table_data)
+    table = Table(table_data,colWidths=colWidth)
     table.setStyle(table_style)
     elements.append(table)
-    elements.append(Spacer(1, 20))
+    elements.append(Spacer(1, 10))
     
     # Footer
     footer_text = "Received the above goods in good order on the terms and conditions set out (This is not an invoice or bill of sale). Duration of consignment is max. 7 days from the memo date"
     footer_style = getSampleStyleSheet()["Normal"]
     footer = Paragraph(footer_text, footer_style)
     elements.append(footer)
-    elements.append(Spacer(1, 20))
+    elements.append(Spacer(1, 10))
     
     # Salesman 
     salesman_text = "<b>Salesman: </b>"+request.user.first_name
@@ -304,3 +307,70 @@ def send_pdf_response(request, file_name):
         return response
     else:
         return HttpResponse("File not found.")
+    
+
+def preparedMemo(request):
+   memoobj=Memo.objects.filter(is_deleted=False).values()
+   result=[]
+   stri=""
+   for row in memoobj:
+      memo={}
+      memo['memo_id']=row['id_memo']
+      memo['date']=str(row['CreatedOn'].date())
+      client_id=row['client_id']
+      client=Client.objects.filter(id_client=client_id).values()
+      memo['client_name']=client[0]['name']
+      memo['client_company']=client[0]['company']
+      memo_data=MemoData.objects.filter(memo=row['id_memo']).values()
+      memo['child_data']=[]
+      for data in memo_data:
+         child_memo={}  
+         child_memo['stk_no']=data['stk_no_id']
+         child_memo['description']=data['desc']
+         child_memo['weight']=data['weight']
+         child_memo['rate']=data['rate']
+         child_memo['remarks']=data['remark']
+         memo["child_data"].append(child_memo)
+      result.append(memo)
+   return HttpResponse(json.dumps(result, indent = 4))
+
+def viewMemo(request):
+   return render(request,'inventory/memo.html')
+
+def deleteMemo(request,memo_id):
+   user=request.user
+   memo=Memo.objects.filter(id_memo=memo_id).first()
+   memodata=MemoData.objects.filter(memo=memo_id).values()
+   if memo:
+      current_time=datetime.datetime.now(tz=datetime.timezone.utc)
+      for row in memodata:
+         stk_no=row['stk_no_id']
+         inv=inventory.objects.filter(STK_ID=stk_no).first()
+         inv.MemoMade=False
+         inv.save()
+      memo.is_deleted=True
+      memo.DeletedBy=user
+      memo.DeletedOn=current_time
+      memo.save()
+      return HttpResponse(json.dumps({'message':'success'}))
+   else:
+      return HttpResponse(json.dumps({'message':'fail'}))
+   
+def getinvoicedata(request,scanid):
+   data=inventory.objects.filter(Scan_Id=scanid,IsSold=False).values()|inventory.objects.filter(GIA_NO=scanid,MemoMade=False).values()
+   if data:
+    result={}
+    result['data']={
+        'NO':data[0]["STK_ID"],
+        'DESCRIPTION':'color:'+data[0]["COLOR"]+', clarity:'+data[0]["CLARITY"]+', shape:'+data[0]["SHAPE"],
+        'PCS':1,
+        'CTS':data[0]["CRT"],
+        'CFR US $':data[0]["PRICE"]
+    }
+    # print(result)
+    return HttpResponse(json.dumps(result, indent = 4)) 
+   else :
+      result={
+         'NO.':'null',
+      }
+      return HttpResponse(json.dumps(result, indent = 4))

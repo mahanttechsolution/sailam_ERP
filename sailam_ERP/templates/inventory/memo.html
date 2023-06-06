@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title%}
+Diamond Stock
+{% endblock title%}
+
+{% block content%}
+<div class="col-lg-12">
+<table class="table table-striped " id="datatable" style="width:100%">
+    <thead class="thead-dark">
+        <tr>
+          <th>Memo ID</th>
+          <th>Client Name</th>
+          <th>Client Company</th>
+          <th>Date</th>
+          <th>Action<th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+</table>
+</div>
+
+<script>
+    $(document).ready(function() {
+        var table = $('#datatable').DataTable({
+          responsive: true,
+          columnDefs: [
+            { "targets": "_all", "className": 'details-control', "defaultContent": "-", }
+          ]
+        });
+      
+        // AJAX request to retrieve data
+        $.ajax({
+          url: "{% url 'memo_prepared'%}", 
+          method: 'GET',
+          dataType: 'json',
+          success: function(data) {
+            populateDataTable(data);
+          },
+          error: function(xhr, status, error) {
+            console.error(error);
+          }
+        });
+      
+        // Function to populate DataTable with data
+        function populateDataTable(data) {
+          $.each(data, function(index, item) {
+            var row = [
+              item.memo_id,
+              item.client_name,
+              item.client_company,
+              item.date,
+            ];
+            row.push('<button type="button" class="btn btn-danger btn-xs dt-delete"><span class="fe fe-trash-2 fe-16" aria-hidden="true"></span></button>');
+            // Add the row to the DataTable
+            var datatableRow = table.row.add(row).draw().node();
+      
+            // Store the child row data for expanding
+            $(datatableRow).data('child', item.child_data);
+          });
+        }
+        
+        $(document).on('click','.dt-delete',function(){
+               var tr=$(this).closest('tr');
+               var memo_id = tr.find('td:eq(0)').text();
+               console.log("memo_id= "+memo_id);
+               if(confirm("Are you sure to delete this Memo?")){
+                $.ajax({
+                  url: "{% url 'memo_delete' memo_id=0 %}".replace('0',memo_id), 
+                  method: 'GET',
+                  dataType: 'json',
+                  success: function(data) {
+                     if(data && data.message === 'success')
+                     {
+                       var index=tr[0].rowIndex-1 > 0 ? tr[0].rowIndex-1 : 0;
+                       table.row(index).remove().draw();
+                     }
+                     else
+                     {
+                         console.error('Unable to delete');
+                     }
+                  },
+                  error: function(xhr, status, error) {
+                    console.error(error);
+                  }
+                });
+                
+              }
+        });
+        // Handle expanding/collapsing child rows
+        $('#datatable tbody').on('click', 'td.details-control', function() {
+          var tr = $(this).closest('tr');
+          var row = table.row(tr);
+          var childData = tr.data('child');
+      
+          if (row.child.isShown()) {
+            // This row is already open - close it
+            row.child.hide();
+            tr.removeClass('shown');
+          } else {
+            // Open this row
+            row.child(formatChildData(childData)).show();
+            tr.addClass('shown');
+          }
+        });
+      
+        // Function to format child row data
+        function formatChildData(childData) {
+          var html = '<div class="col-lg-12"><table class="child-table table table-hover" style="width:100%">';
+          html += '<thead><tr>';
+          html += '<th>Stock No</th>';
+          html += '<th>Description</th>';
+          html += '<th>Weight</th>';
+          html += '<th>Rate</th>';
+          html += '<th>Remarks</th>';
+          html += '</tr></thead>';
+          html += '<tbody>';
+      
+          $.each(childData, function(index, childItem) {
+            html += '<tr>';
+            html += '<td>' + childItem.stk_no + '</td>';
+            html += '<td>' + childItem.description + '</td>';
+            html += '<td>' + childItem.weight + '</td>';
+            html += '<td>' + childItem.rate + '</td>';
+            html += '<td>' + childItem.remarks + '</td>';
+            html += '</tr>';
+          });
+      
+          html += '</tbody></table></div>';
+      
+          return html;
+        }
+      });
+      
+</script>
+{% endblock content%}

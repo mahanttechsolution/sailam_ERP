@@ -7,6 +7,10 @@ urlpatterns = [
     path('stock/',views.viewStock,name="stock"),
     path('scanner/',views.scanner,name="scanner"),
     path('getmemodata/<str:scanid>',views.getMemoData,name="memo_data"),
+    path('getinvoicedata/<str:scanid>',views.getinvoicedata,name='get_invoicedata'),
     path('setmemodata/',views.setMemoData,name="setmemo"),
+    path('viewMemo/',views.viewMemo,name="view_memo"),
+    path('preparedmemo/',views.preparedMemo,name="memo_prepared"),
     path('pdf/<str:file_name>/',views.send_pdf_response, name='pdf_response'),
+    path('memodelete/<str:memo_id>',views.deleteMemo,name='memo_delete'),
 ]

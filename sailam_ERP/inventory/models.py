@@ -25,6 +25,7 @@ class inventory(models.Model):
     UpdatedOn=models.DateTimeField(auto_now=True)
     Scan_Id=models.BigIntegerField(blank=True,null=True)
     MemoMade=models.BooleanField(default=False)
+    IsSold=models.BooleanField(default=False)
 
 class ActivityLog(models.Model):
     Log_Id=models.AutoField(primary_key=True)
@@ -45,6 +46,8 @@ class Memo(models.Model):
     is_deleted=models.BooleanField(default=False)
     CretedBy=models.ForeignKey("account.User", on_delete=models.CASCADE,related_name='memo_created_by')
     CreatedOn=models.DateTimeField(auto_now_add=True)
+    DeletedBy=models.ForeignKey("account.User", on_delete=models.CASCADE,related_name='memo_deleted_by',blank=True,null=True)
+    DeletedOn=models.DateTimeField(blank=True,null=True)
 
 class MemoData(models.Model):
     memo=models.ForeignKey("inventory.Memo",on_delete=models.CASCADE)
