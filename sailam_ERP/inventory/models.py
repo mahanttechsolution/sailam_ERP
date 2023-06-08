@@ -41,7 +41,7 @@ class Video(models.Model):
     file = models.FileField(upload_to="uploads/videos/", blank=True, null=True)
     image = models.ImageField(upload_to="uploads/images/", blank=True, null=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
-    link = models.CharField(blank=True, null=True)
+    link = models.CharField(max_length=500,blank=True, null=True)
     
 class Memo(models.Model):
     id_memo=models.BigAutoField(primary_key=True)
