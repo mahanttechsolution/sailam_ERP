@@ -7,6 +7,10 @@ Sailam QR Code Scanner
 
 {%block header_files%}
 <script src="{% static 'js/instascan.min.js'%}"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
 <style>
   table.display {
     margin: 0 auto;
@@ -87,6 +91,7 @@ Sailam QR Code Scanner
             </table>
             <button class="btn btn-info" id="submitmemo" >Generate Memo</button>
         </div>
+
         <div class="tab-pane fade" id="tab2" role="tabpanel" aria-labelledby="tab2-tab">
           <table id="inventTable" class="table table-striped table-hover" width="100%">
             <thead class="thead-dark">
@@ -112,6 +117,7 @@ Sailam QR Code Scanner
             </tr>
           </tfoot>
           </table>
+          <button class="btn btn-info" id="submitinvoice" >Generate Invoice</button>
         </div>
         <div class="tab-pane fade" id="tab3" role="tabpanel" aria-labelledby="tab3-tab tab4-tab">
           <p>General</p>
@@ -171,6 +177,31 @@ Sailam QR Code Scanner
       </div>
     </div>
   </div>
+
+  <div class="modal fade" id="clientinvoiceModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Enter Client Data</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <label for="desc-input">Client Name</label>
+          <input class="form-control  my-3" type="text" id="invclientname" placeholder="Name"/>
+          <label for="weight-input">Client Comapany</label>
+          <input class="form-control  my-3" type="text" id="invclientcompany" placeholder="Company"/>
+          <label for="remark-input">Company Address</label>
+          <textarea class="form-control  my-3"  id="invcompanyaddress" placeholder="Address"></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button id="getinvoice" class="btn btn-info">Get Invoice</button>
+        </div>
+      </div>
+    </div>
+  </div>
   
 
   <script>
@@ -182,71 +213,47 @@ Sailam QR Code Scanner
     var cfr=0;
     var tusd=0;
     $(document).ready(function () {
-      dataTable=$("#memo_table").DataTable();
-      table = $('#inventTable').DataTable();
+      //datatables initialize
+      dataTable=$("#memo_table").DataTable({
+        dom: 'lBfrtip',
+      buttons: [
+          {
+              extend: 'pdfHtml5',
+              download: 'open',
+              className:'btn btn-info mt-3',
+              title: 'Sailam Memo',
+          },
+        {
+          extend: 'csvHtml5',
+          download: 'open',
+          className:'btn btn-info mt-3',
+
+      },
+      ]});
+
+
+      table = $('#inventTable').DataTable({
+      dom: 'lBfrtip',
+      buttons: [
+          {
+              extend: 'pdfHtml5',
+              download: 'open',
+              className:'btn btn-info mt-3',
+              title: 'Sailam Invoice',
+              footer:true,
+          },
+        {
+          extend: 'csvHtml5',
+          download: 'open',
+          className:'btn btn-info mt-3',
+          footer:true,
+      },
+      ]});
+      //detect current active tab
       $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
         target = $(e.target).attr("id");
       });
-
-      $("#inventTable").on("click","tbody td:not(:nth-child(1), :last-child, :nth-last-child(2))",function() {
-        var cell = $(this);
-        var originalContent = cell.text();
-        var newContent;
-        var columnIndex=cell.index();
-        var row = cell.closest("tr");
-        var rowData = [];
-        row.find("td").each(function() {
-          var cellData = $(this).text();
-          rowData.push(cellData);
-        });
-
-        var input = $("<input type='text'>");
-        input.val(originalContent);
-        
-        // Replace the cell's content with the input field
-        cell.html(input);
-        
-        // Focus on the input field and select its contents
-        input.focus();
-        
-        // Update the cell's content when the input field loses focus
-        input.blur(function() {
-          newContent = $(this).val();
-          cell.html(newContent);
-
-          if (columnIndex === 3 || columnIndex === 4) {
-            var cts = row.find("td:nth-child(3)").text();
-            var cfrUs = row.find("td:nth-child(4)").text();
-            var totalUs = cts * cfrUs;
-            console.log(cts);
-            console.log(" cfrUs: "+cfrUs);
-            console.log(" totalUs: "+totalUs);
-            updatetusd(row.find("td:nth-child(6)").text(),totalUs);
-            row.find("td:nth-child(6)").text(totalUs.toFixed(2));
-          }
-        });
-        
-        // Update the cell's content when the Enter key is pressed
-        input.keypress(function(e) {
-          if (e.which === 13) {
-            newContent = $(this).val();
-            cell.html(newContent);
-            if (columnIndex === 3 || columnIndex === 4) {
-              var cts = row.find("td:nth-child(4)").text();
-              var cfrUs = row.find("td:nth-child(5)").text();
-              var totalUs = cts * cfrUs;
-              console.log(cts);
-              console.log(" cfrUs: "+cfrUs);
-              console.log(" totalUs: "+totalUs);
-              updatetusd(row.find("td:nth-child(6)").text(),totalUs);
-              row.find("td:nth-child(6)").text(totalUs.toFixed(2));
-            }
-          }
-        });
-      });
-      
     });
-    
     
     $(document).ready(function () {
       $('#getreport').click(
@@ -266,9 +273,8 @@ Sailam QR Code Scanner
             {
               console.log('Inside tab1-tab')
                 var value= $('#gianum').val().split("=")
-                console.log(value[1]);
                 var request = new XMLHttpRequest();
-                var json = "{% url 'memo_data' scanid=0 %}".replace('0', value[1])
+                var json = "{% url 'memo_data' scanid=0 %}".replace('0',value[1]!=undefined?value[1]:value[0])
                 request.onload = function() {
                   if ( request.readyState === 4 && request.status === 200 ) {
                     var JSONObject = JSON.parse(request.responseText);
@@ -303,8 +309,73 @@ Sailam QR Code Scanner
   </script>
 
   <script>
+  //script for invoice
 
+  $("#inventTable").on("click","tbody td:not(:nth-child(1), :last-child, :nth-last-child(2))",function() {
+    var cell = $(this);
+    var originalContent = cell.text();
+    var newContent;
+    var columnIndex=cell.index();
+    var row = cell.closest("tr");
+    var rowData = [];
+    row.find("td").each(function() {
+      var cellData = $(this).text();
+      rowData.push(cellData);
+    });
+
+    var input = $("<input type='text'>");
+    input.val(originalContent);
     
+    // Replace the cell's content with the input field
+    cell.html(input);
+    
+    // Focus on the input field and select its contents
+    input.focus();
+    
+    // Update the cell's content when the input field loses focus
+    input.blur(function() {
+      newContent = $(this).val();
+      cell.html(newContent);
+      handelUpdate(columnIndex,row,originalContent,newContent);
+    });
+    
+    // Update the cell's content when the Enter key is pressed
+    input.keypress(function(e) {
+      if (e.which === 13) {
+        newContent = $(this).val();
+        cell.html(newContent);
+        handelUpdate(columnIndex,row,originalContent,newContent);
+      }
+    });
+ 
+
+  function handelUpdate(index,row,oldval,newval)
+  {
+    
+    if (index === 3 || index === 4) {
+      var cts = row.find("td:nth-child(4)").text();
+      var cfrUs = row.find("td:nth-child(5)").text();
+      var totalUs = cts * cfrUs;
+      updatetusd(row.find("td:nth-child(6)").text(),totalUs);
+      row.find("td:nth-child(6)").text(totalUs.toFixed(2));
+    }
+
+    if(index === 2)
+    {
+       updatepcs(oldval,newval)
+    }
+    if(index === 3)
+    {
+       updatects(oldval,newval)
+    }
+    if(index === 4)
+    {
+       updatecfr(oldval,newval)
+    }
+  }
+  
+});
+
   function loadData(newData) {
       if(newData.NO != "null")
         {
@@ -315,28 +386,15 @@ Sailam QR Code Scanner
               rowData.push(newData.CTS);
               rowData.push(newData.CFR_US_$);
               rowData.push(caltotal(newData.CTS,newData.CFR_US_$));
-              rowData.push('<button type="button" class="btn btn-danger btn-xs bt-delete"><span class="fe fe-trash-2 fe-16" aria-hidden="true"></span></button>');
-              if(!isRowExists(table,rowData))
+              rowData.push('<button type="button" onclick="ondelete(this)" class="btn btn-danger btn-xs bt-delete" id="1"><span class="fe fe-trash-2 fe-16" aria-hidden="true"></span></button>');
+              if(!isRowExists(table,rowData) && !isRowExists(dataTable,rowData))
               {
                   table.row.add(rowData).draw();
                   updatefooter(rowData);
 
-                $('.bt-delete').off('click');
-                $('.bt-delete').each(function () {
-                  $(this).on('click', function(evt){
-                    $this = $(this);
-                    var dtRow = $this.parents('tr');
-                    var row = $(this).closest('tr');
-                   
-                    if(confirm("Are you sure to delete this row?")){
-                      delfooter(row);
-                      table.row(row).remove().draw( false );
-                    }
-                  });
-                });
               }
               else{
-                alert('Data Already Exist');
+                alert('Data Already Exist in This or Other Tab');
               }
               
         }
@@ -344,6 +402,16 @@ Sailam QR Code Scanner
         alert("Data For Given GIA Is Not Available Or Bill Is Already Prepared for this");
       }
     }
+   function ondelete(e)
+   {
+    var cell = $(e);
+    var row = cell.closest("tr").find("td");
+        if(confirm("Are you sure to delete this row?")){
+          delfooter(row);
+          table.row(row).remove().draw( false );
+        } 
+  }
+
 function updatefooter(row)
 {
    pcs+=parseInt(row[2]);
@@ -366,6 +434,7 @@ function updatefooter(row)
   console.log("usdNew: "+newval);
    tusd-=parseFloat(oldval);
    tusd+=parseFloat(newval);
+   console.log("tusd: "+tusd);
    $(table.column(5).footer()).html(tusd.toFixed(2));
  }
  function updatecfr(oldval,newval)
@@ -387,21 +456,19 @@ function updatefooter(row)
   $(table.column(2).footer()).html(pcs.toFixed(2));
  }
  
-function delfooter(rowInd)
+function delfooter(row)
 {
-  var row = table.row(rowInd).data();
-  console.log(row);
-  pcs-=parseInt(row[2]);
+  pcs-=parseInt(row[2].textContent);
   $(table.column(2).footer()).html(pcs.toFixed(2));
 
-  cts-=parseFloat(row[3]);
+  cts-=parseFloat(row[3].textContent);
   $(table.column(3).footer()).html(cts.toFixed(2));
 
  
-  cfr-=parseFloat(row[4]);
+  cfr-=parseFloat(row[4].textContent);
   $(table.column(4).footer()).html(cfr.toFixed(2));
 
-  tusd-=parseFloat(row[5]);
+  tusd-=parseFloat(row[5].textContent);
   $(table.column(5).footer()).html(tusd.toFixed(2));
 }
 
@@ -411,6 +478,68 @@ function delfooter(rowInd)
     var res=parseFloat(a)*parseFloat(b);
     return res;
  }
+ 
+ $(document).on('click','#submitinvoice',function(){
+  var modal = $('#clientinvoiceModal');
+   if(table.data().count()>0)
+   {
+    modal.modal({ show: true });
+   }
+   else{
+    alert('Select At least Single Entry for Invoice')
+   }
+});
+
+function resetFooter()
+{
+  var value=0;
+  pcs=0;
+  cts=0;
+  cfr=0;
+  tusd=0;
+  $(table.column(2).footer()).html(value.toFixed(2));
+  $(table.column(3).footer()).html(value.toFixed(2));
+  $(table.column(4).footer()).html(value.toFixed(2));
+  $(table.column(5).footer()).html(value.toFixed(2));
+}
+
+$(document).on('click','#getinvoice',function(){
+  var clientmodal=$('#clientinvoiceModal')
+  var clientname=$('#invclientname').val();
+  var clientcompany=$('#invclientcompany').val();
+  var address=$('textarea#invcompanyaddress').val();
+  var data= table.rows().data();
+  var invoice={};
+  var client={};
+  client['name']=clientname;
+  client['company']=clientcompany;
+  client['address']=address;
+  invoice['diamond']=[];
+  for(var i=0;i<data.length;i++)
+  {
+    var diamond = {};
+    var row=data[i];
+    diamond['stk_no']=row[0];
+    diamond['description']=row[1];
+    diamond['pcs']=row[2];
+    diamond['weight']=row[3];
+    diamond['cfr']=row[4];
+    diamond['total']=row[5];
+    invoice['diamond'].push(diamond);
+  }
+  total={};
+  total['pcs']=$(table.column(2).footer()).html();
+  total['cts']=$(table.column(3).footer()).html();
+  total['cfr']=$(table.column(4).footer()).html();
+  total['tusd']=$(table.column(5).footer()).html();
+  invoice['client']=client;
+  invoice['total']=total;
+  var resp=JSON.stringify(invoice);
+  alert(resp);
+  clientmodal.modal('hide');
+  table.clear().draw();
+  resetFooter();
+});
 
   </script>
   
@@ -437,7 +566,7 @@ function delfooter(rowInd)
               rowData.push(data.remark);
               rowData.push(data.price);
               rowData.push('<button type="button" class="btn btn-primary btn-xs dt-edit mr-3" id="edit-button" ><span class="fe fe-edit fe-16" aria-hidden="true"></span></button><button type="button" class="btn btn-danger btn-xs dt-delete"><span class="fe fe-trash-2 fe-16" aria-hidden="true"></span></button>');
-              if(!isRowExists(dataTable,rowData))
+              if(!isRowExists(dataTable,rowData) && !isRowExists(table,rowData))
               {
                   dataTable.row.add(rowData).draw();
 
@@ -453,7 +582,7 @@ function delfooter(rowInd)
                 });
               }
               else{
-                alert('Data Already Exist');
+                alert('Data Already Exist in This or Other Tab');
               }
               
         }
