@@ -88,7 +88,7 @@ Sailam QR Code Scanner
             <button class="btn btn-info" id="submitmemo" >Generate Memo</button>
         </div>
         <div class="tab-pane fade" id="tab2" role="tabpanel" aria-labelledby="tab2-tab">
-          <table id="data-table" class="table table-striped table-hover" width="100%">
+          <table id="inventTable" class="table table-striped table-hover" width="100%">
             <thead class="thead-dark">
               <tr>
                 <th>NO.</th>
@@ -97,19 +97,20 @@ Sailam QR Code Scanner
                 <th>CTS</th>
                 <th>CFR US $</th>
                 <th>TOTAL US$</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody></tbody>
             <tfoot>
               <tr>
-                <td class="total">Total</td>
-                <td></td>
-                <td class="total" id="pcs-total"></td>
-                <td class="total" id="cts-total"></td>
-                <td class="total" id="cfr-total"></td>
-                <td class="total" id="total-usd-total"></td>
-              </tr>
-            </tfoot>
+                <th></th>
+                <th>Total:</th>
+                <th id="total-pcs"></th>
+                <th id="total-cts"></th>
+                <th id="total-cfr"></th>
+                <th id="total-us"></th>
+            </tr>
+          </tfoot>
           </table>
         </div>
         <div class="tab-pane fade" id="tab3" role="tabpanel" aria-labelledby="tab3-tab tab4-tab">
@@ -174,13 +175,76 @@ Sailam QR Code Scanner
 
   <script>
     var dataTable;
-    var inventTable;
+    var table;
     var target;
+    var pcs=0;
+    var cts=0;
+    var cfr=0;
+    var tusd=0;
     $(document).ready(function () {
       dataTable=$("#memo_table").DataTable();
+      table = $('#inventTable').DataTable();
       $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
         target = $(e.target).attr("id");
       });
+
+      $("#inventTable").on("click","tbody td:not(:nth-child(1), :last-child, :nth-last-child(2))",function() {
+        var cell = $(this);
+        var originalContent = cell.text();
+        var newContent;
+        var columnIndex=cell.index();
+        var row = cell.closest("tr");
+        var rowData = [];
+        row.find("td").each(function() {
+          var cellData = $(this).text();
+          rowData.push(cellData);
+        });
+
+        var input = $("<input type='text'>");
+        input.val(originalContent);
+        
+        // Replace the cell's content with the input field
+        cell.html(input);
+        
+        // Focus on the input field and select its contents
+        input.focus();
+        
+        // Update the cell's content when the input field loses focus
+        input.blur(function() {
+          newContent = $(this).val();
+          cell.html(newContent);
+
+          if (columnIndex === 3 || columnIndex === 4) {
+            var cts = row.find("td:nth-child(3)").text();
+            var cfrUs = row.find("td:nth-child(4)").text();
+            var totalUs = cts * cfrUs;
+            console.log(cts);
+            console.log(" cfrUs: "+cfrUs);
+            console.log(" totalUs: "+totalUs);
+            updatetusd(row.find("td:nth-child(6)").text(),totalUs);
+            row.find("td:nth-child(6)").text(totalUs.toFixed(2));
+          }
+        });
+        
+        // Update the cell's content when the Enter key is pressed
+        input.keypress(function(e) {
+          if (e.which === 13) {
+            newContent = $(this).val();
+            cell.html(newContent);
+            if (columnIndex === 3 || columnIndex === 4) {
+              var cts = row.find("td:nth-child(4)").text();
+              var cfrUs = row.find("td:nth-child(5)").text();
+              var totalUs = cts * cfrUs;
+              console.log(cts);
+              console.log(" cfrUs: "+cfrUs);
+              console.log(" totalUs: "+totalUs);
+              updatetusd(row.find("td:nth-child(6)").text(),totalUs);
+              row.find("td:nth-child(6)").text(totalUs.toFixed(2));
+            }
+          }
+        });
+      });
+      
     });
     
     
@@ -201,9 +265,10 @@ Sailam QR Code Scanner
             if(target === "tab1-tab") 
             {
               console.log('Inside tab1-tab')
-                var value= $('#gianum').val()
+                var value= $('#gianum').val().split("=")
+                console.log(value[1]);
                 var request = new XMLHttpRequest();
-                var json = "{% url 'memo_data' scanid=0 %}".replace('0', value)
+                var json = "{% url 'memo_data' scanid=0 %}".replace('0', value[1])
                 request.onload = function() {
                   if ( request.readyState === 4 && request.status === 200 ) {
                     var JSONObject = JSON.parse(request.responseText);
@@ -216,14 +281,13 @@ Sailam QR Code Scanner
             else if(target==="tab2-tab")
             {
               console.log('Inside tab2-tab');
-              var value= $('#gianum').val()
+              var value= $('#gianum').val().split("=")
                 var request = new XMLHttpRequest();
-                var json = "{% url 'get_invoicedata' scanid=0 %}".replace('0', value)
+                var json = "{% url 'get_invoicedata' scanid=0 %}".replace('0', value[1]!=undefined?value[1]:value[0]);
                 request.onload = function() {
                   if ( request.readyState === 4 && request.status === 200 ) {
                     var JSONObject = JSON.parse(request.responseText);
-                    var res=json2array(JSONObject)
-                    loadData(res);
+                    loadData(JSONObject);
                   } else if(request.status == 400) { console.log("Error", request.status);}
                 };
                   request.open("GET", json, true);
@@ -237,97 +301,121 @@ Sailam QR Code Scanner
       );
     });
   </script>
+
   <script>
 
-    function json2array(json){
-      var result = [];
-      var keys = Object.keys(json);
-      keys.forEach(function(key){
-          result.push(json[key]);
-      });
-      return result;
-  }
+    
+  function loadData(newData) {
+      if(newData.NO != "null")
+        {
+              var rowData = [];
+              rowData.push(newData.NO);
+              rowData.push(newData.DESCRIPTION);
+              rowData.push(newData.PCS);
+              rowData.push(newData.CTS);
+              rowData.push(newData.CFR_US_$);
+              rowData.push(caltotal(newData.CTS,newData.CFR_US_$));
+              rowData.push('<button type="button" class="btn btn-danger btn-xs bt-delete"><span class="fe fe-trash-2 fe-16" aria-hidden="true"></span></button>');
+              if(!isRowExists(table,rowData))
+              {
+                  table.row.add(rowData).draw();
+                  updatefooter(rowData);
 
-    function loadData(newData) {
-      var Data = [
-        { "NO.": "4", "DESCRIPTION": "Product 4", "PCS.": "8", "CTS": "80", "CFR US $": "2" },
-        { "NO.": "2", "DESCRIPTION": "Product 2", "PCS.": "7", "CTS": "70", "CFR US $": "3.5" },
-        { "NO.": "5", "DESCRIPTION": "Product 5", "PCS.": "2", "CTS": "20", "CFR US $": "4" }
-      ];
-        if (!inventTable) {
-          console.log(newData);
-          inventTable = $("#data-table").DataTable({
-            data: newData,
-            columns: [
-              { data: "NO" },
-              { data: "DESCRIPTION", className: "editable" },
-              { data: "PCS", className: "editable" },
-              { data: "CTS", className: "editable" },
-              { data: "CFR US $", className: "editable" },
-              { data: null, render: function(data, type, row) {
-                var pcs = parseInt(row["PCS."]);
-                var cfr = parseFloat(row["CFR US $"]);
-                var totalUsd = pcs * cfr;
-                return totalUsd.toFixed(2);
-              }}
-            ],
-            footerCallback: function(row, data, start, end, display) {
-              var api = this.api();
-              var pcsTotal = api.column(2).data().reduce(function(a, b) { return parseInt(a) + parseInt(b); }, 0);
-              var ctsTotal = api.column(3).data().reduce(function(a, b) { return parseFloat(a) + parseFloat(b); }, 0);
-              var cfrTotal = api.column(4).data().reduce(function(a, b) { return parseFloat(a) + parseFloat(b); }, 0);
-              var totalUsdTotal = api.column(5).data().reduce(function(a, b) { return parseFloat(a) + parseFloat(b); }, 0);
-
-              $(api.column(2).footer()).html(pcsTotal);
-              $(api.column(3).footer()).html(ctsTotal.toFixed(2));
-              $(api.column(4).footer()).html(cfrTotal.toFixed(2));
-              $(api.column(5).footer()).html(totalUsdTotal.toFixed(2));
-            }
-          });
-
-          
-          $("#data-table tbody").on("click", "td.editable", function() {
-            var cell = $(this);
-            var oldValue = cell.text();
-
-            
-            var input = $("<input>").attr("type", "text").val(oldValue).width("100%").on("blur", function() {
-              var newValue = $(this).val();
-              cell.text(newValue);
-
+                $('.bt-delete').off('click');
+                $('.bt-delete').each(function () {
+                  $(this).on('click', function(evt){
+                    $this = $(this);
+                    var dtRow = $this.parents('tr');
+                    var row = $(this).closest('tr');
+                   
+                    if(confirm("Are you sure to delete this row?")){
+                      delfooter(row);
+                      table.row(row).remove().draw( false );
+                    }
+                  });
+                });
+              }
+              else{
+                alert('Data Already Exist');
+              }
               
-              if (cell.index() === 2 || cell.index() === 4) {
-                var row = cell.closest("tr");
-                var pcs = parseInt(row.find("td:eq(2)").text());
-                var cfr = parseFloat(row.find("td:eq(4)").text());
-                var totalUsd = pcs * cfr;
-                row.find("td:eq(5)").text(totalUsd.toFixed(2));
-              }
-            }).on("keyup", function(event) {
-              if (event.key === "Enter") {
-                $(this).blur();
-              }
-            });
-
-            cell.html(input).find("input").focus();
-          });
-        } else {
-          newData.forEach(function(rowData) {
-            var existingRow = inventTable.rows().data().filter(function(row) {
-              return row["NO."] === rowData["NO."];
-            }).toArray();
-
-            if (existingRow.length === 0) {
-              inventTable.row.add(rowData).draw(false);
-            }
-          });
         }
+      else{
+        alert("Data For Given GIA Is Not Available Or Bill Is Already Prepared for this");
       }
+    }
+function updatefooter(row)
+{
+   pcs+=parseInt(row[2]);
+   $(table.column(2).footer()).html(pcs.toFixed(2));
+
+   cts+=parseFloat(row[3]);
+   $(table.column(3).footer()).html(cts.toFixed(2));
+
+  
+   cfr+=parseFloat(row[4]);
+   $(table.column(4).footer()).html(cfr.toFixed(2));
+
+   tusd+=parseFloat(row[5]);
+   $(table.column(5).footer()).html(tusd.toFixed(2));
+}
+
+ function updatetusd(oldval,newval)
+ {
+  console.log("usdOld: "+oldval);
+  console.log("usdNew: "+newval);
+   tusd-=parseFloat(oldval);
+   tusd+=parseFloat(newval);
+   $(table.column(5).footer()).html(tusd.toFixed(2));
+ }
+ function updatecfr(oldval,newval)
+ {
+   cfr-=parseFloat(oldval);
+   cfr+=parseFloat(newval);
+  $(table.column(4).footer()).html(cfr.toFixed(2));
+ }
+ function updatects(oldval,newval)
+ {
+   cts-=parseFloat(oldval);
+   cts+=parseFloat(newval);
+  $(table.column(3).footer()).html(cts.toFixed(2));
+ }
+ function updatepcs(oldval,newval)
+ {
+   pcs-=parseFloat(oldval);
+   pcs+=parseFloat(newval);
+  $(table.column(2).footer()).html(pcs.toFixed(2));
+ }
+ 
+function delfooter(rowInd)
+{
+  var row = table.row(rowInd).data();
+  console.log(row);
+  pcs-=parseInt(row[2]);
+  $(table.column(2).footer()).html(pcs.toFixed(2));
+
+  cts-=parseFloat(row[3]);
+  $(table.column(3).footer()).html(cts.toFixed(2));
+
+ 
+  cfr-=parseFloat(row[4]);
+  $(table.column(4).footer()).html(cfr.toFixed(2));
+
+  tusd-=parseFloat(row[5]);
+  $(table.column(5).footer()).html(tusd.toFixed(2));
+}
+
+
+ function caltotal(a,b)
+ {
+    var res=parseFloat(a)*parseFloat(b);
+    return res;
+ }
+
   </script>
   
   <script>
     //script for memo
-    
     function isRowExists(dataTable, rowData) {
       var rows = dataTable.rows().data().toArray();
       for (var i = 0; i < rows.length; i++) {

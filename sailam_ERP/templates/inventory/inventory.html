@@ -59,16 +59,7 @@
 
 
   function printImg(e) {
-    var win = window.open('');
-    win.document.write('<img src="' + e.value + '" style="width:100%; height:100%;" onload="window.print();window.close()" />');
-    win.document.write(`<style>
-        html, body {
-            width: 100%;
-            height: 100%;
-            text-align: center;
-        }
-      </style>`)
-    win.focus();
+    window.open(e.value);
   }
 </script>
 {%endblock footer_files%}
@@ -230,14 +221,16 @@ Diamond Data
             <button type="submit" class="btn btn-primary" id="namebutton">Upload Data</button>
           </div>
         </div>
-
-        {% if qr_code_path %}
-        <h2>Generated QR Code:</h2>
-        <img src="{{qr_code_path}}" alt="QR Code">
-        <button value="{{qr_code_path}}" class="btn btn-primary" onClick="printImg(this)">Download File</button>
-        {% endif %}
       </div>
   </form>
+ 
+</div>
+<div>
+  {% if qr_code_path %}
+  <h2>Generated QR Code:</h2>
+  <img src="{{qr_code_path}}" alt="QR Code">
+  <a href="{{qr_code_path}}" download="qr"><button class="btn btn-primary">Download File</button></a>
+  {% endif %}
 </div>
 
 {% endblock content %}

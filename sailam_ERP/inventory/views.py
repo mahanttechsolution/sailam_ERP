@@ -504,17 +504,17 @@ def getinvoicedata(request,scanid):
    data=inventory.objects.filter(Scan_Id=scanid,IsSold=False).values()|inventory.objects.filter(GIA_NO=scanid,MemoMade=False).values()
    if data:
     result={}
-    result['data']={
+    result={
         'NO':data[0]["STK_ID"],
         'DESCRIPTION':'color:'+data[0]["COLOR"]+', clarity:'+data[0]["CLARITY"]+', shape:'+data[0]["SHAPE"],
         'PCS':1,
         'CTS':data[0]["CRT"],
-        'CFR US $':data[0]["PRICE"]
+        'CFR_US_$':data[0]["PRICE"]
     }
     # print(result)
     return HttpResponse(json.dumps(result, indent = 4)) 
    else :
       result={
-         'NO.':'null',
+         'NO':'null',
       }
       return HttpResponse(json.dumps(result, indent = 4))
