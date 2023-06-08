@@ -16,6 +16,7 @@
         href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,100;0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap"
         rel="stylesheet">
     <!-- Icons CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="{% static '/assets/css/feather.css' %}">
     <!-- Date Range Picker CSS -->
     <link rel="stylesheet" href="{% static '/assets/css/daterangepicker.css' %}">
@@ -25,269 +26,215 @@
 
 </head>
 
-<body>
-    <nav class="topnav navbar navbar-light bg-white shadow mb-4">
+<body style="overflow: hidden">
+    <nav class="topnav navbar navbar-light bg-white shadow">
         <div class="container-fluid">
             <ul class="nav">
                 <li class="nav-item">
-                    <div class="w-100 mb-4 d-flex my-2">
-                        <a class="navbar-brand mx-auto mt-2 flex-fill " href="http://127.0.0.1:8000/">
+                    <div class="w-100 mb-1 d-flex my-2">
+                        <a class="navbar-brand mx-auto  flex-fill " href="http://127.0.0.1:8000/">
                             <img src="{% static 'image/logo.png' %}" alt="" height="50px" width="50px">
-                            <b>SAILAM</b>
+                            <b>SAILAM LTD.</b>
                         </a>
                     </div>
                 </li>
             </ul>
             <ul class="nav">
-                <li class="nav-item ">
-                    <h5>GIA REPORT : 1234567890</h5>
+                <li class="nav-item float-right">
+                    <h6>Email: sailam@contact.com {%if not user.is_authenticated%}<a href="{%url 'login' %}"
+                            style="margin-left:15px ;"><span
+                                style="text-decoration: underline; color: red">Login</span></a>{%endif%}</h6>
                 </li>
             </ul>
-            <div class="col-sm-4">
-                <ul class="nav">
-                    <li class="nav-item">
-                        <h5 style="text-align: center;">FACSIMILE </h5>
-                        <p>This is a digital representation of the original GIA Report. This representation might not
-                            be accepted in lieu of the original GIA Report in certain circumstances. The original GIA
-                            Report includes certain security features which are not reproducible on this facsimile.</p>
-                    </li>
-                </ul>
-            </div>
         </div>
     </nav>
 
-    <div class="container-fluid">
+    <div class="card" style="padding-bottom: 50px;">
         <div class="row">
-            <div class="col-sm-4">
-                <div class="container-fluid">
-                    <h5 class="card-header mb-4 customheader">Diamond Visulization</h5>
-                    <div class="row justify-content-center">
+            <div class="col-sm-3" style="margin-right: 70px;">
+                <div class=" container-fluid row float-left">
+
+                    {%if pics.link != Null %}
+                    <div class="">
                         <div>
-                            <!-- <div class="column"> -->
-                            {%if pics.link != Null %}
-                            <div class=" mb-4">
-                                <div class="card shadow">
-                                    <div class="card-body" id="dvideo">
-                                        <iframe
-                                            src="https://diamondvid.blob.core.windows.net/diamond-vid/www/viewer3/Vision360.html?d={{pics.link}}"
-                                            frameborder="0" height="600px" width="600px" scrolling="no"></iframe>
-                                    </div> <!-- /.card-body -->
-                                    <!-- /.card -->
-                                </div>
-                            </div>
-                            <div class=" mb-4">
-                                <div class="card shadow">
-                                    <div class="card-body" id="dimage">
-                                        <img src="/media/uploads/images/{{pics.link}}.jpg" alt="" height="600px"
-                                            width="600px">
-                                    </div> <!-- /.card-body -->
-                                </div> <!-- /.card -->
-                            </div> <!-- /. col -->
-                            {%endif%}
-                            <div class="row">
-                                {%if pics.image != Null %}
-                                <div class=" col-sm-6 mb-3">
-                                    <div class=" mb-4">
-                                        <div class="card shadow">
-                                            <div class="card-body">
-                                                <img src="/media/{{pics.image}}" alt="" height="250px" width="250px">
-                                            </div> <!-- /.card-body -->
-                                        </div> <!-- /.card -->
-                                    </div>
-                                </div>
-                                {%endif%}
-                                {%if pics.file != Null%}
-                                <div class=" col-sm-6 mb-3">
-                                    <div class=" mb-4">
-                                        <div class="card shadow">
-                                            <div class="card-body">
-                                                <video src="/media/{{pics.file}}" height="250px" width="250px"></video>
-                                            </div> <!-- /.card-body -->
-                                        </div> <!-- /.card -->
-                                    </div>
-                                </div>
-                                {%endif%}
-                            </div>
+                            <div class="card-body" id="dvideo">
+                                <iframe
+                                    src="https://diamondvid.blob.core.windows.net/diamond-vid/www/viewer3/Vision360.html?d={{pics.link}}"
+                                    frameborder="0" height="600px" width="500px" scrolling="no"></iframe>
+                            </div> <!-- /.card-body -->
+                            <!-- /.card -->
                         </div>
+                    </div>
+
+
+                    <div class=" mb-4">
+                        <!-- <div style="height:650px ; width:600px"> -->
+                        <div class="card-body" style="justify-content: center;display:flex">
+
+                            <img src="/media/uploads/images/{{pics.link}}.jpg" alt="" height="150px" width="150px"
+                                class="imgst">
+                            <img src="/media/uploads/images/{{pics.link}}.jpg" alt="" height="150px" width="150px"
+                                class="imgst">
+                            <img src="/media/uploads/images/{{pics.link}}.jpg" alt="" height="150px" width="150px"
+                                class="imgst">
+                        </div> <!-- /.card-body -->
+                        <!-- </div> -->
+                    </div> <!-- /.card -->
+                    <!-- /. col -->
+
+                    {%endif%}
+
+                </div>
+            </div>
+            <div class="col-sm-8 mt-4">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <h4 class="mb-3">GIA NO : {{info.GIA_NO}} <a style="margin-left: 5px;"
+                                href="https://www.gia.edu/report-check?reportno={{info.GIA_NO}}"><i
+                                    class="fe fe-link fe-14"></i></a></h4>
+                        <h6>Price : {%if user.is_authenticated %}{{info.PRICE}}
+                            {%else%}<a href="{%url 'login' %}"
+                                style="margin-left: 5px;text-decoration: underline; color:red">
+                                Login for Price</a>
+                            {%endif%}</h6>
+
+                    </div>
+                    <div class="col-sm-8">
+                        <div class="float-right">
+                            <h6><i class="fe fe-map-pin fe-16" style="margin-right: 5px;"></i> Mumbai
+                            </h6>
+                        </div>
+                    </div>
+                </div>
+                <hr class="mainhr">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h4 class="leftpad mb-4">Diamond Information</h4>
+                    </div>
+                    <div class="col-sm-6">
+                        <p class="botpad">Stock ID</p>
+                        <h5>{{info.STK_ID}}</h5>
+                        <hr>
+                    </div>
+                    <div class="col-sm-6 ">
+                        <p class="botpad">Shape</p>
+                        <h5>{{info.SHAPE}}</h5>
+                        <hr class="righthr">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <p class="botpad">Polish</p>
+                        <h5>{{info.POL}}</h5>
+                        <hr>
+                    </div>
+                    <div class="col-sm-6 ">
+                        <p class="botpad">Color</p>
+                        <h5>{{info.COLOR}}</h5>
+                        <hr class="righthr">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <p class="botpad">Symmetry</p>
+                        <h5>{{info.SYM}}</h5>
+                        <hr>
+                    </div>
+                    <div class="col-sm-6 ">
+                        <p class="botpad">Cut</p>
+                        <h5>{{info.CUT}}</h5>
+                        <hr class="righthr">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <p class="botpad">Fluorescence Color</p>
+                        <h5>{{info.FLO_COL}}</h5>
+                        <hr>
+                    </div>
+                    <div class="col-sm-6 ">
+                        <p class="botpad">Mesurement</p>
+                        <h5>{{info.MESUREMNT}}</h5>
+                        <hr class="righthr">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <p class="botpad">Depth</p>
+                        <h5>{{info.DEPTH}}</h5>
+                        <hr>
+                    </div>
+                    <div class="col-sm-6 ">
+                        <p class="botpad">Table</p>
+                        <h5>{{info.TABLE}}</h5>
+                        <hr class="righthr">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <p class="botpad">Weight</p>
+                        <h5>{{info.CRT}}</h5>
+                        <hr>
+                    </div>
+                    <div class="col-sm-6 ">
+                        <p class="botpad">Remark</p>
+                        <h5>{{info.REMARK}}</h5>
+                        <hr class="righthr">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <p class="botpad">Description</p>
+                        <h5>{{info.DESCRIPTION}}</h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class=" inq">
+                        <p style=" font-size: 16px;">For Inquiry <i class="fe fe-message-square fe-24"></i></p>
+
                     </div>
                 </div>
             </div>
 
-            <style>
-                #dimage {
-                    margin: auto;
-                }
-
-                #dvideo {
-                    margin: auto;
-                }
-
-                .customheader {
-                    background-color: #d95d2eb8;
-                    color: white;
-                }
-            </style>
-
-
-
-            <div class="col-sm-8">
-                <form id="diamond_form" method="POST" enctype="multipart/form-data" class="mb-4">
-                    {% csrf_token %}
-                    <h5 class="card-header mb-4 customheader">Diamond Information</h5>
-                    <div class="card">
-
-                        <div class="card-body ">
-
-                            <div class="form-row">
-                                <div class="col-sm-6 mb-3">
-                                    <label for="formGroupExampleInput">Stock Id</label>
-                                    <input type="text" class="form-control" id="stkid" name="stkid" required=""
-                                        value="{{info.STK_ID}}">
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="formGroupExampleInput">GIA No</label>
-                                    <input type="text" class="form-control" id="giano" name="giano"
-                                        value="{{info.GIA_NO}}">
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="col-sm-6 mb-3">
-                                    <label for="formGroupExampleInput">Shape</label>
-                                    <input type="text" class="form-control" id="shape" name="shape"
-                                        value="{{info.SHAPE}}">
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="formGroupExampleInput">Color</label>
-                                    <input type="text" class="form-control" id="color" name="color"
-                                        value="{{info.COLOR}}">
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="col-sm-6 mb-3">
-                                    <label for="formGroupExampleInput">Clarity</label>
-                                    <input type="text" class="form-control" id="clarity" name="clarity"
-                                        value="{{info.CLARITY}}">
-                                </div>
-                                <div class="col-sm-6 mb-3">
-                                    <label for="formGroupExampleInput">Polish</label>
-                                    <input type="text" class="form-control" id="polish" name="polish"
-                                        value="{{info.POL}}">
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="formGroupExampleInput">Symmetry</label>
-                                    <input type="text" class="form-control" id="symmetry" name="symmetry"
-                                        value="{{info.SYM}}">
-                                </div>
-                                <div class="col-sm-6 mb-3">
-                                    <label for="formGroupExampleInput">Cut</label>
-                                    <input type="text" class="form-control" id="cut" name="cut" value="{{info.CUT}}">
-                                </div>
-
-                            </div>
-
-                            <div class="form-row">
-                                <div class="col-sm-6 mb-3">
-                                    <label for="formGroupExampleInput">Fluorescence Color</label>
-                                    <input type="text" class="form-control" id="fluorescence" name="fluorescence"
-                                        value="{{info.FLO_COL}}">
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="formGroupExampleInput">Mesurement</label>
-                                    <input type="text" class="form-control" id="mesurement" name="mesurement"
-                                        value="{{info.MESUREMNT}}">
-                                </div>
-
-                            </div>
-
-                            <div class="form-row">
-                                <div class="col-sm-6 mb-3">
-                                    <label for="formGroupExampleInput">Depth</label>
-                                    <input type="text" class="form-control" id="depth" name="depth"
-                                        value="{{info.DEPTH}}">
-                                </div>
-                                <div class="col-sm-6 mb-3">
-                                    <label for="formGroupExampleInput">Table</label>
-                                    <input type="text" class="form-control" id="table" name="table"
-                                        value="{{info.TABLE}}">
-                                </div>
-
-                            </div>
-                            <div class="form-row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="formGroupExampleInput">Weight</label>
-                                    <input type="number" step="any" class="form-control" id="crt" name="crt" required=""
-                                        value="{{info.CRT}}">
-                                </div>
-
-                                <div class="col-md-6 mb-3">
-                                    <label for="formGroupExampleInput">Link</label>
-                                    <input type="text" step="any" class="form-control" id="crt" name="crt" required=""
-                                        value="https://diamondvid.blob.core.windows.net/diamond-vid/www/viewer3/Vision360.html?d={{pics.link}}">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="col-sm-6 mb-3">
-                                    <label for="formGroupExampleInput">Price</label>
-                                    <input type="number" step="any" class="form-control" id="price" name="price"
-                                        required="" value="{{info.PRICE}}">
-                                </div>
-                                <div class="col-sm-6 mb-3">
-                                    <label for="formGroupExampleInput">Remark</label>
-                                    <input type="text" class="form-control" id="remark" name="remark"
-                                        value="{{info.REMARK}}">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="col-sm-12 mb-3">
-                                    <label for="formGroupExampleInput">Description</label>
-                                    <input type="text" class="form-control" id="desc" name="desc"
-                                        value="{{info.DESCRIPTION}}">
-                                </div>
-                            </div>
-                        </div>
-
-
-                    </div>
-                </form>
-
-                <div class="row footeritem">
-                    <div class=" col-sm-6 mb-3">
-                        <div class=" mb-4">
-                            <div class="card shadow">
-                                <div class="card-body mb-5">
-                                    <h4>The results documented in this repor t refer only to
-                                        the diamond described, and were obtained using the
-                                        techniques and equipment available to GIA at the time
-                                        of examination. This repor t is not a guarantee or
-                                        valuation. For additional information and important
-                                        limitations and disclaimers, please see GIA.edu/terms.
-                                    </h4>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-sm-6 mb-3">
-                        <div class=" mb-4">
-                            <div class="card shadow">
-                                <div class="card-body" style="text-align: center;">
-                                    <img src="/media/qr/{{info.Scan_Id}}.png" alt="" height="200px">
-                                </div> <!-- /.card-body -->
-                            </div> <!-- /.card -->
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
+
+
+
+
     <style>
-        .footeritem {
-            margin-top: 300px;
+        .inq {
+            padding-left: 1190px;
+        }
+
+        .mainhr {
+            width: 1350px;
+        }
+
+        .righthr {
+            width: 700px;
+        }
+
+        .imgst {
+            border-radius: 15px;
+            margin-left: 8px;
+
+        }
+
+        .customheader {
+            background-color: #d95d2eb8;
+            color: white;
+        }
+
+        .botpad {
+            margin-bottom: 5px;
+            font-size: 15px;
         }
     </style>
 </body>

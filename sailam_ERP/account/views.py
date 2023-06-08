@@ -2,6 +2,7 @@ from django.shortcuts import redirect, render
 from django.http import HttpResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib.auth import authenticate, login as auth_login
+from django.contrib.auth import logout
 from .models import User
 from account.forms import loginForm
 
@@ -65,3 +66,8 @@ def register(request):
                 return render(request, "account/user.html", context)
     else:
         return render(request, "account/register.html")
+
+
+def auth_logout(request):
+    logout(request)
+    return redirect("login")

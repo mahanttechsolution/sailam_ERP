@@ -158,6 +158,12 @@ def viewStock(request):
     return render(request, "inventory/viewinventory.html", context)
 
 
+def StockInfo(request):
+    stocks = inventory.objects.all()
+    context = {"stocks": stocks}
+    return render(request, "inventory/all_details.html", context)
+
+
 # def generate_qr_code(data):
 #     qr = qrcode.QRCode(
 #         version=1,

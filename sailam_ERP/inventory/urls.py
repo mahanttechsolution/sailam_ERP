@@ -7,4 +7,5 @@ urlpatterns = [
     path("insertdiamond/", views.insertDiamond, name="insertdiamond"),
     path("stock/", views.viewStock, name="stock"),
     path("diamond/", views.DiamondInfo, name="diamondinfo"),
+    path("stock-details", views.StockInfo, name="StockInfo"),
 ]

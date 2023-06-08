@@ -1,0 +1,182 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon.ico">
+    <title>Diamond Details</title>
+    <!-- Simple bar CSS -->
+    <link rel="stylesheet" href="{% static '/assets/css/simplebar.css' %}">
+    <!-- Fonts CSS -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,100;0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+    <!-- Icons CSS -->
+    <link rel="stylesheet" href="{% static '/assets/css/feather.css' %}">
+    <!-- Date Range Picker CSS -->
+    <link rel="stylesheet" href="{% static '/assets/css/daterangepicker.css' %}">
+    <!-- App CSS -->
+    <link rel="stylesheet" href="{% static '/assets/css/app-light.css' %}" id="lightTheme">
+    <link rel="stylesheet" href="{% static '/assets/css/app-dark.css' %}" id="darkTheme" disabled>
+
+</head>
+
+<body>
+
+
+    <nav class="topnav navbar navbar-light bg-white shadow mb-4">
+        <div class="container-fluid">
+            <ul class="nav">
+                <li class="nav-item">
+                    <div class="w-100 mb-4 d-flex my-2">
+                        <a class="navbar-brand mx-auto mt-2 flex-fill " href="http://127.0.0.1:8000/">
+                            <img src="{% static 'image/logo.png' %}" alt="" height="50px" width="50px">
+                            <b>SAILAM</b>
+                        </a>
+                    </div>
+                </li>
+            </ul>
+            <ul class="nav">
+                <li class="nav-item ">
+                    <h5>GIA REPORT : 1234567890</h5>
+                </li>
+            </ul>
+            <div class="col-sm-4">
+                <ul class="nav">
+                    <li class="nav-item">
+                        <h5 style="text-align: center;">FACSIMILE </h5>
+                        <p>This is a digital representation of the original GIA Report. This representation might not
+                            be accepted in lieu of the original GIA Report in certain circumstances. The original GIA
+                            Report includes certain security features which are not reproducible on this facsimile.</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card shadow mb-4">
+                    <div class="card-body">
+
+
+                        <form method="post" id="filterform">
+                            <h4 class="card-title">Filter</h4>
+                            {% csrf_token %}
+                            <div class="form-group row">
+                                <div class="form-group col-md-12">
+                                    <input type="hidden" name="shape" value="">
+                                    <label for="shape">
+                                        Shape</label>
+                                    <button type="button" class="btn mb-1 btn-primary">All Shapes</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">Round</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">Oval</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">Pear</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">Marquise</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">Heart</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">Cushion</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">Cushion B</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">Emerald</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">Princess</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">Sq Randiant</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">L Randiant</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">Other</button>
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <input type="hidden" name="color" value="">
+                                    <label for="shape" class="btn mb-1 btn-primary">Color</label>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">D</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">E</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">F</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">G</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">H</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">I</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">J</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">K</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">L</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">M</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">N</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">O-P</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">Q-R</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">S-T</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">U-V</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">W-X</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">Y-Z</button>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="form-group col-md-12">
+                                    <input type="hidden" name="clearity" value="">
+                                    <label for="shape" class="btn mb-1 btn-primary">Clearity</label>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">D</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">E</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">F</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">G</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">H</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">I</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">J</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">K</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">L</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">M</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">N</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">O-P</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">Q-R</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">S-T</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">U-V</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">W-X</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">Y-Z</button>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="checkbtn">Non Active Only </label>
+                                    <input type="checkbox" name="nonactive" id="nonactive"
+                                        style="height : 20px ; width: 20px ">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <button type="submit" class="btn mb-2 btn-primary float-right">Apply</button>
+                                </div>
+                            </div>
+                        </form>
+
+
+                    </div>
+                </div>
+            </div>
+
+
+            <table class="table table-hover  border-v">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>GIA No</th>
+                        <th>Stock Id</th>
+                        <th>Weight</th>
+                        <th>Shape</th>
+                        <th>Colour</th>
+                        <th>Price</th>
+                        <th>Purity</th>
+                        <th>Symmetry</th>
+                        <th>Morer Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stock in stocks %}
+                    <tr>
+                        <td>{{stock.GIA_NO}}</td>
+                        <td>{{stock.STK_ID}}</td>
+                        <td>{{stock.CRT}}</td>
+                        <td>{{stock.SHAPE}}</td>
+                        <td>{{stock.COLOR}}</td>
+                        <td>{{stock.PRICE}}</td>
+                        <td>{{stock.CLARITY}}</td>
+                        <td>{{stock.SYM}}</td>
+                        <td><a href="{% url 'diamondinfo' %}?q={{stock.Scan_Id}}">...</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+</body>
