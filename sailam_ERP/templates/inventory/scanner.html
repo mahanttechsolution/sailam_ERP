@@ -66,10 +66,7 @@ Sailam QR Code Scanner
           <a class="nav-link" id="tab2-tab" data-toggle="tab" href="#tab2" role="tab" aria-controls="tab2" aria-selected="false">Invoice</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" id="tab3-tab" data-toggle="tab" href="#tab3" role="tab" aria-controls="tab3" aria-selected="false">Sell</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" id="tab4-tab" data-toggle="tab" href="#tab3" role="tab" aria-controls="tab4" aria-selected="false">Hide</a>
+          <a class="nav-link" id="tab3-tab" data-toggle="tab" href="#tab3" role="tab" aria-controls="tab3" aria-selected="false">Hide</a>
         </li>
       </ul>
 
@@ -119,8 +116,23 @@ Sailam QR Code Scanner
           </table>
           <button class="btn btn-info" id="submitinvoice" >Generate Invoice</button>
         </div>
-        <div class="tab-pane fade" id="tab3" role="tabpanel" aria-labelledby="tab3-tab tab4-tab">
-          <p>General</p>
+       
+        <div class="tab-pane fade" id="tab3" role="tabpanel" aria-labelledby="tab3-tab">
+          <table id="hide_table" class="display table table-striped table-hover" cellspacing="0" width="100%">
+            <thead class="thead-dark">
+            <tr>
+            <th>Stock Id</th>
+            <th>Description</th>
+            <th>Weight</th>
+            <th>Remark</th>
+            <th>Rate</th>
+            <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+            </table>
+            <button class="btn btn-info" id="submithide" >Hide Data</button>
         </div>
       </div>
     </div>
@@ -249,6 +261,25 @@ Sailam QR Code Scanner
           footer:true,
       },
       ]});
+
+      hidetable = $('#hide_table').DataTable({
+        dom: 'lBfrtip',
+        buttons: [
+            {
+                extend: 'pdfHtml5',
+                download: 'open',
+                className:'btn btn-info mt-3',
+                title: 'Sailam Hide Data',
+                footer:true,
+            },
+          {
+            extend: 'csvHtml5',
+            download: 'open',
+            className:'btn btn-info mt-3',
+            footer:true,
+        },
+        ]});
+
       //detect current active tab
       $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
         target = $(e.target).attr("id");
@@ -299,6 +330,20 @@ Sailam QR Code Scanner
                   request.open("GET", json, true);
                   request.send();
             } 
+            else if(target==="tab3-tab")
+            {
+              var value= $('#gianum').val().split("=")
+                var request = new XMLHttpRequest();
+                var json = "{% url 'get_hidedata' scanid=0 %}".replace('0', value[1]!=undefined?value[1]:value[0]);
+                request.onload = function() {
+                  if ( request.readyState === 4 && request.status === 200 ) {
+                    var JSONObject = JSON.parse(request.responseText);
+                    loadhideData(JSONObject);
+                  } else if(request.status == 400) { console.log("Error", request.status);}
+                };
+                  request.open("GET", json, true);
+                  request.send();
+            }
             else{
               alert('Please Select One Tab From Below');
             }
@@ -307,6 +352,73 @@ Sailam QR Code Scanner
       );
     });
   </script>
+
+  <script>
+   //script for Hide
+
+   function loadhideData(data)
+   {
+    if(data.stk_id != "null")
+    {
+          var rowData = [];
+          rowData.push(data.stk_id);
+          rowData.push(data.desc);
+          rowData.push(data.weight);
+          rowData.push(data.remark);
+          rowData.push(data.price);
+          rowData.push('<button type="button" class="btn btn-danger btn-xs dt-delete"><span class="fe fe-trash-2 fe-16" aria-hidden="true"></span></button>');
+          if(!isRowExists(hidetable,rowData) && !isRowExists(dataTable,rowData) && !isRowExists(table,rowData))
+          {
+              hidetable.row.add(rowData).draw();
+
+            $('.dt-delete').off('click');
+            $('.dt-delete').each(function () {
+              $(this).on('click', function(evt){
+                $this = $(this);
+                var dtRow = $this.parents('tr');
+                if(confirm("Are you sure to delete this row?")){
+                  hidetable.row(dtRow[0].rowIndex-1).remove().draw( false );
+                }
+              });
+            });
+          }
+          else{
+            alert('Data Already Exist in This or Other Tab');
+          }
+          
+    }
+  else{
+    alert("Data For Given GIA Is Not Available Or Diamond Is Already Sold");
+  }
+}
+
+$(document).on("click","#submithide",function(){
+    var data= hidetable.rows().data();
+    var res={};
+    res['stk_id']=[];
+    for(var i=0;i<data.length;i++)
+    {
+      res['stk_id'].push(data[i][0]);
+    }
+    var resp=JSON.stringify(res);
+    sendhidedata(resp);
+    hidetable.clear().draw();
+});
+
+function sendhidedata(data){
+  $.ajax({
+    type: "POST",
+    headers: {'X-CSRFToken': document.getElementById('csrf').querySelector('input').value},
+    url: "{% url 'sethide' %}",
+    data: data,
+    contentType: 'application/json',
+    success: function(response){
+      console.log("Data Hide Successfull");
+    },
+  });
+}
+
+</script>
 
   <script>
   //script for invoice
@@ -387,7 +499,7 @@ Sailam QR Code Scanner
               rowData.push(newData.CFR_US_$);
               rowData.push(caltotal(newData.CTS,newData.CFR_US_$));
               rowData.push('<button type="button" onclick="ondelete(this)" class="btn btn-danger btn-xs bt-delete" id="1"><span class="fe fe-trash-2 fe-16" aria-hidden="true"></span></button>');
-              if(!isRowExists(table,rowData) && !isRowExists(dataTable,rowData))
+              if(!isRowExists(table,rowData) && !isRowExists(dataTable,rowData) && !isRowExists(hidetable,rowData))
               {
                   table.row.add(rowData).draw();
                   updatefooter(rowData);
@@ -535,11 +647,26 @@ $(document).on('click','#getinvoice',function(){
   invoice['client']=client;
   invoice['total']=total;
   var resp=JSON.stringify(invoice);
-  alert(resp);
+  sendinvoicedata(resp)
   clientmodal.modal('hide');
   table.clear().draw();
   resetFooter();
 });
+
+function sendinvoicedata(data){
+  $.ajax({
+    type: "POST",
+    headers: {'X-CSRFToken': document.getElementById('csrf').querySelector('input').value},
+    url: "{% url 'setinvoice' %}",
+    data: data,
+    contentType: 'application/json',
+    success: function(response){
+      var filename=response
+      console.log(filename);
+      window.open("{% url 'pdf_response'  file_name=0 %}".replace('0', filename));
+    },
+  });
+}
 
   </script>
   
@@ -566,7 +693,7 @@ $(document).on('click','#getinvoice',function(){
               rowData.push(data.remark);
               rowData.push(data.price);
               rowData.push('<button type="button" class="btn btn-primary btn-xs dt-edit mr-3" id="edit-button" ><span class="fe fe-edit fe-16" aria-hidden="true"></span></button><button type="button" class="btn btn-danger btn-xs dt-delete"><span class="fe fe-trash-2 fe-16" aria-hidden="true"></span></button>');
-              if(!isRowExists(dataTable,rowData) && !isRowExists(table,rowData))
+              if(!isRowExists(dataTable,rowData) && !isRowExists(table,rowData) && !isRowExists(hidetable,rowData))
               {
                   dataTable.row.add(rowData).draw();
 

@@ -27,6 +27,9 @@ class inventory(models.Model):
     Scan_Id=models.BigIntegerField(blank=True,null=True)
     MemoMade=models.BooleanField(default=False)
     IsSold=models.BooleanField(default=False)
+    InvoiceMade=models.BooleanField(default=False)
+    IsHide=models.BooleanField(default=False)
+    
 
 class ActivityLog(models.Model):
     Log_Id = models.AutoField(primary_key=True)
@@ -69,3 +72,22 @@ class Client(models.Model):
     def __str__(self):
         return "Name: "+self.name+" Company: "+self.company+" Address: "+self.address
     
+
+class Invoice(models.Model):
+    id_invoice=models.BigAutoField(primary_key=True)
+    client=models.ForeignKey("inventory.client",on_delete=models.CASCADE)
+    is_deleted=models.BooleanField(default=False)
+    CretedBy=models.ForeignKey("account.User", on_delete=models.CASCADE,related_name='invoice_created_by')
+    CreatedOn=models.DateTimeField(auto_now_add=True)
+    DeletedBy=models.ForeignKey("account.User", on_delete=models.CASCADE,related_name='invoice_deleted_by',blank=True,null=True)
+    DeletedOn=models.DateTimeField(blank=True,null=True)
+
+
+class InvoiceData(models.Model):
+    invoice=models.ForeignKey("inventory.Invoice",on_delete=models.CASCADE)
+    stk_no=models.ForeignKey("inventory.inventory", to_field='STK_ID', on_delete=models.CASCADE)
+    desc=models.CharField(max_length=500,blank=True,null=True)
+    pcs=models.IntegerField(blank=True,null=True)
+    weight=models.FloatField()
+    cfr=models.FloatField()
+    total=models.FloatField()

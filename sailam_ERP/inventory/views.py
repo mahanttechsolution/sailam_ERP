@@ -6,7 +6,7 @@ from django.http import HttpResponse, FileResponse
 import requests
 import json
 from django.conf import settings
-from .models import inventory,Client,Memo,MemoData
+from .models import Invoice, InvoiceData, inventory,Client,Memo,MemoData
 from .models import inventory, Video
 from .forms import VideoForm
 from .constant import authorization,urlendpoint
@@ -17,6 +17,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
 from reportlab.lib.units import inch
 import os
+from num2words import num2words
 from io import BytesIO
 import qrcode
 from PIL import Image, ImageDraw, ImageFont
@@ -154,7 +155,7 @@ def insertDiamond(request):
 
 
 def viewStock(request):
-    stocks = inventory.objects.all()
+    stocks = inventory.objects.filter(IsHide=False,IsSold=False)
     context = {"stocks": stocks}
     return render(request, "inventory/viewinventory.html", context)
 
@@ -278,7 +279,7 @@ def scanner(request):
     return render(request,"inventory/scanner.html")
 
 def getMemoData(request,scanid):
-   data=inventory.objects.filter(Scan_Id=scanid,MemoMade=False,IsSold=False).values()|inventory.objects.filter(GIA_NO=scanid,MemoMade=False,IsSold=False).values()
+   data=inventory.objects.filter(Scan_Id=scanid,MemoMade=False,IsSold=False,IsHide=False).values()|inventory.objects.filter(GIA_NO=scanid,MemoMade=False,IsSold=False,IsHide=False).values()
    if data:
     result={
         'stk_id':data[0]["STK_ID"],
@@ -325,7 +326,7 @@ def setMemoData(request):
 
 def gen_report(request,data,memo):
     file_name="memo_"+str(memo.id_memo)+".pdf"
-    url = f'/media/memopdf/'+file_name
+    url = f'/media/pdf/'+file_name
     file_path = f'{BASE_DIR}{url}'
     doc = SimpleDocTemplate(file_path, pagesize=letter)
     elements = []
@@ -441,7 +442,7 @@ def gen_report(request,data,memo):
 
 
 def send_pdf_response(request, file_name):
-    url = f'/media/memopdf/'+file_name
+    url = f'/media/pdf/'+file_name
     file_path = f'{BASE_DIR}{url}'
     print(file_path)
     if os.path.exists(file_path):
@@ -501,7 +502,7 @@ def deleteMemo(request,memo_id):
       return HttpResponse(json.dumps({'message':'fail'}))
    
 def getinvoicedata(request,scanid):
-   data=inventory.objects.filter(Scan_Id=scanid,IsSold=False).values()|inventory.objects.filter(GIA_NO=scanid,MemoMade=False).values()
+   data=inventory.objects.filter(Scan_Id=scanid,IsSold=False,InvoiceMade=False,IsHide=False).values()|inventory.objects.filter(GIA_NO=scanid,IsSold=False,InvoiceMade=False,IsHide=False).values()
    if data:
     result={}
     result={
@@ -518,3 +519,248 @@ def getinvoicedata(request,scanid):
          'NO':'null',
       }
       return HttpResponse(json.dumps(result, indent = 4))
+   
+
+def setInvoiceData(request):
+    if request.method=="POST":
+        user=request.user
+        data=json.loads(request.body)
+        client_name=data['client']['name']
+        client_company=data['client']['company']
+        client_address=data['client']['address']
+        _client=Client.objects.filter(name=client_name,company=client_company).first()
+        if not _client:
+         print("inside create")
+         client=Client.objects.create(name=client_name,company=client_company,address=client_address)
+         _client=client
+        invoice=Invoice.objects.create(client=_client,CretedBy=user)
+        for row in data['diamond']:
+          stk_id=row['stk_no']
+          description=row['description']
+          pcs=row['pcs']
+          weight=row['weight']
+          cfr=row['cfr']
+          total=row['total']
+          inv=inventory.objects.filter(STK_ID=stk_id).first()
+          if inv:
+            inv.InvoiceMade=True
+            # inv.IsSold=True
+            inv.save()
+          InvoiceData.objects.create(invoice=invoice,stk_no=inv,desc=description,pcs=pcs,weight=weight,cfr=cfr,total=total)
+        response=gen_invoice(request,data,invoice)
+        return response
+
+def gen_invoice(request,data,invoice):
+    file_name="invoice_"+str(invoice.id_invoice)+".pdf"
+    url = f'/media/pdf/'+file_name
+    file_path = f'{BASE_DIR}{url}'
+    doc = SimpleDocTemplate(file_path, pagesize=letter)
+    elements = []
+    
+    # Header
+    header_text = "Invoice"
+    header_style = getSampleStyleSheet()["Heading1"]
+    header_style.alignment = 1
+    header = Paragraph(header_text, header_style)
+    elements.append(header)
+    elements.append(Spacer(1, 10))
+    
+    # Company details
+    company_details = [
+        "<b>SAILAM LIMITED</b>",
+        "ROOM 1428, BEVERELY COMMERCIAL CENTER,",
+        "87 CHATHAM ROAD SOUTH, TSIM SHA SUI HONGKONG",
+        "<b>TELEPHONE :</b> 852-24241425 , 852-24241427",
+        "<b>Mobile :</b> 852 9122 4906",
+        "<b>email:</b> sailamltdhk@hotmail.com",
+    ]
+
+    company_style = getSampleStyleSheet()["Normal"]
+
+    client_details=[
+       "<b><u>Sold To</u></b> ",
+       "<b>M/S.</b> "+data['client']['name'],
+       "<b>Company:</b> "+data['client']['company'],
+       "<b>Address: </b>"+data['client']['address'],
+    ]
+
+    invoice_details=[
+       "<b>INVOICE NO: </b>"+str(invoice.id_invoice),
+       "<b>TERMS :</b>",
+       "<b>DATE  :</b>"+str(datetime.datetime.now().date()),
+    ]
+    styles = getSampleStyleSheet()
+    paragraph_style = styles["Normal"]
+    client = [Paragraph(line, paragraph_style) for line in client_details]
+    company= [Paragraph(line, paragraph_style) for line in company_details]
+    invoice= [Paragraph(line, paragraph_style) for line in invoice_details]
+    data_company = [[para] for para in company]
+    data_client= [[para] for para in client]
+    data_inv=[[para] for para in invoice]
+    table_style = [
+        ("FONTSIZE", (0, 1), (-1, -1), 5), 
+    ]
+    company_table=Table(data_company,style=table_style)
+    client_table=Table(data_client,style=table_style) 
+    invoice_table=Table(data_inv,style=table_style)
+    elements.append(company_table)
+    elements.append(Spacer(1, 10))
+    
+    parent_table_data = [[client_table,invoice_table]]
+    parent_table = Table(parent_table_data)
+    elements.append(parent_table)
+    elements.append(Spacer(1, 10))
+    
+    # Table
+    table_data = [
+        [Paragraph("LOT NO.", company_style), Paragraph("DESCRIPTION", company_style),Paragraph("PCS", company_style) ,Paragraph("CTS", company_style) ,Paragraph("CFR US $", company_style) , Paragraph("TOTAL US$", company_style)]
+    ]
+    pcs=0
+    cts=0.0
+    cfr=0.0
+    total=0.0
+    for item in data['diamond']:
+        pcs+=int(item.get("pcs"))
+        cts+=float(item.get("weight"))
+        cfr+=float(item.get("cfr"))
+        total+=(float(item.get("weight"))*float(item.get("cfr")))
+        table_data.append([
+            Paragraph(item.get("stk_no", ""), company_style),
+            Paragraph(item.get("description", ""), company_style),
+            Paragraph(str(item.get("pcs", "")), company_style),
+            Paragraph(str(item.get("weight", "")), company_style),
+            Paragraph(str(item.get("cfr", "")), company_style),
+            Paragraph(str(item.get("total", "")), company_style)
+        ])
+    table_data.append([
+            Paragraph(" ", company_style),
+            Paragraph("<b>Total</b>", company_style),
+            Paragraph(str(pcs), company_style),
+            Paragraph(str(cts), company_style),
+            Paragraph(str(cfr), company_style),
+            Paragraph(str(total), company_style)
+        ])
+    colWidth=(0.9*inch,2.0*inch,0.9*inch,0.9*inch,0.9*inch,0.9*inch)
+    table_style = TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 5),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('WORDWRAP', (0, 0), (-1, -1), 'TRUE'),  
+    ])
+    
+    table = Table(table_data,colWidths=colWidth)
+    table.setStyle(table_style)
+    elements.append(table)
+    elements.append(Spacer(1, 5))
+    
+    footer_text = "<b>"+num2words(int(total)).upper()+" ONLY"+"</b>"
+    footer_style = getSampleStyleSheet()["Normal"]
+    footer = Paragraph(footer_text, footer_style)
+    elements.append(footer)
+    elements.append(Spacer(1, 5))
+
+    table1_data = [
+    ["PAYMENT INSTRUCTION"],
+    ["1 DIRECT PAYMENTS"],
+    ["Send Crossed chq. Made payable 'Sailam Limited' indicate our Invoice number behind the chq."],
+    ["2 Direct Transfers to Bank Account"],
+    ["Bank's Name : HSBC"],
+    ["Name of Bank Account : SAILAM LTD."],
+    ["A/C NO: 817-016124-838"],
+    ["Swift Code : HSBCHKKHHHKH"],
+    ["When making remittance please ensure you indicate whom the funds are from and our invoice no to enable us identify them"],
+    ["Over due date payment will be charged 2% per month"]
+   ]
+
+
+    table2_data = [
+        ["DECLARATION"],
+        ["The Diamonds here in Invoiced have been purchased from legitimate sources not involved in funding conflict diamonds and in compliance with United Nation- Resolutions.The seller hereby guarantees conflict diamonds and in compliance with United Nation- Resolutions.The seller hereby guarantees provided by the supplier of these diamonds."],
+        ["TERMS OF PAYMENT_____________________"],
+        ["PAYMENT DUE DATE: ___________________"],
+        ["CHEQUE NO: __________________________"],
+        ["CASH : ____________________________"]
+    ]
+
+    style = TableStyle([
+        ("ALIGN", (0, 0), (-1, -1), "LEFT"),
+        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+        ("FONTSIZE", (0, 0), (-1, 0), 3),
+        ("BACKGROUND", (0, 1), (-1, -1), colors.beige),
+    ])
+
+    for i in range(len(table1_data)):
+        for j in range(len(table1_data[i])):
+            cell_data = table1_data[i][j]
+            paragraph = Paragraph(cell_data, style=getSampleStyleSheet()['Normal'])
+            table1_data[i][j] = paragraph
+
+    for i in range(len(table2_data)):
+        for j in range(len(table2_data[i])):
+            cell_data = table2_data[i][j]
+            paragraph = Paragraph(cell_data, style=getSampleStyleSheet()['Normal'])
+            table2_data[i][j] = paragraph
+
+    # Create the first table
+    table1 = Table(table1_data, style=style)
+    table1.hAlign = "LEFT"
+
+    # Create the second table
+    table2 = Table(table2_data, style=style)
+    table2.hAlign = "LEFT"
+
+   # Define the document content
+    content = [
+        [table1, table2]
+    ]
+
+    main_table = Table(content)
+    main_table_style = TableStyle([
+    ('VALIGN', (0, 0), (-1, -1), 'TOP'),  
+    ])
+    main_table.setStyle(main_table_style)
+    elements.append(main_table)
+    doc.build(elements)
+
+    response = HttpResponse(file_name)
+    return response
+
+# View for Hide
+
+def getHideData(request,scanid):
+   data=inventory.objects.filter(Scan_Id=scanid,IsSold=False,IsHide=False).values()|inventory.objects.filter(GIA_NO=scanid,IsSold=False,IsHide=False).values()
+   if data:
+    result={
+        'stk_id':data[0]["STK_ID"],
+        'desc':'color:'+data[0]["COLOR"]+', clarity:'+data[0]["CLARITY"]+', shape:'+data[0]["SHAPE"],
+        'weight':data[0]["CRT"],
+        'remark':data[0]["REMARK"],
+        'price':data[0]["PRICE"]
+    }
+    # print(result)
+    return HttpResponse(json.dumps(result, indent = 4)) 
+   else :
+      result={
+         'stk_id':'null',
+      }
+      return HttpResponse(json.dumps(result, indent = 4))
+
+def setHideData(request):
+   if request.method=="POST":
+      data=json.loads(request.body)
+      for id in data['stk_id']:
+         inv=inventory.objects.filter(STK_ID=id).first()
+         if inv:
+            inv.UpdatedBy=request.user
+            inv.IsHide=True
+            inv.save()
+
+   return HttpResponse("Success")
+
+
+
+
