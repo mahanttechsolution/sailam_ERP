@@ -71,7 +71,7 @@
                             <div class="form-group row">
                                 <div class="form-group col-md-12">
                                     <input type="hidden" name="shape" value="">
-                                    <label for="shape">
+                                    <label for="shape" style="margin-right: 29px;">
                                         Shape</label>
                                     <button type="button" class="btn mb-1 btn-primary">All Shapes</button>
                                     <button type="button" class="btn mb-1 btn-outline-primary">Round</button>
@@ -88,8 +88,10 @@
                                     <button type="button" class="btn mb-1 btn-outline-primary">Other</button>
                                 </div>
                                 <div class="form-group col-md-12">
+                                    <label for="shape" style="margin-right: 35px;">
+                                        Color</label>
                                     <input type="hidden" name="color" value="">
-                                    <label for="shape" class="btn mb-1 btn-primary">Color</label>
+                                    <button type="button" class="btn mb-1 btn-primary">All</button>
                                     <button type="button" class="btn mb-1 btn-outline-primary">D</button>
                                     <button type="button" class="btn mb-1 btn-outline-primary">E</button>
                                     <button type="button" class="btn mb-1 btn-outline-primary">F</button>
@@ -111,33 +113,38 @@
                             </div>
                             <div class="form-group row">
                                 <div class="form-group col-md-12">
+                                    <label for="shape" style="margin-right: 20px;">
+                                        Clearity</label>
                                     <input type="hidden" name="clearity" value="">
-                                    <label for="shape" class="btn mb-1 btn-primary">Clearity</label>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">D</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">E</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">F</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">G</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">H</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">I</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">J</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">K</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">L</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">M</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">N</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">O-P</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">Q-R</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">S-T</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">U-V</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">W-X</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">Y-Z</button>
+                                    <button type="button" class="btn mb-1 btn-primary">All</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">FL</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">IF</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">VVS1</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">VVS2</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">VS1</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">VS2</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">SI1</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">SI2</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">SI2-</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">SI3</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">I1</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">I2</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">I3</button>
+
                                 </div>
-                                <div class="form-group col-md-4">
-                                    <label for="checkbtn">Non Active Only </label>
-                                    <input type="checkbox" name="nonactive" id="nonactive"
-                                        style="height : 20px ; width: 20px ">
+                                <div class="form-group col-md-12">
+                                    <label for="shape" style="margin-right: 5px;">
+                                        Symmetry</label>
+                                    <input type="hidden" name="clearity" value="">
+                                    <button type="button" class="btn mb-1 btn-primary">All</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary"
+                                        onclick="change_class(this)">EXCELLENT</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">VERY GOOD</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">GOOD</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">FAIR</button>
                                 </div>
-                                <div class="form-group col-md-4">
-                                    <button type="submit" class="btn mb-2 btn-primary float-right">Apply</button>
+                                <div class="form-group col-md-12">
+                                    <button type="submit" class="btn btn-primary float-right">Apply</button>
                                 </div>
                             </div>
                         </form>
@@ -179,4 +186,17 @@
                 </tbody>
             </table>
         </div>
+
+
+        <script>
+            function change_class(e) {
+                if (e.class == 'btn-outline-primary') {
+                    $("#" + e.class).removeClass()
+                    e.class = "btn-primary"
+                }
+                else {
+                    e.class = 'btn-outline-primary'
+                }
+            }
+        </script>
 </body>

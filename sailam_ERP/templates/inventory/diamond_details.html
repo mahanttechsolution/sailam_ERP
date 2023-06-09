@@ -55,28 +55,34 @@
                 <div class=" container-fluid row float-left">
 
                     {%if pics.link != Null %}
-                    <div class="">
-                        <div>
-                            <div class="card-body" id="dvideo">
-                                <iframe
-                                    src="https://diamondvid.blob.core.windows.net/diamond-vid/www/viewer3/Vision360.html?d={{pics.link}}"
-                                    frameborder="0" height="600px" width="500px" scrolling="no"></iframe>
-                            </div> <!-- /.card-body -->
-                            <!-- /.card -->
-                        </div>
+
+                    <div>
+                        <div class="card-body" id="contentdiv">
+                            <iframe
+                                src="https://diamondvid.blob.core.windows.net/diamond-vid/www/viewer3/Vision360.html?d={{pics.link}}"
+                                frameborder="0" height="600px" width="500px" scrolling="no" id="maincontent"></iframe>
+                        </div> <!-- /.card-body -->
+                        <!-- /.card -->
                     </div>
+
 
 
                     <div class=" mb-4">
                         <!-- <div style="height:650px ; width:600px"> -->
                         <div class="card-body" style="justify-content: center;display:flex">
 
-                            <img src="/media/uploads/images/{{pics.link}}.jpg" alt="" height="150px" width="150px"
-                                class="imgst">
-                            <img src="/media/uploads/images/{{pics.link}}.jpg" alt="" height="150px" width="150px"
-                                class="imgst">
-                            <img src="/media/uploads/images/{{pics.link}}.jpg" alt="" height="150px" width="150px"
-                                class="imgst">
+                            <div class="sdiv">
+                                <img src="/media/uploads/images/{{pics.link}}.jpg" alt="" height="150px" width="150px"
+                                    class="imgst" onclick="switch_main(this)">
+                            </div>
+                            <div class="sdiv">
+                                <img src="/media/uploads/images/{{pics.link}}.jpg" alt="" height="150px" width="150px"
+                                    onclick="switch_main(this)" class="imgst">
+                            </div>
+                            <div class="sdiv">
+                                <img src="/media/uploads/images/{{pics.link}}.jpg" alt="" height="150px" width="150px"
+                                    onclick="switch_main(this)" class="imgst">
+                            </div>
                         </div> <!-- /.card-body -->
                         <!-- </div> -->
                     </div> <!-- /.card -->
@@ -205,7 +211,34 @@
         </div>
     </div>
 
+    <script>
+        function switch_main(e) {
 
+            var container1 = document.getElementById('contentdiv');
+            var element1 = container1.childNodes[1];
+            var element2 = e
+            var container2 = element2.parentNode;
+
+            // Clone the first element
+            element1.style.height = '600px';
+            element1.style.width = '500px';
+            element2.style.height = '150px';
+            element2.style.width = '150px';
+            console.log(element1)
+            console.log(element2)
+            var clonedElement1 = element1.cloneNode(true);
+            i = document.createElement('h2');
+            i.textContent = "Hello"
+            // Replace the first element with the second element
+            container1.replaceChild(element2, element1);
+
+            // Append the cloned first element as the second element
+            container2.replaceChild(i, element2);
+        }
+
+
+
+    </script>
 
 
     <style>

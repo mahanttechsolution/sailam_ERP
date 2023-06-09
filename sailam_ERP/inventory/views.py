@@ -11,6 +11,7 @@ from io import BytesIO
 import qrcode
 from PIL import Image, ImageDraw, ImageFont
 from urllib.request import urlretrieve
+from django.core.paginator import Paginator
 
 # Create your views here.
 
@@ -153,8 +154,24 @@ def insertDiamond(request):
 
 
 def viewStock(request):
+    try:
+        page_number = request.GET["page"]
+    except:
+        page_number = 1
     stocks = inventory.objects.all()
-    context = {"stocks": stocks}
+
+    p = Paginator(stocks, 10)
+    page_obj = p.get_page(page_number)
+    index = page_obj.number - 1
+
+    if index >= 0:
+        index = index * 10
+    else:
+        index = 0
+
+    last_page = p.num_pages
+
+    context = {"stocks": page_obj, "last_page": last_page}
     return render(request, "inventory/viewinventory.html", context)
 
 
