@@ -7,124 +7,148 @@ Diamond Stock
 
 {% block content%}
 <table class="table table-hover table-borderless border-v" id="datatable">
-    <thead class="thead-dark">
-      <tr>
-        <th>GIA No</th>
-        <th>Stock Id</th>
-        <th>Weight</th>
-        <th>Mesurement</th>
-        <th>Clarity</th>
-        <th>Price</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for stock in stocks %}
-      <tr class="accordion-toggle collapsed" id="c-{{stock.Id}}" data-toggle="collapse" data-parent="#c-{{stock.Id}}" href="#collap-{{stock.Id}}">
-        <td>{{stock.GIA_NO}}</td>
-        <td>{{stock.STK_ID}}</td>
-        <td>{{stock.CRT}}</td>
-        <td>{{stock.MESUREMNT}}</td>
-        <td>{{stock.CLARITY}}</td>
-        <td>{{stock.PRICE}}</td>
-        <td>
-          <button type="button"class="btn btn-primary btn-xs dt-edit" id="edit"><span class="fe fe-edit fe-16" aria-hidden="true"></span></button>
-        </td>
-      </tr>
-      <tr id="collap-{{stock.Id}}" class="collapse in p-3 bg-light">
-        <td colspan="16">
-          <dl class="row mb-0 mt-1">
-            <dt class="col-sm-1">Color</dt>
-            <dd class="col-sm-2">{{stock.COLOR}}</dd>
-            <dt class="col-sm-1">Polish</dt>
-            <dd class="col-sm-2">{{stock.POL}}</dd>
-            <dt class="col-sm-1 ">Symmetry</dt>
-            <dd class="col-sm-2">{{stock.SYM}}</dd>
-            <dt class="col-sm-1 ">Cut</dt>
-            <dd class="col-sm-2">{{stock.CUT}}</dd>
-            <dt class="col-sm-1 ">Fluorescence Color</dt>
-            <dd class="col-sm-2">{{stock.FLO_COL}}</dd>
-            <dt class="col-sm-1 ">Depth</dt>
-            <dd class="col-sm-2">{{stock.DEPTH}}</dd>
-            <dt class="col-sm-1 ">Table</dt>
-            <dd class="col-sm-2">{{stock.TABLE}}</dd>
-            <dt class="col-sm-1 ">Remarks</dt>
-            <dd class="col-sm-2 ">{{stock.REMARK}}</dd>
-          </dl>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <thead class="thead-dark">
+    <tr>
+      <th>GIA No</th>
+      <th>Stock Id</th>
+      <th>Weight</th>
+      <th>Mesurement</th>
+      <th>Clarity</th>
+      <th>Price</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for stock in stocks %}
+    <tr class="accordion-toggle collapsed" id="c-{{stock.Id}}" data-toggle="collapse" data-parent="#c-{{stock.Id}}"
+      href="#collap-{{stock.Id}}">
+      <td>{{stock.GIA_NO}}</td>
+      <td>{{stock.STK_ID}}</td>
+      <td>{{stock.CRT}}</td>
+      <td>{{stock.MESUREMNT}}</td>
+      <td>{{stock.CLARITY}}</td>
+      <td>{{stock.PRICE}}</td>
+      <td>
+        <button type="button" class="btn btn-primary btn-xs dt-edit" id="edit"><span class="fe fe-edit fe-16"
+            aria-hidden="true"></span></button>
+      </td>
+    </tr>
+    <tr id="collap-{{stock.Id}}" class="collapse in p-3 bg-light">
+      <td colspan="16">
+        <dl class="row mb-0 mt-1">
+          <dt class="col-sm-1">Color</dt>
+          <dd class="col-sm-2">{{stock.COLOR}}</dd>
+          <dt class="col-sm-1">Polish</dt>
+          <dd class="col-sm-2">{{stock.POL}}</dd>
+          <dt class="col-sm-1 ">Symmetry</dt>
+          <dd class="col-sm-2">{{stock.SYM}}</dd>
+          <dt class="col-sm-1 ">Cut</dt>
+          <dd class="col-sm-2">{{stock.CUT}}</dd>
+          <dt class="col-sm-1 ">Fluorescence Color</dt>
+          <dd class="col-sm-2">{{stock.FLO_COL}}</dd>
+          <dt class="col-sm-1 ">Depth</dt>
+          <dd class="col-sm-2">{{stock.DEPTH}}</dd>
+          <dt class="col-sm-1 ">Table</dt>
+          <dd class="col-sm-2">{{stock.TABLE}}</dd>
+          <dt class="col-sm-1 ">Remarks</dt>
+          <dd class="col-sm-2 ">{{stock.REMARK}}</dd>
+        </dl>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<div class="float-right" id="dataTable-1_paginate pageprev" style="margin-left: 1450px;">
+  <ul class="pagination">
+    {%if stocks.has_previous %}
+    <li class="paginate_button page-item previous" id="dataTable-1_previous"><a href="?page=1"
+        aria-controls="dataTable-1" data-dt-idx="0" tabindex="0" class="page-link">First</a>
+    <li class="paginate_button page-item previous" id="dataTable-1_previous"><a
+        href="?page={{stocks.previous_page_number}}" aria-controls="dataTable-1" data-dt-idx="0" tabindex="0"
+        class="page-link">Previous</a>
+    </li>
+    {% endif %}
+    <li class="paginate_button page-item disabled"><a href="#" aria-controls="dataTable-1" data-dt-idx="1" tabindex="0"
+        class="page-link">{{stocks.number}}</a></li>
+    {%if stocks.has_next %}
+    <li class="paginate_button page-item next pagenext" id="dataTable-1_next"><a
+        href="?page={{stocks.next_page_number}}" aria-controls="dataTable-1" data-dt-idx="5" tabindex="0"
+        class="page-link">Next</a></li>
+    <li class="paginate_button page-item next pagenext" id="dataTable-1_next"><a href="?page={{last_page}}"
+        aria-controls="dataTable-1" data-dt-idx="5" tabindex="0" class="page-link">Last</a></li>
+    {% endif %}
+  </ul>
+</div>
 
 
-  <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLongTitle">Edit Diamond Data</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <label for="desc-input">Weight</label>
-          <input class="form-control  my-3" type="text" id="weight" placeholder="Weight"/>
-          <label for="weight-input">Measurement</label>
-          <input class="form-control  my-3" type="text" id="measurement" placeholder="Measurement"/>
-          <label for="remark-input">Clarity</label>
-          <input class="form-control  my-3"  type="text" id="clarity" placeholder="Clarity"></input>
-          <label for="remark-input">Price</label>
-          <input class="form-control  my-3"  type="text" id="price" placeholder="Price"></input>
-          <label for="remark-input">Color</label>
-          <input class="form-control  my-3"  type="text" id="color" placeholder="Color"></input>
-          <label for="remark-input">Polish</label>
-          <input class="form-control  my-3"  type="text" id="polish" placeholder="Polish"></input>
-          <label for="remark-input">Symmetry</label>
-          <input class="form-control  my-3"  type="text" id="symmetry" placeholder="Symmetry"></input>
-          <label for="remark-input">Cut</label>
-          <input class="form-control  my-3"  type="text" id="cut" placeholder="Cut"></input>
-          <label for="remark-input">Fluorescence Color</label>
-          <input class="form-control  my-3"  type="text" id="fluorescence" placeholder="Fluorescence Color"></input>
-          <label for="remark-input">Depth</label>
-          <input class="form-control  my-3"  type="text" id="depth" placeholder="Depth"></input>
-          <label for="remark-input">Table</label>
-          <input class="form-control  my-3"  type="text" id="table" placeholder="Table"></input>
-          <label for="remark-input">Remarks</label>
-          <input class="form-control  my-3"  type="text" id="remarks" placeholder="Remarks"></input>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button id="updatediamond" class="btn btn-info">Update</button>
-        </div>
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Edit Diamond Data</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <label for="desc-input">Weight</label>
+        <input class="form-control  my-3" type="text" id="weight" placeholder="Weight" />
+        <label for="weight-input">Measurement</label>
+        <input class="form-control  my-3" type="text" id="measurement" placeholder="Measurement" />
+        <label for="remark-input">Clarity</label>
+        <input class="form-control  my-3" type="text" id="clarity" placeholder="Clarity"></input>
+        <label for="remark-input">Price</label>
+        <input class="form-control  my-3" type="text" id="price" placeholder="Price"></input>
+        <label for="remark-input">Color</label>
+        <input class="form-control  my-3" type="text" id="color" placeholder="Color"></input>
+        <label for="remark-input">Polish</label>
+        <input class="form-control  my-3" type="text" id="polish" placeholder="Polish"></input>
+        <label for="remark-input">Symmetry</label>
+        <input class="form-control  my-3" type="text" id="symmetry" placeholder="Symmetry"></input>
+        <label for="remark-input">Cut</label>
+        <input class="form-control  my-3" type="text" id="cut" placeholder="Cut"></input>
+        <label for="remark-input">Fluorescence Color</label>
+        <input class="form-control  my-3" type="text" id="fluorescence" placeholder="Fluorescence Color"></input>
+        <label for="remark-input">Depth</label>
+        <input class="form-control  my-3" type="text" id="depth" placeholder="Depth"></input>
+        <label for="remark-input">Table</label>
+        <input class="form-control  my-3" type="text" id="table" placeholder="Table"></input>
+        <label for="remark-input">Remarks</label>
+        <input class="form-control  my-3" type="text" id="remarks" placeholder="Remarks"></input>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button id="updatediamond" class="btn btn-info">Update</button>
       </div>
     </div>
   </div>
-  <script>
+</div>
+<script>
 
-    $(document).ready(function () {
-      
-      dataTable=$("#datatable").DataTable();
-    });
+  $(document).ready(function () {
+
+    dataTable = $("#datatable").DataTable();
+  });
 
 
-    $(document).on("click","#edit",function(){
-      var row = $(this).closest('tr');
-      var child= $(this).closest('tr').next('tr');
+  $(document).on("click", "#edit", function () {
+    var row = $(this).closest('tr');
+    var child = $(this).closest('tr').next('tr');
 
-      //variables 
-      {% comment %} var weight=
-      var measurement=
-      var clarity=
-      var price=
-      var color=
-      var  {% endcomment %}
+    //variables 
+    {% comment %} var weight =
+      var measurement =
+      var clarity =
+      var price =
+      var color =
+      var {% endcomment %}
       alert(row.find('dd:eq(0)').text());
-      {% comment %} var modal = $('#editModal');
-      modal.modal({ show: true }); {% endcomment %}
+  {% comment %} var modal = $('#editModal');
+  modal.modal({ show: true }); {% endcomment %}
     });
-    
-        
-  
-  </script>
+
+
+
+</script>
 {% endblock content%}
