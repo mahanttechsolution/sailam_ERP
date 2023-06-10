@@ -25,7 +25,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('account.urls'),name='account'),
     path('inventory/',include('inventory.urls'),name='inventory'),
-    path('scanner/',views.scanner,name="scanner"),
 ]+static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
