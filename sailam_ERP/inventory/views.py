@@ -159,18 +159,9 @@ def viewStock(request):
     except:
         page_number = 1
     stocks = inventory.objects.all()
-
     p = Paginator(stocks, 10)
     page_obj = p.get_page(page_number)
-    index = page_obj.number - 1
-
-    if index >= 0:
-        index = index * 10
-    else:
-        index = 0
-
     last_page = p.num_pages
-
     context = {"stocks": page_obj, "last_page": last_page}
     return render(request, "inventory/viewinventory.html", context)
 
