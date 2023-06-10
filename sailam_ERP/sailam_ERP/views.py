@@ -5,3 +5,5 @@ def index(request):
 
     return render(request, "dashboard.html")
 
+def scanner(request):
+    return render(request,"scanner.html")
