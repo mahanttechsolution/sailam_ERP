@@ -26,7 +26,6 @@ class inventory(models.Model):
     UpdatedOn=models.DateTimeField(auto_now=True)
     Scan_Id=models.BigIntegerField(blank=True,null=True)
     MemoMade=models.BooleanField(default=False)
-    IsSold=models.BooleanField(default=False)
     InvoiceMade=models.BooleanField(default=False)
     IsHide=models.BooleanField(default=False)
     

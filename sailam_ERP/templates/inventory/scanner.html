@@ -68,6 +68,9 @@ Sailam QR Code Scanner
         <li class="nav-item">
           <a class="nav-link" id="tab3-tab" data-toggle="tab" href="#tab3" role="tab" aria-controls="tab3" aria-selected="false">Hide</a>
         </li>
+        {% comment %} <li class="nav-item">
+          <a class="nav-link" id="tab4-tab" data-toggle="tab" href="#tab4" role="tab" aria-controls="tab4" aria-selected="false">Sell</a>
+        </li> {% endcomment %}
       </ul>
 
       <div class="tab-content" id="myTabContent">
@@ -134,6 +137,27 @@ Sailam QR Code Scanner
             </table>
             <button class="btn btn-info" id="submithide" >Hide Data</button>
         </div>
+
+        {% comment %} <div class="tab-pane fade" id="tab4" role="tabpanel" aria-labelledby="tab4-tab">
+          <table id="sell_table" class="table table-striped table-hover" width="100%">
+            <thead class="thead-dark">
+              <tr>
+                <th>NO.</th>
+                <th>DESCRIPTION</th>
+                <th>PCS.</th>
+                <th>CTS</th>
+                <th>CFR US $</th>
+                <th>TOTAL US$</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+          </tfoot>
+          </table>
+          <button class="btn btn-info" id="submitsell" >Sell Diamonds</button>
+        </div> {% endcomment %}
+
       </div>
     </div>
   </div>
@@ -181,6 +205,8 @@ Sailam QR Code Scanner
           <input class="form-control  my-3" type="text" id="clientcompany" placeholder="Company"/>
           <label for="remark-input">Company Address</label>
           <textarea class="form-control  my-3"  id="companyaddress" placeholder="Address"></textarea>
+          <input class="form-check-input" type="checkbox" id="dohide">
+          <label class="form-check-label" for="dohide">Hide Diamond</label>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -280,6 +306,25 @@ Sailam QR Code Scanner
         },
         ]});
 
+        {% comment %}
+         selltable = $('#sell_table').DataTable({
+          dom: 'lBfrtip',
+          buttons: [
+              {
+                  extend: 'pdfHtml5',
+                  download: 'open',
+                  className:'btn btn-info mt-3',
+                  title: 'Sailam Sell Data',
+                  footer:true,
+              },
+            {
+              extend: 'csvHtml5',
+              download: 'open',
+              className:'btn btn-info mt-3',
+              footer:true,
+          },
+          ]}); {% endcomment %}
+
       //detect current active tab
       $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
         target = $(e.target).attr("id");
@@ -344,6 +389,21 @@ Sailam QR Code Scanner
                   request.open("GET", json, true);
                   request.send();
             }
+            {% comment %} else if(target==="tab4-tab")
+            {
+              console.log('Inside tab4-tab');
+              var value= $('#gianum').val().split("=")
+                var request = new XMLHttpRequest();
+                var json = "{% url 'get_invoicedata' scanid=0 %}".replace('0', value[1]!=undefined?value[1]:value[0]);
+                request.onload = function() {
+                  if ( request.readyState === 4 && request.status === 200 ) {
+                    var JSONObject = JSON.parse(request.responseText);
+                    loadSellData(JSONObject);
+                  } else if(request.status == 400) { console.log("Error", request.status);}
+                };
+                  request.open("GET", json, true);
+                  request.send();
+            } {% endcomment %}
             else{
               alert('Please Select One Tab From Below');
             }
@@ -352,6 +412,102 @@ Sailam QR Code Scanner
       );
     });
   </script>
+
+  {% comment %}
+   <script>
+    //script for sale
+
+    function loadSellData(newData) {
+      if(newData.NO != "null")
+        {
+              var rowData = [];
+              rowData.push(newData.NO);
+              rowData.push(newData.DESCRIPTION);
+              rowData.push(newData.PCS);
+              rowData.push(newData.CTS);
+              rowData.push(newData.CFR_US_$);
+              rowData.push(caltotal(newData.CTS,newData.CFR_US_$));
+              rowData.push('<button type="button"class="btn btn-danger btn-xs dt-delete" id="1"><span class="fe fe-trash-2 fe-16" aria-hidden="true"></span></button>');
+              if(!isRowExists(table,rowData) && !isRowExists(dataTable,rowData) && !isRowExists(hidetable,rowData) && !isRowExists(selltable,rowData))
+              {
+                  selltable.row.add(rowData).draw();
+
+                  $('.dt-delete').off('click');
+                  $('.dt-delete').each(function () {
+                    $(this).on('click', function(evt){
+                    $this = $(this);
+                    var dtRow = $this.parents('tr');
+                   if(confirm("Are you sure to delete this row?")){
+                      selltable.row(dtRow[0].rowIndex-1).remove().draw( false );
+                   }
+              });
+            });
+              }
+              else{
+                alert('Data Already Exist in This or Other Tab');
+              }
+              
+        }
+      else{
+        alert("Data For Given GIA Is Not Available Or Bill Is Already Prepared for this");
+      }
+    }
+
+    $(document).on("click","#submitsell",function(){
+      var data= selltable.rows().data();
+      var res={};
+      res['stk_id']=[];
+      for(var i=0;i<data.length;i++)
+      {
+        res['stk_id'].push(data[i][0]);
+      }
+      var resp=JSON.stringify(res);
+      alert(resp);
+      selltable.clear().draw(); 
+  });
+
+  $("#sell_table").on("click","tbody td:not(:nth-child(1), :last-child, :nth-last-child(2))",function() {
+    var cell = $(this);
+    var originalContent = cell.text();
+    var newContent;
+    var columnIndex=cell.index();
+    var row = cell.closest("tr");
+
+    var input = $("<input type='text'>");
+    input.val(originalContent);
+    
+    // Replace the cell's content with the input field
+    cell.html(input);
+    
+    // Focus on the input field 
+    input.focus();
+    
+    // Update the cell's content when the input field loses focus
+    input.blur(function() {
+      newContent = $(this).val();
+      cell.html(newContent);
+      updatecol(columnIndex,row);
+    });
+    
+    // Update the cell's content when the Enter key is pressed
+    input.keypress(function(e) {
+      if (e.which === 13) {
+        newContent = $(this).val();
+        cell.html(newContent);
+        updatecol(columnIndex,row);
+      }
+    });
+  });
+  function updatecol(index,row)
+  {
+    if (index === 3 || index === 4) {
+      var cts = row.find("td:nth-child(4)").text();
+      var cfrUs = row.find("td:nth-child(5)").text();
+      var totalUs = cts * cfrUs;
+      row.find("td:nth-child(6)").text(totalUs.toFixed(2));
+    }
+  }
+  </script> {% endcomment %}
 
   <script>
    //script for Hide
@@ -779,12 +935,14 @@ function sendinvoicedata(data){
       var clientname=$('#clientname').val();
       var clientcompany=$('#clientcompany').val();
       var address=$('textarea#companyaddress').val();
+      var dohide=$('#dohide').val();
       var data= dataTable.rows().data();
       var memo={};
       var client={};
       client['name']=clientname;
       client['company']=clientcompany;
       client['address']=address;
+      client['dohide']=dohide;
       memo['diamond']=[];
       for(var i=0;i<data.length;i++)
       {

@@ -7,13 +7,14 @@ Diamond Stock
 
 {% block content%}
 <div class="col-lg-12">
-<table class="table table-striped hover " id="datatable" style="width:100%">
+<table class="table table-striped hover" id="datatable" style="width:100%">
     <thead class="thead-dark">
         <tr>
-          <th>Memo ID</th>
-          <th>Client Name</th>
-          <th>Client Company</th>
-          <th>Date</th>
+          <th>Stock ID</th>
+          <th>Weight</th>
+          <th>Mesurement</th>
+          <th>Clarity</th>
+          <th>Price</th>
           <th>Action</th>
         </tr>
       </thead>
@@ -32,7 +33,7 @@ Diamond Stock
       
         // AJAX request to retrieve data
         $.ajax({
-          url: "{% url 'memo_prepared'%}", 
+          url: "{% url 'hide_stock'%}", 
           method: 'GET',
           dataType: 'json',
           success: function(data) {
@@ -47,12 +48,13 @@ Diamond Stock
         function populateDataTable(data) {
           $.each(data, function(index, item) {
             var row = [
-              item.memo_id,
-              item.client_name,
-              item.client_company,
-              item.date,
+              item.stk_id,
+              item.weight,
+              item.measurement,
+              item.clarity,
+              item.price,
             ];
-            row.push('<button type="button" class="btn btn-danger btn-xs dt-delete"><span class="fe fe-trash-2 fe-16" aria-hidden="true"></span></button>');
+            row.push('<button type="button" class="btn btn-primary btn-xs dt-show"><span>Show</span></button>');
             // Add the row to the DataTable
             var datatableRow = table.row.add(row).draw().node();
       
@@ -61,13 +63,12 @@ Diamond Stock
           });
         }
         
-        $(document).on('click','.dt-delete',function(){
+        $(document).on('click','.dt-show',function(){
                var tr=$(this).closest('tr');
-               var memo_id = tr.find('td:eq(0)').text();
-               console.log("memo_id= "+memo_id);
-               if(confirm("Are you sure to delete this Memo?")){
+               var stk_id = tr.find('td:eq(0)').text();
+               if(confirm("Are you sure to Make Live this Diamond?")){
                 $.ajax({
-                  url: "{% url 'memo_delete' memo_id=0 %}".replace('0',memo_id), 
+                  url: "{% url 'show_diamond' stk_id=0 %}".replace('0',stk_id), 
                   method: 'GET',
                   dataType: 'json',
                   success: function(data) {
@@ -78,7 +79,7 @@ Diamond Stock
                      }
                      else
                      {
-                         console.error('Unable to delete');
+                         console.error('Error: Unable to make live');
                      }
                   },
                   error: function(xhr, status, error) {
@@ -109,20 +110,26 @@ Diamond Stock
         function formatChildData(childData) {
           var html = '<div class="col-lg-12"><table class="child-table table table-hover" style="width:100%">';
           html += '<thead><tr>';
-          html += '<th>Stock No</th>';
-          html += '<th>Description</th>';
-          html += '<th>Weight</th>';
-          html += '<th>Rate</th>';
+          html += '<th>Color</th>';
+          html += '<th>Polish</th>';
+          html += '<th>Symmetry</th>';
+          html += '<th>Cut</th>';
+          html += '<th>Fluorescence Color</th>';
+          html += '<th>Depth</th>';
+          html += '<th>Table</th>';
           html += '<th>Remarks</th>';
           html += '</tr></thead>';
           html += '<tbody>';
       
           $.each(childData, function(index, childItem) {
             html += '<tr>';
-            html += '<td>' + childItem.stk_no + '</td>';
-            html += '<td>' + childItem.description + '</td>';
-            html += '<td>' + childItem.weight + '</td>';
-            html += '<td>' + childItem.rate + '</td>';
+            html += '<td>' + childItem.color + '</td>';
+            html += '<td>' + childItem.polish + '</td>';
+            html += '<td>' + childItem.symmetry + '</td>';
+            html += '<td>' + childItem.cut + '</td>';
+            html += '<td>' + childItem.fluorescence + '</td>';
+            html += '<td>' + childItem.depth + '</td>';
+            html += '<td>' + childItem.table+ '</td>';
             html += '<td>' + childItem.remarks + '</td>';
             html += '</tr>';
           });

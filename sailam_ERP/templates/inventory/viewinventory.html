@@ -6,7 +6,7 @@ Diamond Stock
 {% endblock title%}
 
 {% block content%}
-<table class="table table-hover table-borderless border-v">
+<table class="table table-hover table-borderless border-v" id="datatable">
     <thead class="thead-dark">
       <tr>
         <th>GIA No</th>
@@ -27,17 +27,11 @@ Diamond Stock
         <td>{{stock.MESUREMNT}}</td>
         <td>{{stock.CLARITY}}</td>
         <td>{{stock.PRICE}}</td>
-        <td><button class="btn btn-sm dropdown-toggle more-horizontal" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <span class="text-muted sr-only">Action</span>
-          </button>
-          <div class="dropdown-menu dropdown-menu-right">
-            <a class="dropdown-item" href="#">Edit</a>
-            <a class="dropdown-item" href="#">Remove</a>
-            <a class="dropdown-item" href="#">Assign</a>
-          </div>
+        <td>
+          <button type="button"class="btn btn-primary btn-xs dt-edit" id="edit"><span class="fe fe-edit fe-16" aria-hidden="true"></span></button>
         </td>
       </tr>
-      <tr id="collap-{{stock.Id}}" class="collapse show in p-3 bg-light">
+      <tr id="collap-{{stock.Id}}" class="collapse in p-3 bg-light">
         <td colspan="16">
           <dl class="row mb-0 mt-1">
             <dt class="col-sm-1">Color</dt>
@@ -62,4 +56,75 @@ Diamond Stock
       {% endfor %}
     </tbody>
   </table>
+
+
+  <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Edit Diamond Data</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <label for="desc-input">Weight</label>
+          <input class="form-control  my-3" type="text" id="weight" placeholder="Weight"/>
+          <label for="weight-input">Measurement</label>
+          <input class="form-control  my-3" type="text" id="measurement" placeholder="Measurement"/>
+          <label for="remark-input">Clarity</label>
+          <input class="form-control  my-3"  type="text" id="clarity" placeholder="Clarity"></input>
+          <label for="remark-input">Price</label>
+          <input class="form-control  my-3"  type="text" id="price" placeholder="Price"></input>
+          <label for="remark-input">Color</label>
+          <input class="form-control  my-3"  type="text" id="color" placeholder="Color"></input>
+          <label for="remark-input">Polish</label>
+          <input class="form-control  my-3"  type="text" id="polish" placeholder="Polish"></input>
+          <label for="remark-input">Symmetry</label>
+          <input class="form-control  my-3"  type="text" id="symmetry" placeholder="Symmetry"></input>
+          <label for="remark-input">Cut</label>
+          <input class="form-control  my-3"  type="text" id="cut" placeholder="Cut"></input>
+          <label for="remark-input">Fluorescence Color</label>
+          <input class="form-control  my-3"  type="text" id="fluorescence" placeholder="Fluorescence Color"></input>
+          <label for="remark-input">Depth</label>
+          <input class="form-control  my-3"  type="text" id="depth" placeholder="Depth"></input>
+          <label for="remark-input">Table</label>
+          <input class="form-control  my-3"  type="text" id="table" placeholder="Table"></input>
+          <label for="remark-input">Remarks</label>
+          <input class="form-control  my-3"  type="text" id="remarks" placeholder="Remarks"></input>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button id="updatediamond" class="btn btn-info">Update</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+
+    $(document).ready(function () {
+      
+      dataTable=$("#datatable").DataTable();
+    });
+
+
+    $(document).on("click","#edit",function(){
+      var row = $(this).closest('tr');
+      var child= $(this).closest('tr').next('tr');
+
+      //variables 
+      {% comment %} var weight=
+      var measurement=
+      var clarity=
+      var price=
+      var color=
+      var  {% endcomment %}
+      alert(row.find('dd:eq(0)').text());
+      {% comment %} var modal = $('#editModal');
+      modal.modal({ show: true }); {% endcomment %}
+    });
+    
+        
+  
+  </script>
 {% endblock content%}

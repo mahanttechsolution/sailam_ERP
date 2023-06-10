@@ -11,7 +11,7 @@ from .models import inventory, Video
 from .forms import VideoForm
 from .constant import authorization,urlendpoint
 import qrcode
-from reportlab.lib.pagesizes import letter
+from reportlab.lib.pagesizes import letter,landscape
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph,Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
@@ -155,7 +155,7 @@ def insertDiamond(request):
 
 
 def viewStock(request):
-    stocks = inventory.objects.filter(IsHide=False,IsSold=False)
+    stocks = inventory.objects.filter(IsHide=False,InvoiceMade=False)
     context = {"stocks": stocks}
     return render(request, "inventory/viewinventory.html", context)
 
@@ -279,7 +279,7 @@ def scanner(request):
     return render(request,"inventory/scanner.html")
 
 def getMemoData(request,scanid):
-   data=inventory.objects.filter(Scan_Id=scanid,MemoMade=False,IsSold=False,IsHide=False).values()|inventory.objects.filter(GIA_NO=scanid,MemoMade=False,IsSold=False,IsHide=False).values()
+   data=inventory.objects.filter(Scan_Id=scanid,MemoMade=False,InvoiceMade=False,IsHide=False).values()|inventory.objects.filter(GIA_NO=scanid,MemoMade=False,InvoiceMade=False,IsHide=False).values()
    if data:
     result={
         'stk_id':data[0]["STK_ID"],
@@ -304,6 +304,8 @@ def setMemoData(request):
         client_name=data['client']['name']
         client_company=data['client']['company']
         client_address=data['client']['address']
+        dohide=data['client']['dohide']
+
         _client=Client.objects.filter(name=client_name,company=client_company).first()
         if not _client:
          print("inside create")
@@ -318,6 +320,8 @@ def setMemoData(request):
           rate=row['rate']
           inv=inventory.objects.filter(STK_ID=stk_id).first()
           inv.MemoMade=True
+          if dohide:
+             inv.IsHide=True
           inv.save()
           MemoData.objects.create(memo=memo,stk_no=inv,desc=description,weight=weight,rate=rate,remark=remark)
         response=gen_report(request,data,memo)
@@ -482,6 +486,9 @@ def preparedMemo(request):
 def viewMemo(request):
    return render(request,'inventory/memo.html')
 
+def viewHidden(request):
+   return render(request,'inventory/viewhide.html')
+
 def deleteMemo(request,memo_id):
    user=request.user
    memo=Memo.objects.filter(id_memo=memo_id).first()
@@ -502,7 +509,7 @@ def deleteMemo(request,memo_id):
       return HttpResponse(json.dumps({'message':'fail'}))
    
 def getinvoicedata(request,scanid):
-   data=inventory.objects.filter(Scan_Id=scanid,IsSold=False,InvoiceMade=False,IsHide=False).values()|inventory.objects.filter(GIA_NO=scanid,IsSold=False,InvoiceMade=False,IsHide=False).values()
+   data=inventory.objects.filter(Scan_Id=scanid,InvoiceMade=False,IsHide=False).values()|inventory.objects.filter(GIA_NO=scanid,InvoiceMade=False,IsHide=False).values()
    if data:
     result={}
     result={
@@ -544,7 +551,6 @@ def setInvoiceData(request):
           inv=inventory.objects.filter(STK_ID=stk_id).first()
           if inv:
             inv.InvoiceMade=True
-            # inv.IsSold=True
             inv.save()
           InvoiceData.objects.create(invoice=invoice,stk_no=inv,desc=description,pcs=pcs,weight=weight,cfr=cfr,total=total)
         response=gen_invoice(request,data,invoice)
@@ -729,10 +735,8 @@ def gen_invoice(request,data,invoice):
     response = HttpResponse(file_name)
     return response
 
-# View for Hide
-
 def getHideData(request,scanid):
-   data=inventory.objects.filter(Scan_Id=scanid,IsSold=False,IsHide=False).values()|inventory.objects.filter(GIA_NO=scanid,IsSold=False,IsHide=False).values()
+   data=inventory.objects.filter(Scan_Id=scanid,InvoiceMade=False,IsHide=False).values()|inventory.objects.filter(GIA_NO=scanid,InvoiceMade=False,IsHide=False).values()
    if data:
     result={
         'stk_id':data[0]["STK_ID"],
@@ -761,6 +765,77 @@ def setHideData(request):
 
    return HttpResponse("Success")
 
+def getHideStock(request):
+   result=[]
+   hideobj=inventory.objects.filter(IsHide=True).values()
+   
+   for row in hideobj:
+      hide={}
+      hide['stk_id']=row['STK_ID']
+      hide['weight']=row['CRT']
+      hide['measurement']=row['MESUREMNT']
+      hide['clarity']=row['CLARITY']
+      hide['price']=row['PRICE']
+      hide['child_data']=[]
+      child={}
+      child['color']=row['COLOR']
+      child['polish']=row['POL']
+      child['symmetry']=row['SYM']
+      child['cut']=row['CUT']
+      child['fluorescence']=row['FLO_COL']
+      child['depth']=row['DEPTH']
+      child['table']=row['TABLE']
+      child['remarks']=row['REMARK']
+      hide['child_data'].append(child)
+      result.append(hide)
+   return HttpResponse(json.dumps(result, indent = 4))
 
+def showDiamond(request,stk_id):
+   user=request.user
+   current_time=datetime.datetime.now(tz=datetime.timezone.utc)
+   inv=inventory.objects.filter(STK_ID=stk_id).first()
+   if inv:
+      inv.IsHide=False
+      inv.UpdatedBy=user
+      inv.UpdatedOn=current_time
+      inv.save()
+      return HttpResponse(json.dumps({'message':'success'}))
+   else:
+    return HttpResponse(json.dumps({'message':'fail'}))
+   
+def allView(request):
+   return render(request,'inventory/viewallstock.html')
 
-
+def getAll(request):
+   result=[]
+   hideobj=inventory.objects.filter().values()
+   
+   for row in hideobj:
+      hide={}
+      hide['stk_id']=row['STK_ID']
+      hide['weight']=row['CRT']
+      hide['measurement']=row['MESUREMNT']
+      hide['clarity']=row['CLARITY']
+      hide['price']=row['PRICE']
+      hide['child_data']=[]
+      if row['MemoMade']:
+         hide['status']="Memo Prepared"
+      elif row['InvoiceMade']:
+         hide['status']='Sold'
+      elif row['IsHide']:
+         hide['status']='Hidden'
+      else:
+         hide['status']='Available'
+        
+      child={}
+      child['color']=row['COLOR']
+      child['polish']=row['POL']
+      child['symmetry']=row['SYM']
+      child['cut']=row['CUT']
+      child['fluorescence']=row['FLO_COL']
+      child['depth']=row['DEPTH']
+      child['table']=row['TABLE']
+      child['remarks']=row['REMARK']
+      hide['child_data'].append(child)
+      result.append(hide)
+   return HttpResponse(json.dumps(result, indent = 4))
