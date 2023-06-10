@@ -1,0 +1,266 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon.ico">
+    <title>Diamond Details</title>
+    <!-- Simple bar CSS -->
+    <link rel="stylesheet" href="{% static '/assets/css/simplebar.css' %}">
+    <!-- Fonts CSS -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,100;0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+    <!-- Icons CSS -->
+    <link rel="stylesheet" href="{% static '/assets/css/feather.css' %}">
+    <!-- Date Range Picker CSS -->
+    <link rel="stylesheet" href="{% static '/assets/css/daterangepicker.css' %}">
+    <!-- App CSS -->
+    <link rel="stylesheet" href="{% static '/assets/css/app-light.css' %}" id="lightTheme">
+    <link rel="stylesheet" href="{% static '/assets/css/app-dark.css' %}" id="darkTheme" disabled>
+
+</head>
+
+<body>
+
+
+    <nav class="topnav navbar navbar-light bg-white shadow mb-4">
+        <div class="container-fluid">
+            <ul class="nav">
+                <li class="nav-item"></li>
+                <li class="nav-item"></li>
+                <li class="nav-item"></li>
+                <li class="nav-item"></li>
+                <li class="nav-item">
+                    <div class="w-100  d-flex my-2">
+                        <a class="navbar-brand mx-auto mt-2 flex-fill " href="http://127.0.0.1:8000/">
+                            <img src="{% static 'image/logo.png' %}" alt="" height="50px" width="50px">
+                            <b>SAILAM</b>
+                        </a>
+                    </div>
+                </li>
+            </ul>
+            <ul class="nav">
+                <li class="nav-item ">
+                    <h5>GIA REPORT : 1234567890</h5>
+                </li>
+            </ul>
+            <div class="col-sm-4">
+                <ul class="nav">
+                    <li class="nav-item">
+
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card shadow mb-4">
+                    <div class="card-body">
+                        <form method="post" id="filterform">
+                            <h4 class="card-title">Filter</h4>
+                            {% csrf_token %}
+                            <div class="form-group row">
+                                <button class="btn btn-sm dropdown-toggle more-horizontal" type="button"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span class="text-muted sr-only">Action</span>
+                                </button>
+                                <div class="dropdown-menu ">
+                                    <a class="staff_edit dropdown-item">Edit</a>
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <input type="hidden" name="shape" value="">
+                                    <label for="shape" style="margin-right: 40px;">
+                                        SHAPE</label>
+                                    <button type="button" class="btn mb-1 btn-primary">ANY</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">OVAL</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">PEAR</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">MARQUIS</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">HEART</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">CUSHION</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">RADIANT</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">EMERALD</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">PRINCESS</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">ROUND</button>
+
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <input type="hidden" name="shape" value="">
+                                    <label for="shape" style="margin-right: 35px;">
+                                        WEIGHT</label>
+                                    <button type="button" class="btn mb-1 btn-primary">ANY</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">0.30 DOWN</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">0.31-0.5</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">0.51-1.00</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">1.00</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">1.00-3.00</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">3.00-5.00</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">5.00+</button>
+
+
+
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label for="shape" style="margin-right: 40px;">
+                                        COLOR</label>
+                                    <input type="hidden" name="color" value="">
+                                    <button type="button" class="btn mb-1 btn-primary">ANY</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">WHITE</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">D</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">E</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">F</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">G</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">H</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">I</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">J</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">K</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">L</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">M</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">N</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">O-P</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">Q-R</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">S-T</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">U-V</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">W-X</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">Y-Z</button>
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label for="shape" style="margin-right: 45px;">
+                                        FANCY</label>
+                                    <input type="hidden" name="clearity" value="">
+                                    <button type="button" class="btn mb-1 btn-primary">ANY</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">ALL YELLOW</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">ALL PINK</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">ALL GREEN</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">ALL BLUE</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">ALL ORANGE</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">ALL PURPLE</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">ALL CAMALION</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">ALL BROWN</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">ALL VIOLET</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">ALL RED</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">ALL GRAY</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">ALL BLACK</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">FANCY WHITE</button>
+
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="form-group col-md-12">
+                                    <label for="shape" style="margin-right: 32px;">
+                                        CLARITY</label>
+                                    <input type="hidden" name="clearity" value="">
+                                    <button type="button" class="btn mb-1 btn-primary">ANY</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">FL</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">IF</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">VVS1</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">VVS2</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">VS1</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">VS2</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">SI1</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">SI2</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">SI2-</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">SI3</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">I1</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">I2</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">I3</button>
+
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label for="shape" style="margin-right: 40px;">
+                                        POLISH</label>
+                                    <input type="hidden" name="clearity" value="">
+                                    <button type="button" class="btn mb-1 btn-primary">ANY</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">EX</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">VG</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">G</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">FAIR</button>
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label for="shape" style="margin-right: 5px;">
+                                        SYMMENTRY</label>
+                                    <input type="hidden" name="clearity" value="">
+                                    <button type="button" class="btn mb-1 btn-primary">ANY</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">EX</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">VG</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">G</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">FAIR</button>
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label for="shape" style="margin-right:20px;">
+                                        LOCATION</label>
+                                    <input type="hidden" name="clearity" value="">
+                                    <button type="button" class="btn mb-1 btn-primary">ANY</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary"
+                                        onclick="change_class(this)">MUMBAI</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">HONG KONG</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">TAIWAN</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">SURAT</button>
+                                    <button type="button" class="btn mb-1 btn-outline-primary">BANGKOK</button>
+
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <button type="submit" class="btn btn-primary float-right">Apply</button>
+                                </div>
+                            </div>
+                        </form>
+
+
+                    </div>
+                </div>
+            </div>
+
+
+            <table class="table table-hover  border-v">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>GIA No</th>
+                        <th>Stock Id</th>
+                        <th>Weight</th>
+                        <th>Shape</th>
+                        <th>Colour</th>
+                        <th>Price</th>
+                        <th>Purity</th>
+                        <th>Symmetry</th>
+                        <th>Morer Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stock in stocks %}
+                    <tr>
+                        <td>{{stock.GIA_NO}}</td>
+                        <td>{{stock.STK_ID}}</td>
+                        <td>{{stock.CRT}}</td>
+                        <td>{{stock.SHAPE}}</td>
+                        <td>{{stock.COLOR}}</td>
+                        <td>{{stock.PRICE}}</td>
+                        <td>{{stock.CLARITY}}</td>
+                        <td>{{stock.SYM}}</td>
+                        <td><a href="{% url 'diamondinfo' %}?q={{stock.Scan_Id}}">...</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+
+        <script>
+            function change_class(e) {
+                if (e.class == 'btn-outline-primary') {
+                    e.classList.remove("btn-outline-primary");
+                    e.class = "btn-primary"
+                }
+                else {
+                    e.classList.remove("btn-primary");
+                    e.class = 'btn-outline-primary'
+                }
+            }
+        </script>
+</body>
