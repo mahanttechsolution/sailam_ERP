@@ -187,11 +187,21 @@ def viewStock(request):
 #     return url
 
 
+def StockInfo(request):
+    stocks = inventory.objects.all()
+    context = {"stocks": stocks}
+    return render(request, "inventory/all_details.html", context)
+
+
 def DiamondInfo(request):
     if request.method == "GET":
         q = request.GET["q"]
-        info = inventory.objects.get(Scan_Id=q)
-        pics = Video.objects.get(id_inv=info.Id)
+        try:
+            info = inventory.objects.get(Scan_Id=q)
+            pics = Video.objects.get(id_inv=info.Id)
+        except:
+            info = ""
+            pics = ""
         context = {"info": info, "pics": pics}
         return render(request, "inventory/diamond_details.html", context=context)
 
