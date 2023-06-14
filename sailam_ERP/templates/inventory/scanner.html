@@ -205,8 +205,11 @@ Sailam QR Code Scanner
           <input class="form-control  my-3" type="text" id="clientcompany" placeholder="Company"/>
           <label for="remark-input">Company Address</label>
           <textarea class="form-control  my-3"  id="companyaddress" placeholder="Address"></textarea>
-          <input class="form-check-input" type="checkbox" id="dohide">
-          <label class="form-check-label" for="dohide">Hide Diamond</label>
+          <div>
+            <input type="checkbox" id="dohide" name="dohide" value="hide">
+            <label for="dohide"> Hide</label><br>
+          </div>
+          
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -935,7 +938,7 @@ function sendinvoicedata(data){
       var clientname=$('#clientname').val();
       var clientcompany=$('#clientcompany').val();
       var address=$('textarea#companyaddress').val();
-      var dohide=$('#dohide').val();
+      var dohide=$('#dohide').is(':checked');
       var data= dataTable.rows().data();
       var memo={};
       var client={};

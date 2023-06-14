@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "account",
     "inventory",
+    "parcels_jewellery"
 ]
 
 MIDDLEWARE = [
@@ -84,8 +85,8 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": "sailam",
-        "USER": "admin",
-        "PASSWORD": "Admin@321",
+        "USER": "postgres",
+        "PASSWORD": "Fenil@3241",
         "HOST": "localhost",
         "PORT": "5432",
     }

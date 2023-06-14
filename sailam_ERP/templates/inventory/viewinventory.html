@@ -6,6 +6,9 @@ Diamond Stock
 {% endblock title%}
 
 {% block content%}
+<div id="csrf">
+  {% csrf_token %}
+</div>
 <table class="table table-hover table-borderless border-v" id="datatable">
   <thead class="thead-dark">
     <tr>
@@ -93,13 +96,13 @@ Diamond Stock
       </div>
       <div class="modal-body">
         <label for="desc-input">Weight</label>
-        <input class="form-control  my-3" type="text" id="weight" placeholder="Weight" />
+        <input class="form-control  my-3" type="number" id="weight" placeholder="Weight" />
         <label for="weight-input">Measurement</label>
         <input class="form-control  my-3" type="text" id="measurement" placeholder="Measurement" />
         <label for="remark-input">Clarity</label>
         <input class="form-control  my-3" type="text" id="clarity" placeholder="Clarity"></input>
         <label for="remark-input">Price</label>
-        <input class="form-control  my-3" type="text" id="price" placeholder="Price"></input>
+        <input class="form-control  my-3" type="number" id="price" placeholder="Price"></input>
         <label for="remark-input">Color</label>
         <input class="form-control  my-3" type="text" id="color" placeholder="Color"></input>
         <label for="remark-input">Polish</label>
@@ -126,29 +129,120 @@ Diamond Stock
 </div>
 <script>
 
-  $(document).ready(function () {
+  {% comment %} $(document).ready(function () {
 
     dataTable = $("#datatable").DataTable();
-  });
+  }); {% endcomment %}
 
-
+   var selrow;
+   var selchild;
   $(document).on("click", "#edit", function () {
     var row = $(this).closest('tr');
+    selrow=row;
     var child = $(this).closest('tr').next('tr');
-
+    selchild=child;
     //variables 
-    {% comment %} var weight =
-      var measurement =
-      var clarity =
-      var price =
-      var color =
-      var {% endcomment %}
-      alert(row.find('dd:eq(0)').text());
-  {% comment %} var modal = $('#editModal');
-  modal.modal({ show: true }); {% endcomment %}
+      var weight =row.find("td:eq(2)").text();
+      var measurement =row.find("td:eq(3)").text();
+      var clarity =row.find("td:eq(4)").text();
+      var price =row.find("td:eq(5)").text();
+      var color =child.find("dd:eq(0)").text();
+      var polish=child.find("dd:eq(1)").text();
+      var symmetry=child.find("dd:eq(2)").text();
+      var cut=child.find("dd:eq(3)").text();
+      var fluorescence=child.find("dd:eq(4)").text();
+      var depth=child.find("dd:eq(5)").text();
+      var table=child.find("dd:eq(6)").text();
+      var remarks=child.find("dd:eq(7)").text();
+
+      var modal = $('#editModal');
+      modal.modal({ show: true }); 
+      $('#weight').val(weight);
+      $('#measurement').val(measurement);
+      $('#clarity').val(clarity);
+      $('#price').val(price);
+      $('#color').val(color);
+      $('#polish').val(polish);
+      $('#symmetry').val(symmetry);
+      $('#cut').val(cut);
+      $('#fluorescence').val(fluorescence);
+      $('#depth').val(depth);
+      $('#table').val(table);
+      $('#remarks').val(remarks);
+    }); 
+
+    $(document).on("click","#updatediamond",function(){
+         var row=selrow;
+         var child=selchild;
+         var modal = $('#editModal');
+         var weight=$('#weight').val();
+         var measurement=$('#measurement').val();
+         var clarity=$('#clarity').val();
+         var price=$('#price').val();
+         var color=$('#color').val();
+         var polish=$('#polish').val();
+         var symmetry=$('#symmetry').val();
+         var cut=$('#cut').val();
+         var fluorescence=$('#fluorescence').val();
+         var depth=$('#depth').val();
+         var table=$('#table').val();
+         var remarks=$('#remarks').val();
+  
+
+         update={}
+         update['stk_id']=row.find("td:eq(1)").text();
+         update['weight']=weight;
+         update['measurement']=measurement;
+         update['clarity']=clarity;
+         update['price']=price;
+         update['color']=color;
+         update['polish']=polish;
+         update['symmetry']=symmetry;
+         update['cut']=cut;
+         update['fluorescence']=fluorescence;
+         update['depth']=depth;
+         update['table']=table;
+         update['remarks']=remarks;
+         var resp=JSON.stringify(update);
+
+         //set value of table cell
+         var dochange=sendinvdata(resp)
+         const obj = JSON.parse(dochange); 
+        if(obj.message==="success")
+        {
+          row.find("td:eq(2)").text(weight);
+          row.find("td:eq(3)").text(measurement);
+          row.find("td:eq(4)").text(clarity);
+          row.find("td:eq(5)").text(price);
+          child.find("dd:eq(0)").text(color);
+          child.find("dd:eq(1)").text(polish);
+          child.find("dd:eq(2)").text(symmetry);
+          child.find("dd:eq(3)").text(cut);
+          child.find("dd:eq(4)").text(fluorescence);
+          child.find("dd:eq(5)").text(depth);
+          child.find("dd:eq(6)").text(table);
+          child.find("dd:eq(7)").text(remarks);
+        }
+        else{
+          alert("Updation fail due to some error");
+        }
+         modal.modal('hide');
     });
-
-
-
+    
+    function sendinvdata(data){
+     var result=$.ajax({
+        type: "POST",
+        global: false, 
+        async:false,
+        headers: {'X-CSRFToken': document.getElementById('csrf').querySelector('input').value},
+        url: "{% url 'updateinv' %}",
+        data: data,
+        contentType: 'application/json',
+        success: function(response){
+          return response;
+        },
+      }).responseText;
+      return result;
+    }
 </script>
 {% endblock content%}

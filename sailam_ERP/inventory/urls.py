@@ -18,10 +18,11 @@ urlpatterns = [
     path("pdf/<str:file_name>/", views.send_pdf_response, name="pdf_response"),
     path("memodelete/<str:memo_id>", views.deleteMemo, name="memo_delete"),
     path("diamond/", views.DiamondInfo, name="diamondinfo"),
-    path("stock-details", views.StockInfo, name="StockInfo"),
+    path("stock-details/", views.StockInfo, name="StockInfo"),
     path("setinvoicedata/", views.setInvoiceData, name="setinvoice"),
     path("gethidedata/<str:scanid>", views.getHideData, name="get_hidedata"),
     path("sethidedata/", views.setHideData, name="sethide"),
     path("getall/", views.getAll, name="getall_data"),
     path("allview/", views.allView, name="allview"),
+    path("updateinventory/", views.updateInventory, name="updateinv"),
 ]

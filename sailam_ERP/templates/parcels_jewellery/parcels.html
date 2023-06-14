@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title%}
+ Parcels
+{% endblock title%}
+
+{% block header_files%}
+  <style>
+    .disabled-card {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+  </style>
+  <style>
+    .card-front,
+.card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transition: transform 1s;
+}
+
+.card-front {
+  transform: rotateY(0);
+  backface-visibility: hidden;
+}
+
+.card-back {
+  transform: rotateY(180deg);
+  backface-visibility: hidden;
+  background-color: #f8f8fb; 
+}
+
+.card:hover .card-front {
+  transform: rotateY(-180deg);
+}
+
+.card:hover .card-back {
+  transform: rotateY(0);
+}
+
+.card .card-img-top {
+      max-height: 300px;
+      object-fit: fill;
+      border-radius:20px;
+    }
+    
+  </style>
+{% endblock header_files%}
+
+{% block content%}
+<div class="d-flex justify-content-center">
+    <h3>Our Parcels & Layouts</h3>
+</div>
+<div class="container mt-4">
+    <p><b>Filters:</b></p>
+    <div id="checkboxContainer"></div>
+    <hr>
+    <div class="row" id="cardContainer"></div>
+  </div>
+
+
+    
+  <script>
+    $(document).ready(function() {
+     
+        $.ajax({
+            url: "{% url 'getparcel_data'%}", 
+            method: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                console.log(data);
+                renderCheckboxes(data);
+                renderGridView(data);
+            },
+            error: function(xhr, status, error) {
+              console.error(error);
+            }
+          });
+
+      
+          function getAvailableColors(data) {
+            var colors = [];
+            colors.push("all");
+            data.forEach(function(item) {
+              var color = item.color
+              if (color && !colors.includes(color)) {
+                colors.push(color);
+              }
+            });
+            return colors;
+          }
+    
+          // Function to render checkboxes for available colors
+          function renderCheckboxes(data) {
+            var checkboxContainer = $('#checkboxContainer');
+            checkboxContainer.empty();
+    
+            var colors = getAvailableColors(data);
+            colors.forEach(function(color) {
+                var checkboxId = color + 'Checkbox';
+                var checkboxLabel = color.charAt(0).toUpperCase() + color.slice(1);
+                var checkbox = $('<div class="form-check form-check-inline"></div>');
+                var input = $('<input class="form-check-input" type="checkbox" id="' + checkboxId + '" value="' + color + '">');
+                var label = $('<label class="form-check-label" for="' + checkboxId + '">' + checkboxLabel + '</label>');
+                checkbox.append(input, label);
+                checkboxContainer.append(checkbox);
+              });
+          }
+    
+          // Function to render the grid view
+          function renderGridView(data) {
+            var cardContainer = $('#cardContainer');
+            cardContainer.empty();
+    
+            var selectedColors = [];
+            $('.form-check-input:checked').each(function() {
+              selectedColors.push($(this).val());
+            });
+    
+            data.forEach(function(item) {
+                var color =item.color;
+                var isCardDisabled = selectedColors.length > 0 && !selectedColors.includes(color);
+            
+                var card = $('<div class="col-md-4 mb-3"></div>');
+                var cardInner = $('<div class="card h-100 "></div>');
+                var cardFront = $('<div class="card-front"></div>');
+                var cardImage = $('<img class="card-img-top" src="/' + item.image + '">');
+                var cardBack = $('<div class="card-back"></div>');
+                var cardDiv =$('<div class="card-text"></div>');
+                var cardTable =$('<table cellpadding="10"  border="0"></table>');
+                var rowDescription = $('<tr><td><b>Description: </b></td><td colspan="3">'+ item.description + '</td></tr>');
+                var rowColor = $('<tr><td><b>Color: </b></td><td>'+ item.color +'</td><td><b> Shape: </b></td><td>'+ item.shape + '</td></tr>');
+                var rowStk = $('<tr><td><b>StockId: </b></td><td>'+ item.stkid +'</td><td><b> Weight: </b></td><td>'+ item.crt + '</td></tr>');
+                var rowClarity = $('<tr><td><b>Clarity: </b></td><td>' + item.clarity +'</td><td><b> Price: </b></td><td>' + item.price + '</td></tr>');
+                card.attr('data-color', color);
+                if (isCardDisabled) {
+                  card.addClass('disabled-card');
+                }
+                cardFront.append(cardImage);
+                cardTable.append(rowStk);
+                cardTable.append(rowColor);
+                cardTable.append(rowClarity);
+                cardTable.append(rowDescription);
+                cardDiv.append(cardTable);
+                cardBack.append(cardDiv);
+                cardInner.append(cardFront, cardBack);
+                card.append(cardInner);
+                cardContainer.append(card);
+              });
+          }
+    
+          
+    
+    
+          // Event handler for checkbox click
+          $(document).on('click', '.form-check-input', function() {
+            $('#cardContainer .col-md-4').each(function() {
+              var cardColor = $(this).attr('data-color');
+              var isCardDisabled = true;
+    
+              $('.form-check-input:checked').each(function() {
+                var selectedColor = $(this).val();
+                if(selectedColor==='all')
+                {
+                    isCardDisabled = false;
+                    return false;
+                }
+                if (cardColor === selectedColor) {
+                  isCardDisabled = false;
+                  return false; // exit the loop
+                }
+              });
+    
+              if (isCardDisabled) {
+                $(this).addClass('disabled-card');
+                $(this).hide();
+              } else {
+                $(this).removeClass('disabled-card');
+                $(this).show();
+              }
+            });
+          });
+        });    
+  </script>
+{% endblock content%}

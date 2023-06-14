@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title%}
-Diamond Stock
+ Prepared Memo
 {% endblock title%}
 
 {% block content%}
@@ -52,7 +52,7 @@ Diamond Stock
               item.client_company,
               item.date,
             ];
-            row.push('<button type="button" class="btn btn-danger btn-xs dt-delete"><span class="fe fe-trash-2 fe-16" aria-hidden="true"></span></button>');
+            row.push('<button type="button" class="btn btn-danger btn-xs dt-delete"><span class="fe fe-trash-2 fe-16" aria-hidden="true"></span></button><button type="button" class="btn btn-info btn-xs dt-download ml-3"><span class="fe fe-download fe-16" aria-hidden="true"></span></button>');
             // Add the row to the DataTable
             var datatableRow = table.row.add(row).draw().node();
       
@@ -61,6 +61,13 @@ Diamond Stock
           });
         }
         
+        $(document).on('click','.dt-download',function(){
+          var tr=$(this).closest('tr');
+          var memo_id = tr.find('td:eq(0)').text();
+          var filename='memo_'+memo_id+'.pdf';
+          window.open("{% url 'pdf_response'  file_name=0 %}".replace('0', filename));
+        });
+
         $(document).on('click','.dt-delete',function(){
                var tr=$(this).closest('tr');
                var memo_id = tr.find('td:eq(0)').text();
