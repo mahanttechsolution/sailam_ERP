@@ -6,13 +6,20 @@ from django.http import HttpResponse, FileResponse
 import requests
 import json
 from django.conf import settings
-from .models import Invoice, InvoiceData, inventory,Client,Memo,MemoData
+from .models import Invoice, InvoiceData, inventory, Client, Memo, MemoData
 from .models import inventory, Video
 from .forms import VideoForm
-from .constant import authorization,urlendpoint
+from .constant import authorization, urlendpoint
 import qrcode
-from reportlab.lib.pagesizes import letter,landscape
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph,Spacer,Image as Img
+from reportlab.lib.pagesizes import letter, landscape
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Table,
+    TableStyle,
+    Paragraph,
+    Spacer,
+    Image as Img,
+)
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib import colors
 from reportlab.lib.units import inch
@@ -155,46 +162,49 @@ def insertDiamond(request):
 
 
 def viewStock(request):
-    stocks = inventory.objects.filter(IsHide=False,InvoiceMade=False)
+    stocks = inventory.objects.filter(IsHide=False, InvoiceMade=False)
     context = {"stocks": stocks}
     return render(request, "inventory/viewinventory.html", context)
 
+
 def updateInventory(request):
-    if request.method=="POST":
-        user=request.user
-        data=json.loads(request.body)
-        stk_id=data['stk_id']
-        weight=data['weight']
-        measurement=data['measurement']
-        clarity=data['clarity']
-        price=data['price']
-        color=data['color']
-        polish=data['polish']
-        symmetry=data['symmetry']
-        cut=data['cut']
-        fluorescence=data['fluorescence']
-        depth=data['depth']
-        table=data['table']
-        remarks=data['remarks']
-        invobj=inventory.objects.filter(STK_ID=stk_id).first()
+    if request.method == "POST":
+        user = request.user
+        data = json.loads(request.body)
+        stk_id = data["stk_id"]
+        weight = data["weight"]
+        measurement = data["measurement"]
+        clarity = data["clarity"]
+        price = data["price"]
+        color = data["color"]
+        polish = data["polish"]
+        symmetry = data["symmetry"]
+        cut = data["cut"]
+        fluorescence = data["fluorescence"]
+        depth = data["depth"]
+        table = data["table"]
+        remarks = data["remarks"]
+        invobj = inventory.objects.filter(STK_ID=stk_id).first()
         if invobj:
-           invobj.CRT=weight
-           invobj.MESUREMNT=measurement
-           invobj.CLARITY=clarity
-           invobj.PRICE=price
-           invobj.COLOR=color
-           invobj.POL=polish
-           invobj.SYM=symmetry
-           invobj.CUT=cut
-           invobj.FLO_COL=fluorescence
-           invobj.DEPTH=depth
-           invobj.TABLE=table
-           invobj.REMARK=remarks
-           invobj.UpdatedBy=user
-           invobj.save()
-           return HttpResponse(json.dumps({'message':'success'}))
+            invobj.CRT = weight
+            invobj.MESUREMNT = measurement
+            invobj.CLARITY = clarity
+            invobj.PRICE = price
+            invobj.COLOR = color
+            invobj.POL = polish
+            invobj.SYM = symmetry
+            invobj.CUT = cut
+            invobj.FLO_COL = fluorescence
+            invobj.DEPTH = depth
+            invobj.TABLE = table
+            invobj.REMARK = remarks
+            invobj.UpdatedBy = user
+            invobj.save()
+            return HttpResponse(json.dumps({"message": "success"}))
         else:
-           return HttpResponse(json.dumps({'message':'fail'}))
+            return HttpResponse(json.dumps({"message": "fail"}))
+
+
 # def generate_qr_code(data):
 #     qr = qrcode.QRCode(
 #         version=1,
@@ -261,7 +271,7 @@ Purity: {purity}
 
 
 def generate_footer(width, gia):
-    text = f"""SAILAM .LTD               GIA: {gia}"""
+    text = f"""SAILAM .LTD                         GIA: {gia}"""
     width, height = width, 10
     background_color = (255, 255, 255)
     footer = Image.new("RGB", (width, height), background_color)
@@ -318,86 +328,111 @@ def encrypt(data):
 
 
 def decrypt(data):
-   return data>>19
+    return data >> 19
+
 
 def scanner(request):
-    return render(request,"inventory/scanner.html")
+    return render(request, "inventory/scanner.html")
 
-def getMemoData(request,scanid):
-   data=inventory.objects.filter(Scan_Id=scanid,MemoMade=False,InvoiceMade=False,IsHide=False).values()|inventory.objects.filter(GIA_NO=scanid,MemoMade=False,InvoiceMade=False,IsHide=False).values()
-   if data:
-    result={
-        'stk_id':data[0]["STK_ID"],
-        'desc':'color:'+data[0]["COLOR"]+', clarity:'+data[0]["CLARITY"]+', shape:'+data[0]["SHAPE"],
-        'weight':data[0]["CRT"],
-        'remark':data[0]["REMARK"],
-        'price':data[0]["PRICE"]
-    }
-    # print(result)
-    return HttpResponse(json.dumps(result, indent = 4)) 
-   else :
-      result={
-         'stk_id':'null',
-      }
-      return HttpResponse(json.dumps(result, indent = 4))
-   
+
+def getMemoData(request, scanid):
+    data = (
+        inventory.objects.filter(
+            Scan_Id=scanid, MemoMade=False, InvoiceMade=False, IsHide=False
+        ).values()
+        | inventory.objects.filter(
+            GIA_NO=scanid, MemoMade=False, InvoiceMade=False, IsHide=False
+        ).values()
+    )
+    if data:
+        result = {
+            "stk_id": data[0]["STK_ID"],
+            "desc": "color:"
+            + data[0]["COLOR"]
+            + ", clarity:"
+            + data[0]["CLARITY"]
+            + ", shape:"
+            + data[0]["SHAPE"],
+            "weight": data[0]["CRT"],
+            "remark": data[0]["REMARK"],
+            "price": data[0]["PRICE"],
+        }
+        # print(result)
+        return HttpResponse(json.dumps(result, indent=4))
+    else:
+        result = {
+            "stk_id": "null",
+        }
+        return HttpResponse(json.dumps(result, indent=4))
+
 
 def setMemoData(request):
-    if request.method=="POST":
-        user=request.user
-        data=json.loads(request.body)
-        client_name=data['client']['name']
-        client_company=data['client']['company']
-        client_address=data['client']['address']
-        dohide=data['client']['dohide']
+    if request.method == "POST":
+        user = request.user
+        data = json.loads(request.body)
+        client_name = data["client"]["name"]
+        client_company = data["client"]["company"]
+        client_address = data["client"]["address"]
+        dohide = data["client"]["dohide"]
 
-        _client=Client.objects.filter(name=client_name,company=client_company).first()
+        _client = Client.objects.filter(
+            name=client_name, company=client_company
+        ).first()
         if not _client:
-         print("inside create")
-         client=Client.objects.create(name=client_name,company=client_company,address=client_address)
-         _client=client
-        memo=Memo.objects.create(client=_client,CretedBy=user)
-        for row in data['diamond']:
-          stk_id=row['stk_no']
-          description=row['description']
-          weight=row['weight']
-          remark=row['remark']
-          rate=row['rate']
-          inv=inventory.objects.filter(STK_ID=stk_id).first()
-          inv.MemoMade=True
-          if dohide:
-             inv.IsHide=True
-          inv.save()
-          memodata=MemoData.objects.create(memo=memo,stk_no=inv,desc=description,weight=weight,rate=rate,remark=remark)
+            print("inside create")
+            client = Client.objects.create(
+                name=client_name, company=client_company, address=client_address
+            )
+            _client = client
+        memo = Memo.objects.create(client=_client, CretedBy=user)
+        for row in data["diamond"]:
+            stk_id = row["stk_no"]
+            description = row["description"]
+            weight = row["weight"]
+            remark = row["remark"]
+            rate = row["rate"]
+            inv = inventory.objects.filter(STK_ID=stk_id).first()
+            inv.MemoMade = True
+            if dohide:
+                inv.IsHide = True
+            inv.save()
+            memodata = MemoData.objects.create(
+                memo=memo,
+                stk_no=inv,
+                desc=description,
+                weight=weight,
+                rate=rate,
+                remark=remark,
+            )
         if memodata:
-         response=gen_report(request,data,memo)
-         return response
+            response = gen_report(request, data, memo)
+            return response
         else:
-         return HttpResponse("Error")
-      
+            return HttpResponse("Error")
 
-def gen_report(request,data,memo):
-    file_name="memo_"+str(memo.id_memo)+".pdf"
-    url = f'/media/pdf/'+file_name
-    file_path = f'{BASE_DIR}{url}'
+
+def gen_report(request, data, memo):
+    file_name = "memo_" + str(memo.id_memo) + ".pdf"
+    url = f"/media/pdf/" + file_name
+    file_path = f"{BASE_DIR}{url}"
     doc = SimpleDocTemplate(file_path, pagesize=letter)
     elements = []
     custom_style = ParagraphStyle(
-    'CustomStyle',
-    parent=getSampleStyleSheet()['Normal'],
-    fontSize=8,
-     )
-    image_path = os.path.join(BASE_DIR, 'static', 'image', 'logo.png')
-    logo = Img(image_path, width=0.9*inch, height=0.9*inch)
+        "CustomStyle",
+        parent=getSampleStyleSheet()["Normal"],
+        fontSize=8,
+    )
+    image_path = os.path.join(BASE_DIR, "static", "image", "logo.png")
+    logo = Img(image_path, width=0.9 * inch, height=0.9 * inch)
     elements.append(logo)
     # Header
     header_text = '<font size="10">APPROVAL MEMO</font>'
     header_style = getSampleStyleSheet()["Heading1"]
     header_style.alignment = 1
-    header = Paragraph(header_text,header_style)
+    header = Paragraph(header_text, header_style)
     elements.append(header)
     elements.append(Spacer(1, 10))
-    
+
     # Company details
     company_details = [
         '<b><font size="15">SAILAM LIMITED</font></b>',
@@ -412,94 +447,119 @@ def gen_report(request,data,memo):
 
     company_style = getSampleStyleSheet()["Normal"]
 
-    client_details=[
-       "<b>Memo No:</b> "+str(memo.id_memo),
-       "<b>Date: </b>"+str(memo.CreatedOn).split(" ")[0],
-       "<b>To: </b>",
-       "<b>Name: </b>"+data['client']['name'],
-       "<b>Company:</b> "+data['client']['company'],
-       "<b>Address: </b>"+data['client']['address'],
+    client_details = [
+        "<b>Memo No:</b> " + str(memo.id_memo),
+        "<b>Date: </b>" + str(memo.CreatedOn).split(" ")[0],
+        "<b>To: </b>",
+        "<b>Name: </b>" + data["client"]["name"],
+        "<b>Company:</b> " + data["client"]["company"],
+        "<b>Address: </b>" + data["client"]["address"],
     ]
-    
-    
+
     client = [Paragraph(line, custom_style) for line in client_details]
-    company= [Paragraph(line, custom_style) for line in company_details]
+    company = [Paragraph(line, custom_style) for line in company_details]
     data_company = [[para] for para in company]
-    data_client= [[para] for para in client]
+    data_client = [[para] for para in client]
 
     table_style = [
-        ("FONTSIZE", (0, 1), (-1, -1), 5), 
+        ("FONTSIZE", (0, 1), (-1, -1), 5),
     ]
-    company_table=Table(data_company,style=table_style)
-    client_table=Table(data_client,style=table_style) 
-    empty=[[" "],[" "],[" "],[" "],[" "],[" "]]
-    empty_table=Table(empty)
-    parent_table_data = [[company_table,empty_table, client_table]]
-    parent_table = Table(parent_table_data,colWidths=[200,150,200])
-    parent_table_style = TableStyle([
-    ('VALIGN', (0, 0), (-1, -1), 'TOP'),  
-    ])
+    company_table = Table(data_company, style=table_style)
+    client_table = Table(data_client, style=table_style)
+    empty = [[" "], [" "], [" "], [" "], [" "], [" "]]
+    empty_table = Table(empty)
+    parent_table_data = [[company_table, empty_table, client_table]]
+    parent_table = Table(parent_table_data, colWidths=[200, 150, 200])
+    parent_table_style = TableStyle(
+        [
+            ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ]
+    )
     parent_table.setStyle(parent_table_style)
     elements.append(parent_table)
     elements.append(Spacer(1, 10))
 
-    inst_text="The goods described and valued as below are delivered to you for examinations and  inspection and inspection only and remain our property subject to ourorder and shall returned to SAILAM LIMTED on demand. Such merchandise until returned to us and actually recieved,are at you risk from all hazards. No right or power is given to you to sell, pledge, hypothecate or otherwise dispose of this merchandise regardless of prior transaction. A sale of this merchandise can only be effected and title will pass only if, as and when we the said owner shall agree to such sale and a  bill of sale rendered therefor."
-    instruction = Paragraph(inst_text,custom_style)
+    inst_text = "The goods described and valued as below are delivered to you for examinations and  inspection and inspection only and remain our property subject to ourorder and shall returned to SAILAM LIMTED on demand. Such merchandise until returned to us and actually recieved,are at you risk from all hazards. No right or power is given to you to sell, pledge, hypothecate or otherwise dispose of this merchandise regardless of prior transaction. A sale of this merchandise can only be effected and title will pass only if, as and when we the said owner shall agree to such sale and a  bill of sale rendered therefor."
+    instruction = Paragraph(inst_text, custom_style)
     elements.append(instruction)
     elements.append(Spacer(1, 10))
     # Table
     table_data = [
-        [Paragraph("LOT NO.", custom_style), Paragraph("DESCRIPTION", custom_style),Paragraph("CARATS", custom_style) ,Paragraph("Rate per Crt HK$/US$", custom_style) ,Paragraph("PENDING", custom_style) , Paragraph("RETURN", custom_style), Paragraph("CARATS SOLD", custom_style), Paragraph("REMARK", custom_style), Paragraph("CRT", custom_style)]
+        [
+            Paragraph("LOT NO.", custom_style),
+            Paragraph("DESCRIPTION", custom_style),
+            Paragraph("CARATS", custom_style),
+            Paragraph("Rate per Crt HK$/US$", custom_style),
+            Paragraph("PENDING", custom_style),
+            Paragraph("RETURN", custom_style),
+            Paragraph("CARATS SOLD", custom_style),
+            Paragraph("REMARK", custom_style),
+            Paragraph("CRT", custom_style),
+        ]
     ]
-    
-    for item in data['diamond']:
-        table_data.append([
-            Paragraph(item.get("stk_no", ""), custom_style),
-            Paragraph(item.get("description", ""), custom_style),
-            Paragraph(str(item.get("weight", "")), custom_style),
-            Paragraph(str(item.get("rate", "")), custom_style),
-            Paragraph("", custom_style),
-            Paragraph("", custom_style),
-            Paragraph("", custom_style),
-            Paragraph(item.get("remark", ""), custom_style),
-            Paragraph("", custom_style)
-        ])
-    colWidth=(0.4*inch,2.0*inch,0.4*inch,0.7*inch,0.7*inch,0.7*inch,0.7*inch,1.3*inch,0.7*inch)
-    table_style = TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, 0), 9),
-        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-        ('GRID', (0, 0), (-1, -1), 1, colors.black),
-        ('WORDWRAP', (0, 0), (-1, -1), 'TRUE'),  
-    ])
-    
-    table = Table(table_data,colWidths=colWidth)
+
+    for item in data["diamond"]:
+        table_data.append(
+            [
+                Paragraph(item.get("stk_no", ""), custom_style),
+                Paragraph(item.get("description", ""), custom_style),
+                Paragraph(str(item.get("weight", "")), custom_style),
+                Paragraph(str(item.get("rate", "")), custom_style),
+                Paragraph("", custom_style),
+                Paragraph("", custom_style),
+                Paragraph("", custom_style),
+                Paragraph(item.get("remark", ""), custom_style),
+                Paragraph("", custom_style),
+            ]
+        )
+    colWidth = (
+        0.4 * inch,
+        2.0 * inch,
+        0.4 * inch,
+        0.7 * inch,
+        0.7 * inch,
+        0.7 * inch,
+        0.7 * inch,
+        1.3 * inch,
+        0.7 * inch,
+    )
+    table_style = TableStyle(
+        [
+            ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
+            ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+            ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+            ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+            ("FONTSIZE", (0, 0), (-1, 0), 9),
+            ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
+            ("BACKGROUND", (0, 1), (-1, -1), colors.beige),
+            ("GRID", (0, 0), (-1, -1), 1, colors.black),
+            ("WORDWRAP", (0, 0), (-1, -1), "TRUE"),
+        ]
+    )
+
+    table = Table(table_data, colWidths=colWidth)
     table.setStyle(table_style)
     elements.append(table)
     elements.append(Spacer(1, 5))
-    
+
     # Footer
     footer_text = "Received the above goods in good order on the terms and conditions set out (This is not an invoice or bill of sale). Duration of consignment is max. 7 days from the memo date"
     footer = Paragraph(footer_text, custom_style)
     elements.append(footer)
     elements.append(Spacer(1, 5))
-    # Salesman 
-    salesman_text = "<b>Salesman: </b>"+request.user.first_name
+    # Salesman
+    salesman_text = "<b>Salesman: </b>" + request.user.first_name
     salesman = Paragraph(salesman_text, custom_style)
     elements.append(salesman)
     elements.append(Spacer(1, 5))
-    text1="<b>Time:</b> "+str(datetime.datetime.now().time().strftime("%H:%M:%S"))
-    text2="<b>Chop & Signature______________</b>"
-    text3="           "
+    text1 = "<b>Time:</b> " + str(datetime.datetime.now().time().strftime("%H:%M:%S"))
+    text2 = "<b>Chop & Signature______________</b>"
+    text3 = "           "
     paragraph1 = Paragraph(text1, custom_style)
     paragraph2 = Paragraph(text2, custom_style)
     paragraph3 = Paragraph(text3, custom_style)
-    story = [[paragraph1,paragraph3,paragraph2]]
-    signtable=Table(story)
+    story = [[paragraph1, paragraph3, paragraph2]]
+    signtable = Table(story)
     elements.append(signtable)
     doc.build(elements)
     response = HttpResponse(file_name)
@@ -507,129 +567,158 @@ def gen_report(request,data,memo):
 
 
 def send_pdf_response(request, file_name):
-    url = f'/media/pdf/'+file_name
-    file_path = f'{BASE_DIR}{url}'
+    url = f"/media/pdf/" + file_name
+    file_path = f"{BASE_DIR}{url}"
     print(file_path)
     if os.path.exists(file_path):
         f = open(file_path, "rb")
-        response = FileResponse(f, content_type='application/pdf')
-        response['Content-Disposition'] = 'inline; filename="{}"'.format(file_name)
+        response = FileResponse(f, content_type="application/pdf")
+        response["Content-Disposition"] = 'inline; filename="{}"'.format(file_name)
         return response
     else:
         return HttpResponse("File not found.")
-    
+
 
 def preparedMemo(request):
-   memoobj=Memo.objects.filter(is_deleted=False).values()
-   result=[]
-   stri=""
-   for row in memoobj:
-      memo={}
-      memo['memo_id']=row['id_memo']
-      memo['date']=str(row['CreatedOn'].date())
-      client_id=row['client_id']
-      client=Client.objects.filter(id_client=client_id).values()
-      memo['client_name']=client[0]['name']
-      memo['client_company']=client[0]['company']
-      memo_data=MemoData.objects.filter(memo=row['id_memo']).values()
-      memo['child_data']=[]
-      for data in memo_data:
-         child_memo={}  
-         child_memo['stk_no']=data['stk_no_id']
-         child_memo['description']=data['desc']
-         child_memo['weight']=data['weight']
-         child_memo['rate']=data['rate']
-         child_memo['remarks']=data['remark']
-         memo["child_data"].append(child_memo)
-      result.append(memo)
-   return HttpResponse(json.dumps(result, indent = 4))
+    memoobj = Memo.objects.filter(is_deleted=False).values()
+    result = []
+    stri = ""
+    for row in memoobj:
+        memo = {}
+        memo["memo_id"] = row["id_memo"]
+        memo["date"] = str(row["CreatedOn"].date())
+        client_id = row["client_id"]
+        client = Client.objects.filter(id_client=client_id).values()
+        memo["client_name"] = client[0]["name"]
+        memo["client_company"] = client[0]["company"]
+        memo_data = MemoData.objects.filter(memo=row["id_memo"]).values()
+        memo["child_data"] = []
+        for data in memo_data:
+            child_memo = {}
+            child_memo["stk_no"] = data["stk_no_id"]
+            child_memo["description"] = data["desc"]
+            child_memo["weight"] = data["weight"]
+            child_memo["rate"] = data["rate"]
+            child_memo["remarks"] = data["remark"]
+            memo["child_data"].append(child_memo)
+        result.append(memo)
+    return HttpResponse(json.dumps(result, indent=4))
+
 
 def viewMemo(request):
-   return render(request,'inventory/memo.html')
+    return render(request, "inventory/memo.html")
+
 
 def viewHidden(request):
-   return render(request,'inventory/viewhide.html')
+    return render(request, "inventory/viewhide.html")
 
-def deleteMemo(request,memo_id):
-   user=request.user
-   memo=Memo.objects.filter(id_memo=memo_id).first()
-   memodata=MemoData.objects.filter(memo=memo_id).values()
-   if memo:
-      current_time=datetime.datetime.now(tz=datetime.timezone.utc)
-      for row in memodata:
-         stk_no=row['stk_no_id']
-         inv=inventory.objects.filter(STK_ID=stk_no).first()
-         inv.MemoMade=False
-         inv.save()
-      memo.is_deleted=True
-      memo.DeletedBy=user
-      memo.DeletedOn=current_time
-      memo.save()
-      return HttpResponse(json.dumps({'message':'success'}))
-   else:
-      return HttpResponse(json.dumps({'message':'fail'}))
-   
-def getinvoicedata(request,scanid):
-   data=inventory.objects.filter(Scan_Id=scanid,InvoiceMade=False,IsHide=False).values()|inventory.objects.filter(GIA_NO=scanid,InvoiceMade=False,IsHide=False).values()
-   if data:
-    result={}
-    result={
-        'NO':data[0]["STK_ID"],
-        'DESCRIPTION':'color:'+data[0]["COLOR"]+', clarity:'+data[0]["CLARITY"]+', shape:'+data[0]["SHAPE"],
-        'PCS':1,
-        'CTS':data[0]["CRT"],
-        'CFR_US_$':data[0]["PRICE"]
-    }
-    # print(result)
-    return HttpResponse(json.dumps(result, indent = 4)) 
-   else :
-      result={
-         'NO':'null',
-      }
-      return HttpResponse(json.dumps(result, indent = 4))
-   
+
+def deleteMemo(request, memo_id):
+    user = request.user
+    memo = Memo.objects.filter(id_memo=memo_id).first()
+    memodata = MemoData.objects.filter(memo=memo_id).values()
+    if memo:
+        current_time = datetime.datetime.now(tz=datetime.timezone.utc)
+        for row in memodata:
+            stk_no = row["stk_no_id"]
+            inv = inventory.objects.filter(STK_ID=stk_no).first()
+            inv.MemoMade = False
+            inv.save()
+        memo.is_deleted = True
+        memo.DeletedBy = user
+        memo.DeletedOn = current_time
+        memo.save()
+        return HttpResponse(json.dumps({"message": "success"}))
+    else:
+        return HttpResponse(json.dumps({"message": "fail"}))
+
+
+def getinvoicedata(request, scanid):
+    data = (
+        inventory.objects.filter(
+            Scan_Id=scanid, InvoiceMade=False, IsHide=False
+        ).values()
+        | inventory.objects.filter(
+            GIA_NO=scanid, InvoiceMade=False, IsHide=False
+        ).values()
+    )
+    if data:
+        result = {}
+        result = {
+            "NO": data[0]["STK_ID"],
+            "DESCRIPTION": "color:"
+            + data[0]["COLOR"]
+            + ", clarity:"
+            + data[0]["CLARITY"]
+            + ", shape:"
+            + data[0]["SHAPE"],
+            "PCS": 1,
+            "CTS": data[0]["CRT"],
+            "CFR_US_$": data[0]["PRICE"],
+        }
+        # print(result)
+        return HttpResponse(json.dumps(result, indent=4))
+    else:
+        result = {
+            "NO": "null",
+        }
+        return HttpResponse(json.dumps(result, indent=4))
+
 
 def setInvoiceData(request):
-    if request.method=="POST":
-        user=request.user
-        data=json.loads(request.body)
-        client_name=data['client']['name']
-        client_company=data['client']['company']
-        client_address=data['client']['address']
-        _client=Client.objects.filter(name=client_name,company=client_company).first()
+    if request.method == "POST":
+        user = request.user
+        data = json.loads(request.body)
+        client_name = data["client"]["name"]
+        client_company = data["client"]["company"]
+        client_address = data["client"]["address"]
+        _client = Client.objects.filter(
+            name=client_name, company=client_company
+        ).first()
         if not _client:
-         print("inside create")
-         client=Client.objects.create(name=client_name,company=client_company,address=client_address)
-         _client=client
-        invoice=Invoice.objects.create(client=_client,CretedBy=user)
-        for row in data['diamond']:
-          stk_id=row['stk_no']
-          description=row['description']
-          pcs=row['pcs']
-          weight=row['weight']
-          cfr=row['cfr']
-          total=row['total']
-          inv=inventory.objects.filter(STK_ID=stk_id).first()
-          if inv:
-            inv.InvoiceMade=True
-            inv.save()
-          InvoiceData.objects.create(invoice=invoice,stk_no=inv,desc=description,pcs=pcs,weight=weight,cfr=cfr,total=total)
-        response=gen_invoice(request,data,invoice)
+            print("inside create")
+            client = Client.objects.create(
+                name=client_name, company=client_company, address=client_address
+            )
+            _client = client
+        invoice = Invoice.objects.create(client=_client, CretedBy=user)
+        for row in data["diamond"]:
+            stk_id = row["stk_no"]
+            description = row["description"]
+            pcs = row["pcs"]
+            weight = row["weight"]
+            cfr = row["cfr"]
+            total = row["total"]
+            inv = inventory.objects.filter(STK_ID=stk_id).first()
+            if inv:
+                inv.InvoiceMade = True
+                inv.save()
+            InvoiceData.objects.create(
+                invoice=invoice,
+                stk_no=inv,
+                desc=description,
+                pcs=pcs,
+                weight=weight,
+                cfr=cfr,
+                total=total,
+            )
+        response = gen_invoice(request, data, invoice)
         return response
 
-def gen_invoice(request,data,invoice):
-    file_name="invoice_"+str(invoice.id_invoice)+".pdf"
-    url = f'/media/pdf/'+file_name
-    file_path = f'{BASE_DIR}{url}'
+
+def gen_invoice(request, data, invoice):
+    file_name = "invoice_" + str(invoice.id_invoice) + ".pdf"
+    url = f"/media/pdf/" + file_name
+    file_path = f"{BASE_DIR}{url}"
     doc = SimpleDocTemplate(file_path, pagesize=letter)
     elements = []
     custom_style = ParagraphStyle(
-    'CustomStyle',
-    parent=getSampleStyleSheet()['Normal'],
-    fontSize=8,
-     )
-    image_path = os.path.join(BASE_DIR, 'static', 'image', 'logo.png')
-    logo = Img(image_path, width=0.9*inch, height=0.9*inch)
+        "CustomStyle",
+        parent=getSampleStyleSheet()["Normal"],
+        fontSize=8,
+    )
+    image_path = os.path.join(BASE_DIR, "static", "image", "logo.png")
+    logo = Img(image_path, width=0.9 * inch, height=0.9 * inch)
     elements.append(logo)
     # Header
     header_text = '<font size="10">Invoice</font>'
@@ -638,7 +727,7 @@ def gen_invoice(request,data,invoice):
     header = Paragraph(header_text, header_style)
     elements.append(header)
     elements.append(Spacer(1, 10))
-    
+
     # Company details
     company_details = [
         '<font size="15">SAILAM LIMITED</font>',
@@ -651,118 +740,138 @@ def gen_invoice(request,data,invoice):
 
     company_style = getSampleStyleSheet()["Normal"]
 
-    client_details=[
-       "<b><u>Sold To</u></b> ",
-       "<b>M/S.</b> "+data['client']['name'],
-       "<b>Company:</b> "+data['client']['company'],
-       "<b>Address: </b>"+data['client']['address'],
+    client_details = [
+        "<b><u>Sold To</u></b> ",
+        "<b>M/S.</b> " + data["client"]["name"],
+        "<b>Company:</b> " + data["client"]["company"],
+        "<b>Address: </b>" + data["client"]["address"],
     ]
 
-    invoice_details=[
-       "<b>INVOICE NO: </b>"+str(invoice.id_invoice),
-       "<b>TERMS :</b>",
-       "<b>DATE  :</b>"+str(datetime.datetime.now().date()),
+    invoice_details = [
+        "<b>INVOICE NO: </b>" + str(invoice.id_invoice),
+        "<b>TERMS :</b>",
+        "<b>DATE  :</b>" + str(datetime.datetime.now().date()),
     ]
     client = [Paragraph(line, custom_style) for line in client_details]
-    company= [Paragraph(line, custom_style) for line in company_details]
-    invoice= [Paragraph(line, custom_style) for line in invoice_details]
+    company = [Paragraph(line, custom_style) for line in company_details]
+    invoice = [Paragraph(line, custom_style) for line in invoice_details]
     data_company = [[para] for para in company]
-    data_client= [[para] for para in client]
-    data_inv=[[para] for para in invoice]
+    data_client = [[para] for para in client]
+    data_inv = [[para] for para in invoice]
     table_style = [
-        ("FONTSIZE", (0, 1), (-1, -1), 5), 
+        ("FONTSIZE", (0, 1), (-1, -1), 5),
     ]
-    company_table=Table(data_company,style=table_style)
-    client_table=Table(data_client,style=table_style) 
-    invoice_table=Table(data_inv,style=table_style)
+    company_table = Table(data_company, style=table_style)
+    client_table = Table(data_client, style=table_style)
+    invoice_table = Table(data_inv, style=table_style)
     elements.append(company_table)
     elements.append(Spacer(1, 10))
-    
-    parent_table_data = [[client_table,invoice_table]]
+
+    parent_table_data = [[client_table, invoice_table]]
     parent_table = Table(parent_table_data)
     elements.append(parent_table)
     elements.append(Spacer(1, 10))
-    
+
     # Table
     table_data = [
-        [Paragraph("LOT NO.", company_style), Paragraph("DESCRIPTION", company_style),Paragraph("PCS", company_style) ,Paragraph("CTS", company_style) ,Paragraph("CFR US $", company_style) , Paragraph("TOTAL US$", company_style)]
+        [
+            Paragraph("LOT NO.", company_style),
+            Paragraph("DESCRIPTION", company_style),
+            Paragraph("PCS", company_style),
+            Paragraph("CTS", company_style),
+            Paragraph("CFR US $", company_style),
+            Paragraph("TOTAL US$", company_style),
+        ]
     ]
-    pcs=0
-    cts=0.0
-    cfr=0.0
-    total=0.0
-    for item in data['diamond']:
-        pcs+=int(item.get("pcs"))
-        cts+=float(item.get("weight"))
-        cfr+=float(item.get("cfr"))
-        total+=(float(item.get("weight"))*float(item.get("cfr")))
-        table_data.append([
-            Paragraph(item.get("stk_no", ""), custom_style),
-            Paragraph(item.get("description", ""), custom_style),
-            Paragraph(str(item.get("pcs", "")), custom_style),
-            Paragraph(str(item.get("weight", "")), custom_style),
-            Paragraph(str(item.get("cfr", "")),custom_style),
-            Paragraph(str(item.get("total", "")), custom_style)
-        ])
-    table_data.append([
+    pcs = 0
+    cts = 0.0
+    cfr = 0.0
+    total = 0.0
+    for item in data["diamond"]:
+        pcs += int(item.get("pcs"))
+        cts += float(item.get("weight"))
+        cfr += float(item.get("cfr"))
+        total += float(item.get("weight")) * float(item.get("cfr"))
+        table_data.append(
+            [
+                Paragraph(item.get("stk_no", ""), custom_style),
+                Paragraph(item.get("description", ""), custom_style),
+                Paragraph(str(item.get("pcs", "")), custom_style),
+                Paragraph(str(item.get("weight", "")), custom_style),
+                Paragraph(str(item.get("cfr", "")), custom_style),
+                Paragraph(str(item.get("total", "")), custom_style),
+            ]
+        )
+    table_data.append(
+        [
             Paragraph(" ", custom_style),
             Paragraph("<b>Total</b>", company_style),
             Paragraph(str(pcs), custom_style),
             Paragraph(str(cts), custom_style),
             Paragraph(str(cfr), custom_style),
-            Paragraph(str(total), custom_style)
-        ])
-    colWidth=(0.4*inch,2.4*inch,0.7*inch,0.7*inch,0.9*inch,0.9*inch)
-    table_style = TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, 0), 5),
-        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-        ('GRID', (0, 0), (-1, -1), 1, colors.black),
-        ('WORDWRAP', (0, 0), (-1, -1), 'TRUE'),  
-    ])
-    
-    table = Table(table_data,colWidths=colWidth)
+            Paragraph(str(total), custom_style),
+        ]
+    )
+    colWidth = (0.4 * inch, 2.4 * inch, 0.7 * inch, 0.7 * inch, 0.9 * inch, 0.9 * inch)
+    table_style = TableStyle(
+        [
+            ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
+            ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+            ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+            ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+            ("FONTSIZE", (0, 0), (-1, 0), 5),
+            ("BACKGROUND", (0, 1), (-1, -1), colors.beige),
+            ("GRID", (0, 0), (-1, -1), 1, colors.black),
+            ("WORDWRAP", (0, 0), (-1, -1), "TRUE"),
+        ]
+    )
+
+    table = Table(table_data, colWidths=colWidth)
     table.setStyle(table_style)
     elements.append(table)
     elements.append(Spacer(1, 5))
-    
-    footer_text = "<b>"+num2words(int(total)).upper()+" ONLY"+"</b>"
+
+    footer_text = "<b>" + num2words(int(total)).upper() + " ONLY" + "</b>"
     footer = Paragraph(footer_text, company_style)
     elements.append(footer)
     elements.append(Spacer(1, 5))
 
     table1_data = [
-    ["PAYMENT INSTRUCTION"],
-    ["1 DIRECT PAYMENTS"],
-    ["Send Crossed chq. Made payable 'Sailam Limited' indicate our Invoice number behind the chq."],
-    ["2 Direct Transfers to Bank Account"],
-    ["Bank's Name : HSBC"],
-    ["Name of Bank Account : SAILAM LTD."],
-    ["A/C NO: 817-016124-838"],
-    ["Swift Code : HSBCHKKHHHKH"],
-    ["When making remittance please ensure you indicate whom the funds are from and our invoice no to enable us identify them"],
-    ["Over due date payment will be charged 2% per month"]
-   ]
-
+        ["PAYMENT INSTRUCTION"],
+        ["1 DIRECT PAYMENTS"],
+        [
+            "Send Crossed chq. Made payable 'Sailam Limited' indicate our Invoice number behind the chq."
+        ],
+        ["2 Direct Transfers to Bank Account"],
+        ["Bank's Name : HSBC"],
+        ["Name of Bank Account : SAILAM LTD."],
+        ["A/C NO: 817-016124-838"],
+        ["Swift Code : HSBCHKKHHHKH"],
+        [
+            "When making remittance please ensure you indicate whom the funds are from and our invoice no to enable us identify them"
+        ],
+        ["Over due date payment will be charged 2% per month"],
+    ]
 
     table2_data = [
         ["DECLARATION"],
-        ["The Diamonds here in Invoiced have been purchased from legitimate sources not involved in funding conflict diamonds and in compliance with United Nation- Resolutions.The seller hereby guarantees conflict diamonds and in compliance with United Nation- Resolutions.The seller hereby guarantees provided by the supplier of these diamonds."],
+        [
+            "The Diamonds here in Invoiced have been purchased from legitimate sources not involved in funding conflict diamonds and in compliance with United Nation- Resolutions.The seller hereby guarantees conflict diamonds and in compliance with United Nation- Resolutions.The seller hereby guarantees provided by the supplier of these diamonds."
+        ],
         ["TERMS OF PAYMENT_____________________"],
         ["PAYMENT DUE DATE: ___________________"],
         ["CHEQUE NO: __________________________"],
-        ["CASH : ____________________________"]
+        ["CASH : ____________________________"],
     ]
 
-    style = TableStyle([
-        ("ALIGN", (0, 0), (-1, -1), "LEFT"),
-        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-        ("FONTSIZE", (0, 0), (-1, 0), 3),
-        ("BACKGROUND", (0, 1), (-1, -1), colors.beige),
-    ])
+    style = TableStyle(
+        [
+            ("ALIGN", (0, 0), (-1, -1), "LEFT"),
+            ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+            ("FONTSIZE", (0, 0), (-1, 0), 3),
+            ("BACKGROUND", (0, 1), (-1, -1), colors.beige),
+        ]
+    )
 
     for i in range(len(table1_data)):
         for j in range(len(table1_data[i])):
@@ -773,7 +882,7 @@ def gen_invoice(request,data,invoice):
     for i in range(len(table2_data)):
         for j in range(len(table2_data[i])):
             cell_data = table2_data[i][j]
-            paragraph = Paragraph(cell_data,custom_style)
+            paragraph = Paragraph(cell_data, custom_style)
             table2_data[i][j] = paragraph
 
     # Create the first table
@@ -784,15 +893,15 @@ def gen_invoice(request,data,invoice):
     table2 = Table(table2_data, style=style)
     table2.hAlign = "LEFT"
 
-   # Define the document content
-    content = [
-        [table1, table2]
-    ]
+    # Define the document content
+    content = [[table1, table2]]
 
     main_table = Table(content)
-    main_table_style = TableStyle([
-    ('VALIGN', (0, 0), (-1, -1), 'TOP'),  
-    ])
+    main_table_style = TableStyle(
+        [
+            ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ]
+    )
     main_table.setStyle(main_table_style)
     elements.append(main_table)
     doc.build(elements)
@@ -800,107 +909,125 @@ def gen_invoice(request,data,invoice):
     response = HttpResponse(file_name)
     return response
 
-def getHideData(request,scanid):
-   data=inventory.objects.filter(Scan_Id=scanid,InvoiceMade=False,IsHide=False).values()|inventory.objects.filter(GIA_NO=scanid,InvoiceMade=False,IsHide=False).values()
-   if data:
-    result={
-        'stk_id':data[0]["STK_ID"],
-        'desc':'color:'+data[0]["COLOR"]+', clarity:'+data[0]["CLARITY"]+', shape:'+data[0]["SHAPE"],
-        'weight':data[0]["CRT"],
-        'remark':data[0]["REMARK"],
-        'price':data[0]["PRICE"]
-    }
-    # print(result)
-    return HttpResponse(json.dumps(result, indent = 4)) 
-   else :
-      result={
-         'stk_id':'null',
-      }
-      return HttpResponse(json.dumps(result, indent = 4))
+
+def getHideData(request, scanid):
+    data = (
+        inventory.objects.filter(
+            Scan_Id=scanid, InvoiceMade=False, IsHide=False
+        ).values()
+        | inventory.objects.filter(
+            GIA_NO=scanid, InvoiceMade=False, IsHide=False
+        ).values()
+    )
+    if data:
+        result = {
+            "stk_id": data[0]["STK_ID"],
+            "desc": "color:"
+            + data[0]["COLOR"]
+            + ", clarity:"
+            + data[0]["CLARITY"]
+            + ", shape:"
+            + data[0]["SHAPE"],
+            "weight": data[0]["CRT"],
+            "remark": data[0]["REMARK"],
+            "price": data[0]["PRICE"],
+        }
+        # print(result)
+        return HttpResponse(json.dumps(result, indent=4))
+    else:
+        result = {
+            "stk_id": "null",
+        }
+        return HttpResponse(json.dumps(result, indent=4))
+
 
 def setHideData(request):
-   if request.method=="POST":
-      data=json.loads(request.body)
-      for id in data['stk_id']:
-         inv=inventory.objects.filter(STK_ID=id).first()
-         if inv:
-            inv.UpdatedBy=request.user
-            inv.IsHide=True
-            inv.save()
+    if request.method == "POST":
+        data = json.loads(request.body)
+        for id in data["stk_id"]:
+            inv = inventory.objects.filter(STK_ID=id).first()
+            if inv:
+                inv.UpdatedBy = request.user
+                inv.IsHide = True
+                inv.save()
 
-   return HttpResponse("Success")
+    return HttpResponse("Success")
+
 
 def getHideStock(request):
-   result=[]
-   hideobj=inventory.objects.filter(IsHide=True).values()
-   
-   for row in hideobj:
-      hide={}
-      hide['stk_id']=row['STK_ID']
-      hide['weight']=row['CRT']
-      hide['measurement']=row['MESUREMNT']
-      hide['clarity']=row['CLARITY']
-      hide['price']=row['PRICE']
-      hide['child_data']=[]
-      child={}
-      child['color']=row['COLOR']
-      child['polish']=row['POL']
-      child['symmetry']=row['SYM']
-      child['cut']=row['CUT']
-      child['fluorescence']=row['FLO_COL']
-      child['depth']=row['DEPTH']
-      child['table']=row['TABLE']
-      child['remarks']=row['REMARK']
-      hide['child_data'].append(child)
-      result.append(hide)
-   return HttpResponse(json.dumps(result, indent = 4))
+    result = []
+    hideobj = inventory.objects.filter(IsHide=True).values()
 
-def showDiamond(request,stk_id):
-   user=request.user
-   current_time=datetime.datetime.now(tz=datetime.timezone.utc)
-   inv=inventory.objects.filter(STK_ID=stk_id).first()
-   if inv:
-      inv.IsHide=False
-      inv.UpdatedBy=user
-      inv.UpdatedOn=current_time
-      inv.save()
-      return HttpResponse(json.dumps({'message':'success'}))
-   else:
-    return HttpResponse(json.dumps({'message':'fail'}))
-   
+    for row in hideobj:
+        hide = {}
+        hide["stk_id"] = row["STK_ID"]
+        hide["weight"] = row["CRT"]
+        hide["measurement"] = row["MESUREMNT"]
+        hide["clarity"] = row["CLARITY"]
+        hide["price"] = row["PRICE"]
+        hide["child_data"] = []
+        child = {}
+        child["color"] = row["COLOR"]
+        child["polish"] = row["POL"]
+        child["symmetry"] = row["SYM"]
+        child["cut"] = row["CUT"]
+        child["fluorescence"] = row["FLO_COL"]
+        child["depth"] = row["DEPTH"]
+        child["table"] = row["TABLE"]
+        child["remarks"] = row["REMARK"]
+        hide["child_data"].append(child)
+        result.append(hide)
+    return HttpResponse(json.dumps(result, indent=4))
+
+
+def showDiamond(request, stk_id):
+    user = request.user
+    current_time = datetime.datetime.now(tz=datetime.timezone.utc)
+    inv = inventory.objects.filter(STK_ID=stk_id).first()
+    if inv:
+        inv.IsHide = False
+        inv.UpdatedBy = user
+        inv.UpdatedOn = current_time
+        inv.save()
+        return HttpResponse(json.dumps({"message": "success"}))
+    else:
+        return HttpResponse(json.dumps({"message": "fail"}))
+
+
 def allView(request):
-   return render(request,'inventory/viewallstock.html')
+    return render(request, "inventory/viewallstock.html")
+
 
 def getAll(request):
-   result=[]
-   hideobj=inventory.objects.filter().values()
-   
-   for row in hideobj:
-      hide={}
-      hide['stk_id']=row['STK_ID']
-      hide['weight']=row['CRT']
-      hide['measurement']=row['MESUREMNT']
-      hide['clarity']=row['CLARITY']
-      hide['price']=row['PRICE']
-      hide['child_data']=[]
-      if row['MemoMade']:
-         hide['status']="Memo Prepared"
-      elif row['InvoiceMade']:
-         hide['status']='Sold'
-      elif row['IsHide']:
-         hide['status']='Hidden'
-      else:
-         hide['status']='Available'
-        
-      child={}
-      child['color']=row['COLOR']
-      child['polish']=row['POL']
-      child['symmetry']=row['SYM']
-      child['cut']=row['CUT']
-      child['fluorescence']=row['FLO_COL']
-      child['depth']=row['DEPTH']
-      child['table']=row['TABLE']
-      child['remarks']=row['REMARK']
-      hide['child_data'].append(child)
-      result.append(hide)
-   return HttpResponse(json.dumps(result, indent = 4))
+    result = []
+    hideobj = inventory.objects.filter().values()
+
+    for row in hideobj:
+        hide = {}
+        hide["stk_id"] = row["STK_ID"]
+        hide["weight"] = row["CRT"]
+        hide["measurement"] = row["MESUREMNT"]
+        hide["clarity"] = row["CLARITY"]
+        hide["price"] = row["PRICE"]
+        hide["child_data"] = []
+        if row["MemoMade"]:
+            hide["status"] = "Memo Prepared"
+        elif row["InvoiceMade"]:
+            hide["status"] = "Sold"
+        elif row["IsHide"]:
+            hide["status"] = "Hidden"
+        else:
+            hide["status"] = "Available"
+
+        child = {}
+        child["color"] = row["COLOR"]
+        child["polish"] = row["POL"]
+        child["symmetry"] = row["SYM"]
+        child["cut"] = row["CUT"]
+        child["fluorescence"] = row["FLO_COL"]
+        child["depth"] = row["DEPTH"]
+        child["table"] = row["TABLE"]
+        child["remarks"] = row["REMARK"]
+        hide["child_data"].append(child)
+        result.append(hide)
+    return HttpResponse(json.dumps(result, indent=4))
