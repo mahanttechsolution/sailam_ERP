@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title%}
+ Parcels
+{% endblock title%}
+
+{% block content%}
+<div id="csrf">
+    {% csrf_token %}
+</div>
+<div class="col-lg-12">
+<table id="datatable" class="table table-striped hover" style="width:100%">
+    <thead class="thead-dark">
+        <tr>
+            <th>Id</th>
+            <th>Desc</th>
+            <th>Price</th>
+            <th>Color</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Data will be loaded dynamically here -->
+    </tbody>
+</table>
+</div>
+<script>
+    $(document).ready(function () {
+        // Initialize the DataTable
+        var table = $('#datatable').DataTable({
+            ajax: {
+                url: '{% url "jewellerydata_endpoint" %}',
+                type: 'GET',
+                dataSrc: ''
+            },
+            columns: [
+                { data: 'Id' },
+                { data: 'Desc' },
+                { data: 'Price' },
+                { data: 'Color' },
+                { data: 'Actions' }
+            ]
+        });
+
+        // Enable inline editing
+        $('#datatable').on('click', 'td:not(:last-child,:first-child)', function () {
+            var cell = $(this);
+            var originalContent = cell.text();
+            var newContent;
+            var input = $("<input class='edit-input' type='text'>");
+            input.val(originalContent);
+            cell.html(input);
+            input.focus();
+        });
+
+        // Save the edited data
+        $('#datatable').on('blur', '.edit-input', function () {
+            var cell = table.cell($(this).closest('td'));
+            var data = $(this).val();
+            cell.data(data).draw();
+           
+            var row_data = table.row().data();
+            var column_name =table.column(cell.index().column).header().innerHTML; 
+            // Perform AJAX request to update the data in the database
+            $.ajax({
+                headers: {'X-CSRFToken': document.getElementById('csrf').querySelector('input').value},
+                url: '{% url "jewelleryupdate_data_endpoint" %}',
+                type: 'POST',
+                data: {
+                    'id': row_data['Id'],
+                    'column': column_name,
+                    'value': data
+                },
+                success: function (response) {
+                    console.log('Data updated successfully!');
+                },
+                error: function (xhr, errmsg, err) {
+                    console.log('Failed to update data:', errmsg);
+                }
+            });
+        });
+
+        // Delete the row
+        $('#datatable').on('click', '.dt-delete', function () {
+            var row = table.row($(this).closest('tr'));
+            var row_data = row.data();
+            if(confirm("Are you sure to delete this row?")){
+                $.ajax({
+                    headers: {'X-CSRFToken': document.getElementById('csrf').querySelector('input').value},
+                    url: '{% url "jewellerydelete_data_endpoint" %}',
+                    type: 'POST',
+                    data: { 'id': row_data['Id'] },
+                    success: function (response) {
+                        row.remove().draw();
+                        console.log('Data deleted successfully!');
+                    },
+                    error: function (xhr, errmsg, err) {
+                        console.log('Failed to delete data:', errmsg);
+                    }
+                });
+            }
+        });
+    });
+</script>
+
+{% endblock content%}

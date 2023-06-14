@@ -2,7 +2,7 @@ import json
 import os
 from django.conf import settings
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.core.files.storage import default_storage
 from .models import Parcels,Jewellery, Type
 
@@ -93,3 +93,92 @@ def getJewelleryData(request):
         jewellery['type']=Type.objects.filter(Id=obj['Type_id']).first().Name
         data.append(jewellery)
     return HttpResponse(json.dumps(data, indent = 4))
+
+
+def allParcels(requets):
+    return render(requets,'parcels_jewellery/viewParcels.html')
+
+
+def data_endpoint(request):
+    parcelobj=Parcels.objects.filter(Isdeleted=False).all()
+    data = []
+    for par in parcelobj:
+        obj={}
+        obj['Stk_Id']=par.Stk_Id
+        obj['Crt']=par.Crt
+        obj['Clarity']=par.Clarity
+        obj['Desc']=par.Desc
+        obj['Price']=par.Price
+        obj['Color']=par.Color
+        obj['Shape']=par.Shape
+        obj['Actions']='<button type="button" class="btn btn-danger btn-xs dt-delete"><span class="fe fe-trash-2 fe-16" aria-hidden="true"></span></button>'
+        data.append(obj)
+    return JsonResponse(data, safe=False)
+
+
+def update_data_endpoint(request):
+    if request.method == 'POST':
+        id = request.POST.get('id')
+        column = request.POST.get('column')
+        value = request.POST.get('value')
+        parcelobj=Parcels.objects.get(Stk_Id=id)
+        setattr(parcelobj, column, value)
+        parcelobj.save()
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
+
+
+def delete_data_endpoint(request):
+    if request.method == 'POST':
+        id = request.POST.get('id')
+        user=request.user
+        parcelobj=Parcels.objects.filter(Stk_Id=id).first()
+        if parcelobj:
+            parcelobj.Isdeleted=True
+            parcelobj.UpdatedBy=user
+            parcelobj.save()
+            return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
+
+
+def allJewellery(requets):
+    return render(requets,'parcels_jewellery/viewJewellery.html')
+
+
+def jewellerydata_endpoint(request):
+    jewelleryobj=Jewellery.objects.filter(Isdeleted=False).all()
+    data = []
+    for par in jewelleryobj:
+        obj={}
+        obj['Id']=par.Id
+        obj['Desc']=par.Desc
+        obj['Price']=par.Price
+        obj['Color']=par.Color
+        obj['Actions']='<button type="button" class="btn btn-danger btn-xs dt-delete"><span class="fe fe-trash-2 fe-16" aria-hidden="true"></span></button>'
+        data.append(obj)
+    return JsonResponse(data, safe=False)
+
+
+def jewelleryupdate_data_endpoint(request):
+    if request.method == 'POST':
+        id = request.POST.get('id')
+        column = request.POST.get('column')
+        value = request.POST.get('value')
+        jewelleryobj=Jewellery.objects.get(Id=id)
+        setattr(jewelleryobj, column, value)
+        jewelleryobj.save()
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
+
+
+def jewellerydelete_data_endpoint(request):
+    if request.method == 'POST':
+        id = request.POST.get('id')
+        user=request.user
+        jewelleryobj=Jewellery.objects.filter(Id=id).first()
+        if jewelleryobj:
+            jewelleryobj.Isdeleted=True
+            jewelleryobj.UpdatedBy=user
+            jewelleryobj.save()
+            return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
