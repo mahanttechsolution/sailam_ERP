@@ -68,151 +68,164 @@
                             <h4 class="card-title">Filter</h4>
                             {% csrf_token %}
                             <div class="form-group row">
-                                <button class="btn btn-sm dropdown-toggle more-horizontal" type="button"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <span class="text-muted sr-only">Action</span>
-                                </button>
-                                <div class="dropdown-menu ">
-                                    <a class="staff_edit dropdown-item">Edit</a>
-                                </div>
-                                <div class="form-group col-md-12">
-                                    <input type="hidden" name="shape" value="">
-                                    <label for="shape" style="margin-right: 40px;">
-                                        SHAPE</label>
-                                    <button type="button" class="btn mb-1 btn-primary">ANY</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">OVAL</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">PEAR</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">MARQUIS</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">HEART</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">CUSHION</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">RADIANT</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">EMERALD</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">PRINCESS</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">ROUND</button>
+
+                                <div class="dropdown">
+                                    <button class="btn btn-outline-primary dropdown-toggle" type="button"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="dr1"
+                                        style="margin-left: 15px;">
+                                        <b style="font-size: 1rem;">Filter</b>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-left " aria-labelledby="dr1">
+                                        <div class="form-group col-md-12 dropdown-item">
+                                            <input type="hidden" name="shape" value="">
+                                            <label for="shape" style="margin-right: 40px;">
+                                                SHAPE</label>
+                                            <button type="button" class="btn mb-1 btn-primary">ANY</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">OVAL</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">PEAR</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">MARQUIS</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">HEART</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">CUSHION</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">RADIANT</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">EMERALD</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">PRINCESS</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">ROUND</button>
+
+                                        </div>
+                                        <div class="form-group col-md-12 dropdown-item">
+                                            <input type="hidden" name="shape" value="">
+                                            <label for="shape" style="margin-right: 35px;">
+                                                WEIGHT</label>
+                                            <button type="button" class="btn mb-1 btn-primary">ANY</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">0.30
+                                                DOWN</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">0.31-0.5</button>
+                                            <button type="button"
+                                                class="btn mb-1 btn-outline-primary">0.51-1.00</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">1.00</button>
+                                            <button type="button"
+                                                class="btn mb-1 btn-outline-primary">1.00-3.00</button>
+                                            <button type="button"
+                                                class="btn mb-1 btn-outline-primary">3.00-5.00</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">5.00+</button>
+
+
+
+                                        </div>
+                                        <div class="form-group col-md-12 dropdown-item">
+                                            <label for="shape" style="margin-right: 40px;">
+                                                COLOR</label>
+                                            <input type="hidden" name="color" value="">
+                                            <button type="button" class="btn mb-1 btn-primary">ANY</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">WHITE</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">D</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">E</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">F</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">G</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">H</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">I</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">J</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">K</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">L</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">M</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">N</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">O-P</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">Q-R</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">S-T</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">U-V</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">W-X</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">Y-Z</button>
+                                        </div>
+                                        <div class="form-group col-md-12 dropdown-item">
+                                            <label for="shape" style="margin-right: 45px;">
+                                                FANCY</label>
+                                            <input type="hidden" name="clearity" value="">
+                                            <button type="button" class="btn mb-1 btn-primary">ANY</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">ALL
+                                                YELLOW</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">ALL PINK</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">ALL
+                                                GREEN</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">ALL BLUE</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">ALL
+                                                ORANGE</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">ALL
+                                                PURPLE</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">ALL
+                                                CAMALION</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">ALL
+                                                BROWN</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">ALL
+                                                VIOLET</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">ALL RED</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">ALL GRAY</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">ALL
+                                                BLACK</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">FANCY
+                                                WHITE</button>
+
+                                        </div>
+                                        <div class="form-group col-md-12 dropdown-item">
+                                            <label for="shape" style="margin-right: 32px;">
+                                                CLARITY</label>
+                                            <input type="hidden" name="clearity" value="">
+                                            <button type="button" class="btn mb-1 btn-primary">ANY</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">FL</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">IF</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">VVS1</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">VVS2</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">VS1</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">VS2</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">SI1</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">SI2</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">SI2-</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">SI3</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">I1</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">I2</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">I3</button>
+
+                                        </div>
+                                        <div class="form-group col-md-12 dropdown-item">
+                                            <label for="shape" style="margin-right: 40px;">
+                                                POLISH</label>
+                                            <input type="hidden" name="clearity" value="">
+                                            <button type="button" class="btn mb-1 btn-primary">ANY</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">EX</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">VG</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">G</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">FAIR</button>
+                                        </div>
+                                        <div class="form-group col-md-12 dropdown-item">
+                                            <label for="shape" style="margin-right: 5px;">
+                                                SYMMENTRY</label>
+                                            <input type="hidden" name="clearity" value="">
+                                            <button type="button" class="btn mb-1 btn-primary">ANY</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">EX</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">VG</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">G</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">FAIR</button>
+                                        </div>
+                                        <div class="form-group col-md-12 dropdown-item">
+                                            <label for="shape" style="margin-right:20px;">
+                                                LOCATION</label>
+                                            <input type="hidden" name="clearity" value="">
+                                            <button type="button" class="btn mb-1 btn-primary">ANY</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary"
+                                                onclick="change_class(this)">MUMBAI</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">HONG
+                                                KONG</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">TAIWAN</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">SURAT</button>
+                                            <button type="button" class="btn mb-1 btn-outline-primary">BANGKOK</button>
+
+                                        </div>
+                                        <div class="form-group col-md-12 dropdown-item">
+                                            <button type="submit" class="btn btn-primary float-right">Apply</button>
+                                        </div>
+                                    </div>
 
                                 </div>
-                                <div class="form-group col-md-12">
-                                    <input type="hidden" name="shape" value="">
-                                    <label for="shape" style="margin-right: 35px;">
-                                        WEIGHT</label>
-                                    <button type="button" class="btn mb-1 btn-primary">ANY</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">0.30 DOWN</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">0.31-0.5</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">0.51-1.00</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">1.00</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">1.00-3.00</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">3.00-5.00</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">5.00+</button>
-
-
-
-                                </div>
-                                <div class="form-group col-md-12">
-                                    <label for="shape" style="margin-right: 40px;">
-                                        COLOR</label>
-                                    <input type="hidden" name="color" value="">
-                                    <button type="button" class="btn mb-1 btn-primary">ANY</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">WHITE</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">D</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">E</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">F</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">G</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">H</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">I</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">J</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">K</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">L</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">M</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">N</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">O-P</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">Q-R</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">S-T</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">U-V</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">W-X</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">Y-Z</button>
-                                </div>
-                                <div class="form-group col-md-12">
-                                    <label for="shape" style="margin-right: 45px;">
-                                        FANCY</label>
-                                    <input type="hidden" name="clearity" value="">
-                                    <button type="button" class="btn mb-1 btn-primary">ANY</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">ALL YELLOW</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">ALL PINK</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">ALL GREEN</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">ALL BLUE</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">ALL ORANGE</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">ALL PURPLE</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">ALL CAMALION</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">ALL BROWN</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">ALL VIOLET</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">ALL RED</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">ALL GRAY</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">ALL BLACK</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">FANCY WHITE</button>
-
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <div class="form-group col-md-12">
-                                    <label for="shape" style="margin-right: 32px;">
-                                        CLARITY</label>
-                                    <input type="hidden" name="clearity" value="">
-                                    <button type="button" class="btn mb-1 btn-primary">ANY</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">FL</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">IF</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">VVS1</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">VVS2</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">VS1</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">VS2</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">SI1</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">SI2</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">SI2-</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">SI3</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">I1</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">I2</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">I3</button>
-
-                                </div>
-                                <div class="form-group col-md-12">
-                                    <label for="shape" style="margin-right: 40px;">
-                                        POLISH</label>
-                                    <input type="hidden" name="clearity" value="">
-                                    <button type="button" class="btn mb-1 btn-primary">ANY</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">EX</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">VG</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">G</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">FAIR</button>
-                                </div>
-                                <div class="form-group col-md-12">
-                                    <label for="shape" style="margin-right: 5px;">
-                                        SYMMENTRY</label>
-                                    <input type="hidden" name="clearity" value="">
-                                    <button type="button" class="btn mb-1 btn-primary">ANY</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">EX</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">VG</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">G</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">FAIR</button>
-                                </div>
-                                <div class="form-group col-md-12">
-                                    <label for="shape" style="margin-right:20px;">
-                                        LOCATION</label>
-                                    <input type="hidden" name="clearity" value="">
-                                    <button type="button" class="btn mb-1 btn-primary">ANY</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary"
-                                        onclick="change_class(this)">MUMBAI</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">HONG KONG</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">TAIWAN</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">SURAT</button>
-                                    <button type="button" class="btn mb-1 btn-outline-primary">BANGKOK</button>
-
-                                </div>
-                                <div class="form-group col-md-12">
-                                    <button type="submit" class="btn btn-primary float-right">Apply</button>
-                                </div>
-                            </div>
                         </form>
-
-
                     </div>
                 </div>
             </div>
@@ -251,16 +264,19 @@
         </div>
 
 
-        <script>
-            function change_class(e) {
-                if (e.class == 'btn-outline-primary') {
-                    e.classList.remove("btn-outline-primary");
-                    e.class = "btn-primary"
-                }
-                else {
-                    e.classList.remove("btn-primary");
-                    e.class = 'btn-outline-primary'
-                }
-            }
-        </script>
+
+
+        <script src="{% static '/assets/js/apps.js' %}"></script>
+
+        <script src="{% static '/assets/js/jquery.min.js' %}"></script>
+        <script src="{% static '/assets/js/popper.min.js' %}"></script>
+        <script src="{% static '/assets/js/moment.min.js' %}"></script>
+        <script src="{% static '/assets/js/bootstrap.min.js' %}"></script>
+        <script src="{% static '/assets/js/simplebar.min.js' %}"></script>
+        <script src="{% static '/assets/js/daterangepicker.js' %}"></script>
+        <script src="{% static '/assets/js/jquery.stickOnScroll.js' %}"></script>
+        <script src="{% static '/assets/js/tinycolor-min.js' %}"></script>
+        <script src="{% static '/assets/js/config.js' %}"></script>
+        <script src="{% static '/assets/js/jquery.dataTables.min.js' %}"></script>
+        <script src="{% static '/assets/js/dataTables.bootstrap4.min.js' %}"></script>
 </body>
