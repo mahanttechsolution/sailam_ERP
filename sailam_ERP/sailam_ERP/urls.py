@@ -26,6 +26,7 @@ urlpatterns = [
     path('',include('account.urls'),name='account'),
     path('inventory/',include('inventory.urls'),name='inventory'),
     path('parcels/',include('parcels_jewellery.urls'),name='parcels_jewellery'),
+    path('message/',include('message.urls'),name='message'),
 ]+static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

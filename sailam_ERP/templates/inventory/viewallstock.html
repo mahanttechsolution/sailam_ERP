@@ -56,7 +56,7 @@ Diamond Stock
             ];
             if(item.status==='Sold')
             {
-               row.push('<p class="font-weight-bold" style="color:green">'+item.status+'</p>');
+               row.push('<button type="button" class="btn btn-success btn-xs dt-download" id='+item.inv_id+'>'+item.status+'</button>');
             }
             else if(item.status==='Memo Prepared')
             {
@@ -78,6 +78,12 @@ Diamond Stock
           });
         }
         
+        //Function to handle download 
+        $(document).on('click','.dt-download',function(){
+          var invoice_id = $(this).attr('id');
+          var filename='invoice_'+invoice_id+'.pdf';
+          window.open("{% url 'pdf_response'  file_name=0 %}".replace('0', filename));
+        });
         
         // Handle expanding/collapsing child rows
         $('#datatable tbody').on('click', 'td.details-control', function() {

@@ -1,7 +1,7 @@
 from django.shortcuts import redirect, render
 from django.http import HttpResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
-from django.contrib.auth import authenticate,login as auth_login
+from django.contrib.auth import authenticate,login as auth_login,logout
 from .models import User
 from account.forms import loginForm
 
@@ -11,7 +11,6 @@ def login(request):
       if form.is_valid:
         username = request.POST["username"]
         password = request.POST["password"]
-        print(username +" "+ password)
         user= authenticate(username=username,password=password)
         if user is not None:
             print("Login done")
@@ -25,7 +24,14 @@ def login(request):
     
             return render(request,'account/login.html',{'message':"Username Or Password Is Incorrect"})
     else:
-     return render(request,'account/login.html')
+     if request.user.is_authenticated:
+        user=request.user
+        context={
+                user:user.get_username()
+            }
+        return render(request,'account/user.html',context)
+     else:
+        return render(request,'account/login.html')
 
 
     
@@ -53,3 +59,7 @@ def register(request):
            return render(request,'account/user.html',context)
     else:
      return render(request,'account/register.html')
+
+def logoutUser(request):
+   logout(request)
+   return redirect('login_account')

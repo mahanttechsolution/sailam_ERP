@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "account",
     "inventory",
-    "parcels_jewellery"
+    "parcels_jewellery",
+    "message",
 ]
 
 MIDDLEWARE = [

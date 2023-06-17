@@ -6,6 +6,8 @@ from django.http import HttpResponse, FileResponse
 import requests
 import json
 from django.conf import settings
+
+from  message.format import saveMessage
 from .models import Invoice, InvoiceData, inventory,Client,Memo,MemoData
 from .models import inventory, Video
 from .forms import VideoForm
@@ -46,6 +48,21 @@ def loadGiaData(request):
     return HttpResponse(json.dumps(data), content_type="application/json")
 
 
+def compare_objects(old_obj, new_obj, allowkeys):
+    differences = {}
+
+    for attr_name, new_value in new_obj.__dict__.items():
+            if attr_name in allowkeys:
+                if hasattr(old_obj, attr_name):
+                    old_value = getattr(old_obj, attr_name)
+                    
+                    if old_value != new_value:
+                        differences[attr_name] = {
+                            'old_value': old_value,
+                            'new_value': new_value
+                        }
+    return differences
+
 def insertDiamond(request):
     if request.method == "POST":
         user = request.user
@@ -71,7 +88,7 @@ def insertDiamond(request):
             scan = encrypt(1)
         else:
             scan = encrypt(inventory.objects.last().Id)
-        print(scan)
+        # print(scan)
         exist = inventory.objects.filter(GIA_NO=giano).values()
         if not exist:
             stock = inventory.objects.create(
@@ -95,14 +112,17 @@ def insertDiamond(request):
                 Scan_Id=scan,
             )
             if stock:
+                saveMessage("inventory",user,"Inventory",stkid,"Inserted",user.get_username())
                 link = request.POST["link"]
-                request.POST._mutable = True
-                if link.endswith(".jpg"):
-                    i = link.rfind("/")
-                    did = link[i + 1 : -4]
-                else:
-                    did = link.split("=")[1]
-                request.POST["link"] = did
+                print(link)
+                if link:
+                    request.POST._mutable = True
+                    if link.endswith(".jpg"):
+                        i = link.rfind("/")
+                        did = link[i + 1 : -4]
+                    else:
+                        did = link.split("=")[1]
+                    request.POST["link"] = did
                 # print(request.POST)
                 form = VideoForm(request.POST, request.FILES)
                 if form.is_valid():
@@ -177,6 +197,8 @@ def updateInventory(request):
         table=data['table']
         remarks=data['remarks']
         invobj=inventory.objects.filter(STK_ID=stk_id).first()
+        prev=inventory.objects.filter(STK_ID=stk_id).first()
+        allow=['CRT','MESUREMNT','CLARITY','PRICE','COLOR','POL','SYM','CUT','FLO_COL','DEPTH','TABLE','REMARK']
         if invobj:
            invobj.CRT=weight
            invobj.MESUREMNT=measurement
@@ -192,6 +214,9 @@ def updateInventory(request):
            invobj.REMARK=remarks
            invobj.UpdatedBy=user
            invobj.save()
+           newobj=inventory.objects.filter(STK_ID=stk_id).first()
+           diff=compare_objects(old_obj=prev,new_obj=newobj,allowkeys=allow)
+           saveMessage("inventory",user,"Inventory",invobj.STK_ID,"Updated",user.get_username(),**{'changes':str(diff)})
            return HttpResponse(json.dumps({'message':'success'}))
         else:
            return HttpResponse(json.dumps({'message':'fail'}))
@@ -314,7 +339,7 @@ def generate_sticker(data, sid, weight, shape, color, purity, gia):
 
 
 def encrypt(data):
-    return data << 19
+    return data <<19
 
 
 def decrypt(data):
@@ -370,6 +395,7 @@ def setMemoData(request):
           inv.save()
           memodata=MemoData.objects.create(memo=memo,stk_no=inv,desc=description,weight=weight,rate=rate,remark=remark)
         if memodata:
+         saveMessage("memo",user,"Memo",client_name,client_company,"memo","prepared",user.get_username(),"Having MemoId "+str(memo.id_memo))
          response=gen_report(request,data,memo)
          return response
         else:
@@ -565,6 +591,9 @@ def deleteMemo(request,memo_id):
       memo.DeletedBy=user
       memo.DeletedOn=current_time
       memo.save()
+      client=memo.client
+      saveMessage("memo",user,"Memo",client.name,client.company,"memo","deleted",user.get_username(),"Having MemoId "+str(memo.id_memo))
+
       return HttpResponse(json.dumps({'message':'success'}))
    else:
       return HttpResponse(json.dumps({'message':'fail'}))
@@ -598,10 +627,12 @@ def setInvoiceData(request):
         client_address=data['client']['address']
         _client=Client.objects.filter(name=client_name,company=client_company).first()
         if not _client:
-         print("inside create")
+        #  print("inside create")
          client=Client.objects.create(name=client_name,company=client_company,address=client_address)
          _client=client
         invoice=Invoice.objects.create(client=_client,CretedBy=user)
+        if invoice:
+           saveMessage("memo",user,"Invoice",client_name,client_company,"invoice","prepared",user.get_username(),"Having InvoiceId "+str(invoice.id_invoice))
         for row in data['diamond']:
           stk_id=row['stk_no']
           description=row['description']
@@ -628,6 +659,11 @@ def gen_invoice(request,data,invoice):
     parent=getSampleStyleSheet()['Normal'],
     fontSize=8,
      )
+    custom_style2 = ParagraphStyle(
+    'CustomStyle',
+    parent=getSampleStyleSheet()['Normal'],
+    fontSize=6,
+     )
     image_path = os.path.join(BASE_DIR, 'static', 'image', 'logo.png')
     logo = Img(image_path, width=0.9*inch, height=0.9*inch)
     elements.append(logo)
@@ -637,7 +673,7 @@ def gen_invoice(request,data,invoice):
     header_style.alignment = 1
     header = Paragraph(header_text, header_style)
     elements.append(header)
-    elements.append(Spacer(1, 10))
+    elements.append(Spacer(1, 3))
     
     # Company details
     company_details = [
@@ -676,16 +712,16 @@ def gen_invoice(request,data,invoice):
     client_table=Table(data_client,style=table_style) 
     invoice_table=Table(data_inv,style=table_style)
     elements.append(company_table)
-    elements.append(Spacer(1, 10))
+    elements.append(Spacer(1, 3))
     
     parent_table_data = [[client_table,invoice_table]]
     parent_table = Table(parent_table_data)
     elements.append(parent_table)
-    elements.append(Spacer(1, 10))
+    elements.append(Spacer(1, 3))
     
     # Table
     table_data = [
-        [Paragraph("LOT NO.", company_style), Paragraph("DESCRIPTION", company_style),Paragraph("PCS", company_style) ,Paragraph("CTS", company_style) ,Paragraph("CFR US $", company_style) , Paragraph("TOTAL US$", company_style)]
+        [Paragraph("LOT NO.", custom_style), Paragraph("DESCRIPTION", custom_style),Paragraph("PCS", custom_style) ,Paragraph("CTS", custom_style) ,Paragraph("CFR US $", custom_style) , Paragraph("TOTAL US$", custom_style)]
     ]
     pcs=0
     cts=0.0
@@ -706,13 +742,13 @@ def gen_invoice(request,data,invoice):
         ])
     table_data.append([
             Paragraph(" ", custom_style),
-            Paragraph("<b>Total</b>", company_style),
+            Paragraph("<b>Total</b>", custom_style),
             Paragraph(str(pcs), custom_style),
             Paragraph(str(cts), custom_style),
             Paragraph(str(cfr), custom_style),
             Paragraph(str(total), custom_style)
         ])
-    colWidth=(0.4*inch,2.4*inch,0.7*inch,0.7*inch,0.9*inch,0.9*inch)
+    colWidth=(0.5*inch,2.4*inch,0.7*inch,0.7*inch,0.9*inch,0.9*inch)
     table_style = TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
@@ -727,76 +763,45 @@ def gen_invoice(request,data,invoice):
     table = Table(table_data,colWidths=colWidth)
     table.setStyle(table_style)
     elements.append(table)
-    elements.append(Spacer(1, 5))
+    elements.append(Spacer(1, 3))
     
     footer_text = "<b>"+num2words(int(total)).upper()+" ONLY"+"</b>"
-    footer = Paragraph(footer_text, company_style)
+    footer = Paragraph(footer_text, custom_style2)
     elements.append(footer)
-    elements.append(Spacer(1, 5))
-
-    table1_data = [
-    ["PAYMENT INSTRUCTION"],
-    ["1 DIRECT PAYMENTS"],
-    ["Send Crossed chq. Made payable 'Sailam Limited' indicate our Invoice number behind the chq."],
-    ["2 Direct Transfers to Bank Account"],
-    ["Bank's Name : HSBC"],
-    ["Name of Bank Account : SAILAM LTD."],
-    ["A/C NO: 817-016124-838"],
-    ["Swift Code : HSBCHKKHHHKH"],
-    ["When making remittance please ensure you indicate whom the funds are from and our invoice no to enable us identify them"],
-    ["Over due date payment will be charged 2% per month"]
-   ]
-
-
-    table2_data = [
-        ["DECLARATION"],
-        ["The Diamonds here in Invoiced have been purchased from legitimate sources not involved in funding conflict diamonds and in compliance with United Nation- Resolutions.The seller hereby guarantees conflict diamonds and in compliance with United Nation- Resolutions.The seller hereby guarantees provided by the supplier of these diamonds."],
-        ["TERMS OF PAYMENT_____________________"],
-        ["PAYMENT DUE DATE: ___________________"],
-        ["CHEQUE NO: __________________________"],
-        ["CASH : ____________________________"]
-    ]
-
-    style = TableStyle([
-        ("ALIGN", (0, 0), (-1, -1), "LEFT"),
-        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-        ("FONTSIZE", (0, 0), (-1, 0), 3),
-        ("BACKGROUND", (0, 1), (-1, -1), colors.beige),
-    ])
-
-    for i in range(len(table1_data)):
-        for j in range(len(table1_data[i])):
-            cell_data = table1_data[i][j]
-            paragraph = Paragraph(cell_data, custom_style)
-            table1_data[i][j] = paragraph
-
-    for i in range(len(table2_data)):
-        for j in range(len(table2_data[i])):
-            cell_data = table2_data[i][j]
-            paragraph = Paragraph(cell_data,custom_style)
-            table2_data[i][j] = paragraph
-
-    # Create the first table
-    table1 = Table(table1_data, style=style)
-    table1.hAlign = "LEFT"
-
-    # Create the second table
-    table2 = Table(table2_data, style=style)
-    table2.hAlign = "LEFT"
-
-   # Define the document content
-    content = [
-        [table1, table2]
-    ]
-
-    main_table = Table(content)
+    elements.append(Spacer(1, 2))
+    custom_stylepara = ParagraphStyle(
+    'CustomStyle',
+    parent=getSampleStyleSheet()['Normal'],
+    fontSize=6,
+    backColor=colors.beige 
+)
+    table1_data ="PAYMENT INSTRUCTION<br/>1 DIRECT PAYMENTS<br/>Send Crossed chq. Made payable 'Sailam Limited' indicate our Invoice number behind the chq.<br/>2 Direct Transfers to Bank Account<br/>Bank's Name : HSBC<br/>Name of Bank Account : SAILAM LTD.<br/>A/C NO: 817-016124-838<br/>Swift Code : HSBCHKKHHHKH<br/>When making remittance please ensure you indicate whom the funds are from and our invoice no to enable us identify them<br/>Over due date payment will be charged 2% per month"
+    table2_data = "DECLARATION<br/>The Diamonds here in Invoiced have been purchased from legitimate sources not involved in funding conflict diamonds and in compliance with United Nation- Resolutions.The seller hereby guarantees conflict diamonds and in compliance with United Nation- Resolutions.The seller hereby guarantees provided by the supplier of these diamonds.<br/>TERMS OF PAYMENT_____________________<br/>PAYMENT DUE DATE: ___________________<br/>CHEQUE NO: __________________________<br/>CASH : ____________________________"
+    text3="           "
+    paragraph1 = Paragraph(table1_data, custom_stylepara)
+    paragraph2 = Paragraph(table2_data, custom_stylepara)
+    paragraph3 = Paragraph(text3, custom_style2)
+    story = [[paragraph1,paragraph3,paragraph2]]
+    main_table = Table(story)
     main_table_style = TableStyle([
-    ('VALIGN', (0, 0), (-1, -1), 'TOP'),  
+        ('VALIGN', (0, 0), (-1, -1), 'TOP'),  
     ])
     main_table.setStyle(main_table_style)
     elements.append(main_table)
-    doc.build(elements)
+    elements.append(Spacer(1, 1))
 
+    text1="<b>SOLD GOOD ARE NOT REFUNDABLE</b><br/><b>CONFIRMED BY:</b><br/>CHOP & BUYERS SIGNATURE<br/>PHONE NO :_________________________"
+    text2="<b>for SAILAM LIMITED</b><br/>CHOP & AUTHORIZED SIGN<br/>TIME:"+str(datetime.datetime.now().time().strftime("%H:%M:%S"))
+    text3="           "
+    
+    paragraph1 = Paragraph(text1, custom_style2)
+    paragraph2 = Paragraph(text2, custom_style2)
+    paragraph3 = Paragraph(text3, custom_style2)
+    story = [[paragraph1,paragraph3,paragraph2]]
+    signtable=Table(story)
+    elements.append(signtable)
+    doc.build(elements)
+    
     response = HttpResponse(file_name)
     return response
 
@@ -883,10 +888,12 @@ def getAll(request):
       hide['clarity']=row['CLARITY']
       hide['price']=row['PRICE']
       hide['child_data']=[]
-      if row['MemoMade']:
-         hide['status']="Memo Prepared"
-      elif row['InvoiceMade']:
+      if row['InvoiceMade']:
          hide['status']='Sold'
+         inv=InvoiceData.objects.filter(stk_no=row['STK_ID']).last()
+         hide['inv_id']=inv.invoice.id_invoice
+      elif row['MemoMade']:
+         hide['status']="Memo Prepared"
       elif row['IsHide']:
          hide['status']='Hidden'
       else:

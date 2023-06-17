@@ -353,14 +353,14 @@ Sailam QR Code Scanner
               console.log('Inside tab1-tab')
                 var value= $('#gianum').val().split("=")
                 var request = new XMLHttpRequest();
-                var json = "{% url 'memo_data' scanid=0 %}".replace('0',value[1]!=undefined?value[1]:value[0])
+                var url = "{% url 'memo_data' scanid=0 %}".replace('0',value[1]!=undefined?value[1]:value[0])
                 request.onload = function() {
                   if ( request.readyState === 4 && request.status === 200 ) {
                     var JSONObject = JSON.parse(request.responseText);
                     updatememoTable(JSONObject);
                   } else if(request.status == 400) { console.log("Error", request.status);}
                 };
-                  request.open("GET", json, true);
+                  request.open("GET", url, true);
                   request.send();
             }
             else if(target==="tab2-tab")
@@ -368,28 +368,28 @@ Sailam QR Code Scanner
               console.log('Inside tab2-tab');
               var value= $('#gianum').val().split("=")
                 var request = new XMLHttpRequest();
-                var json = "{% url 'get_invoicedata' scanid=0 %}".replace('0', value[1]!=undefined?value[1]:value[0]);
+                var url = "{% url 'get_invoicedata' scanid=0 %}".replace('0', value[1]!=undefined?value[1]:value[0]);
                 request.onload = function() {
                   if ( request.readyState === 4 && request.status === 200 ) {
                     var JSONObject = JSON.parse(request.responseText);
                     loadData(JSONObject);
                   } else if(request.status == 400) { console.log("Error", request.status);}
                 };
-                  request.open("GET", json, true);
+                  request.open("GET", url, true);
                   request.send();
             } 
             else if(target==="tab3-tab")
             {
               var value= $('#gianum').val().split("=")
                 var request = new XMLHttpRequest();
-                var json = "{% url 'get_hidedata' scanid=0 %}".replace('0', value[1]!=undefined?value[1]:value[0]);
+                var url = "{% url 'get_hidedata' scanid=0 %}".replace('0', value[1]!=undefined?value[1]:value[0]);
                 request.onload = function() {
                   if ( request.readyState === 4 && request.status === 200 ) {
                     var JSONObject = JSON.parse(request.responseText);
                     loadhideData(JSONObject);
                   } else if(request.status == 400) { console.log("Error", request.status);}
                 };
-                  request.open("GET", json, true);
+                  request.open("GET", url, true);
                   request.send();
             }
             {% comment %} else if(target==="tab4-tab")
@@ -397,14 +397,14 @@ Sailam QR Code Scanner
               console.log('Inside tab4-tab');
               var value= $('#gianum').val().split("=")
                 var request = new XMLHttpRequest();
-                var json = "{% url 'get_invoicedata' scanid=0 %}".replace('0', value[1]!=undefined?value[1]:value[0]);
+                var url = "{% url 'get_invoicedata' scanid=0 %}".replace('0', value[1]!=undefined?value[1]:value[0]);
                 request.onload = function() {
                   if ( request.readyState === 4 && request.status === 200 ) {
                     var JSONObject = JSON.parse(request.responseText);
                     loadSellData(JSONObject);
                   } else if(request.status == 400) { console.log("Error", request.status);}
                 };
-                  request.open("GET", json, true);
+                  request.open("GET", url, true);
                   request.send();
             } {% endcomment %}
             else{
