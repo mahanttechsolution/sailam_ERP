@@ -28,6 +28,7 @@ from num2words import num2words
 from io import BytesIO
 import qrcode
 from PIL import Image, ImageDraw, ImageFont
+from django.http import JsonResponse, response
 
 # Create your views here.
 
@@ -225,9 +226,21 @@ def updateInventory(request):
 
 
 def StockInfo(request):
-    stocks = inventory.objects.all()
-    context = {"stocks": stocks}
-    return render(request, "inventory/all_details.html", context)
+    if request.method == "POST":
+        flag = request.POST["flag"]
+
+    else:
+        try:
+            flag = request.GET["flag"]
+            if flag == "non-gia":
+                stock = inventory.objects.filter(GIA_NO__isnull=True).values_list()
+                context = {"status": "0", "stocks": list(stock)}
+                return JsonResponse(context)
+        except Exception as e:
+            print("------------->", e)
+            stocks = inventory.objects.all()
+            context = {"stocks": stocks}
+            return render(request, "inventory/all_details.html", context)
 
 
 def DiamondInfo(request):
