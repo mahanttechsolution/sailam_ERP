@@ -1,11 +1,11 @@
 from datetime import datetime, timedelta, timezone
 from django.http import JsonResponse
 from django.shortcuts import render
-
+from django.contrib.auth.decorators import login_required
 from account.models import User
 from .models import Message
 
-
+@login_required
 def getMessage(requets):
     now = datetime.now(tz=timezone.utc)
     earlier = now - timedelta(hours=24)
@@ -23,6 +23,7 @@ def getMessage(requets):
     # print(messages)
     return JsonResponse(messages, safe=False)
 
+@login_required
 def getLog(request):
     messObj=Message.objects.all().values()
     messages=[]
@@ -38,5 +39,7 @@ def getLog(request):
        messages.append(mess)
     return JsonResponse(messages, safe=False)
 
+
+@login_required
 def getLogView(request):
    return render(request,"message/logs.html")

@@ -5,7 +5,9 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.core.files.storage import default_storage
 from .models import Color, Parcels,Jewellery, Type
+from django.contrib.auth.decorators import login_required
 
+@login_required
 def inputView(request):
     typeData=Type.objects.all()
     colordata=Color.objects.all()
@@ -88,11 +90,11 @@ def getJewelleryData(request):
         data.append(jewellery)
     return HttpResponse(json.dumps(data, indent = 4))
 
-
+@login_required
 def allParcels(requets):
     return render(requets,'parcels_jewellery/viewParcels.html')
 
-
+@login_required
 def data_endpoint(request):
     parcelobj=Parcels.objects.filter().all()
     data = []
@@ -113,7 +115,7 @@ def data_endpoint(request):
         
     return JsonResponse(data, safe=False)
 
-
+@login_required
 def update_data_endpoint(request):
     if request.method == 'POST':
         id = request.POST.get('id')
@@ -125,7 +127,7 @@ def update_data_endpoint(request):
         return JsonResponse({'success': True})
     return JsonResponse({'success': False})
 
-
+@login_required
 def delete_data_endpoint(request):
     if request.method == 'POST':
         id = request.POST.get('id')
@@ -140,11 +142,11 @@ def delete_data_endpoint(request):
         return JsonResponse({'success': True})
     return JsonResponse({'success': False})
 
-
+@login_required
 def allJewellery(requets):
     return render(requets,'parcels_jewellery/viewJewellery.html')
 
-
+@login_required
 def jewellerydata_endpoint(request):
     jewelleryobj=Jewellery.objects.filter().all()
     data = []
@@ -161,7 +163,7 @@ def jewellerydata_endpoint(request):
         data.append(obj)
     return JsonResponse(data, safe=False)
 
-
+@login_required
 def jewelleryupdate_data_endpoint(request):
     if request.method == 'POST':
         id = request.POST.get('id')
@@ -173,7 +175,7 @@ def jewelleryupdate_data_endpoint(request):
         return JsonResponse({'success': True})
     return JsonResponse({'success': False})
 
-
+@login_required
 def jewellerydelete_data_endpoint(request):
     if request.method == 'POST':
         id = request.POST.get('id')

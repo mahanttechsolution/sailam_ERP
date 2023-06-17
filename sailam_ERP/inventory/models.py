@@ -28,6 +28,8 @@ class inventory(models.Model):
     MemoMade=models.BooleanField(default=False)
     InvoiceMade=models.BooleanField(default=False)
     IsHide=models.BooleanField(default=False)
+    Location=models.CharField(max_length=100,blank=True,null=True)
+    Match=models.CharField(max_length=100,blank=True,null=True)
     
 
 class ActivityLog(models.Model):
@@ -90,3 +92,11 @@ class InvoiceData(models.Model):
     weight=models.FloatField()
     cfr=models.FloatField()
     total=models.FloatField()
+
+class Location(models.Model):
+    Id=models.BigAutoField(primary_key=True)
+    Name=models.CharField(max_length=100,unique=True)
+    CreatedOn=models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.Name

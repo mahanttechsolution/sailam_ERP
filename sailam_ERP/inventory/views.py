@@ -2,13 +2,13 @@ import datetime
 import io
 import os
 from django.shortcuts import render
-from django.http import HttpResponse, FileResponse
+from django.http import HttpResponse, FileResponse, JsonResponse
 import requests
 import json
 from django.conf import settings
 
 from  message.format import saveMessage
-from .models import Invoice, InvoiceData, inventory,Client,Memo,MemoData
+from .models import Invoice, InvoiceData, Location, inventory,Client,Memo,MemoData
 from .models import inventory, Video
 from .forms import VideoForm
 from .constant import authorization,urlendpoint
@@ -23,7 +23,7 @@ from num2words import num2words
 from io import BytesIO
 import qrcode
 from PIL import Image, ImageDraw, ImageFont
-
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 BASE_DIR = settings.BASE_DIR
@@ -63,6 +63,7 @@ def compare_objects(old_obj, new_obj, allowkeys):
                         }
     return differences
 
+@login_required
 def insertDiamond(request):
     if request.method == "POST":
         user = request.user
@@ -82,6 +83,8 @@ def insertDiamond(request):
         price = request.POST.get("price")
         crt = request.POST.get("crt")
         desc = request.POST.get("desc")
+        location=request.POST.get("location")
+        matchid=request.POST.get("dropdown")
         scan = 0
 
         if inventory.objects.last() == None:
@@ -110,11 +113,13 @@ def insertDiamond(request):
                 DESCRIPTION=desc,
                 CretedBy=user,
                 Scan_Id=scan,
+                Location=location,
+                Match=matchid,
             )
+            Location.objects.get_or_create(Name=location)
             if stock:
                 saveMessage("inventory",user,"Inventory",stkid,"Inserted",user.get_username())
                 link = request.POST["link"]
-                print(link)
                 if link:
                     request.POST._mutable = True
                     if link.endswith(".jpg"):
@@ -127,9 +132,10 @@ def insertDiamond(request):
                 form = VideoForm(request.POST, request.FILES)
                 if form.is_valid():
                     #    saving video and image to media
-                    video = form.save(commit=False)
-                    video.id_inv = stock
-                    video.save()
+                    if form.data['image'] or form.data['file'] or form.data['link']:
+                        video = form.save(commit=False)
+                        video.id_inv = stock
+                        video.save()
                     form = VideoForm()
                     # sid, weight, shape, color, purity
                     #    generating qr code
@@ -170,15 +176,27 @@ def insertDiamond(request):
                 {"errormessage": "Data Is Already Present", "form": form},
             )
     else:
+        locationdata=Location.objects.all()
+        result=[{'location':location.Name} for location in locationdata]
+        locationData = json.dumps(result)
         form = VideoForm()
-        return render(request, "inventory/inventory.html", {"form": form})
+        return render(request, "inventory/inventory.html", {'form': form,'locationdata':locationData})
 
-
+@login_required
 def viewStock(request):
     stocks = inventory.objects.filter(IsHide=False,InvoiceMade=False)
     context = {"stocks": stocks}
     return render(request, "inventory/viewinventory.html", context)
 
+@login_required
+def retStk(request):
+    stocks = inventory.objects.all().values()
+    data=[]
+    for row in stocks:
+     data.append(row["STK_ID"])
+    return HttpResponse(json.dumps(data))
+
+@login_required
 def updateInventory(request):
     if request.method=="POST":
         user=request.user
@@ -239,12 +257,14 @@ def updateInventory(request):
 #     return url
 
 
+@login_required
 def StockInfo(request):
     stocks = inventory.objects.all()
     context = {"stocks": stocks}
     return render(request, "inventory/all_details.html", context)
 
 
+@login_required
 def DiamondInfo(request):
     if request.method == "GET":
         q = request.GET["q"]
@@ -345,9 +365,11 @@ def encrypt(data):
 def decrypt(data):
    return data>>19
 
+@login_required
 def scanner(request):
     return render(request,"inventory/scanner.html")
 
+@login_required
 def getMemoData(request,scanid):
    data=inventory.objects.filter(Scan_Id=scanid,MemoMade=False,InvoiceMade=False,IsHide=False).values()|inventory.objects.filter(GIA_NO=scanid,MemoMade=False,InvoiceMade=False,IsHide=False).values()
    if data:
@@ -366,7 +388,7 @@ def getMemoData(request,scanid):
       }
       return HttpResponse(json.dumps(result, indent = 4))
    
-
+@login_required
 def setMemoData(request):
     if request.method=="POST":
         user=request.user
@@ -401,6 +423,7 @@ def setMemoData(request):
         else:
          return HttpResponse("Error")
       
+
 
 def gen_report(request,data,memo):
     file_name="memo_"+str(memo.id_memo)+".pdf"
@@ -570,12 +593,15 @@ def preparedMemo(request):
       result.append(memo)
    return HttpResponse(json.dumps(result, indent = 4))
 
+@login_required
 def viewMemo(request):
    return render(request,'inventory/memo.html')
 
+@login_required
 def viewHidden(request):
    return render(request,'inventory/viewhide.html')
 
+@login_required
 def deleteMemo(request,memo_id):
    user=request.user
    memo=Memo.objects.filter(id_memo=memo_id).first()
@@ -597,7 +623,8 @@ def deleteMemo(request,memo_id):
       return HttpResponse(json.dumps({'message':'success'}))
    else:
       return HttpResponse(json.dumps({'message':'fail'}))
-   
+
+
 def getinvoicedata(request,scanid):
    data=inventory.objects.filter(Scan_Id=scanid,InvoiceMade=False,IsHide=False).values()|inventory.objects.filter(GIA_NO=scanid,InvoiceMade=False,IsHide=False).values()
    if data:
@@ -617,7 +644,7 @@ def getinvoicedata(request,scanid):
       }
       return HttpResponse(json.dumps(result, indent = 4))
    
-
+@login_required
 def setInvoiceData(request):
     if request.method=="POST":
         user=request.user
@@ -805,6 +832,7 @@ def gen_invoice(request,data,invoice):
     response = HttpResponse(file_name)
     return response
 
+
 def getHideData(request,scanid):
    data=inventory.objects.filter(Scan_Id=scanid,InvoiceMade=False,IsHide=False).values()|inventory.objects.filter(GIA_NO=scanid,InvoiceMade=False,IsHide=False).values()
    if data:
@@ -823,6 +851,7 @@ def getHideData(request,scanid):
       }
       return HttpResponse(json.dumps(result, indent = 4))
 
+@login_required
 def setHideData(request):
    if request.method=="POST":
       data=json.loads(request.body)
@@ -834,6 +863,7 @@ def setHideData(request):
             inv.save()
 
    return HttpResponse("Success")
+
 
 def getHideStock(request):
    result=[]
@@ -860,6 +890,7 @@ def getHideStock(request):
       result.append(hide)
    return HttpResponse(json.dumps(result, indent = 4))
 
+@login_required
 def showDiamond(request,stk_id):
    user=request.user
    current_time=datetime.datetime.now(tz=datetime.timezone.utc)
@@ -872,10 +903,12 @@ def showDiamond(request,stk_id):
       return HttpResponse(json.dumps({'message':'success'}))
    else:
     return HttpResponse(json.dumps({'message':'fail'}))
-   
+
+@login_required   
 def allView(request):
    return render(request,'inventory/viewallstock.html')
 
+@login_required
 def getAll(request):
    result=[]
    hideobj=inventory.objects.filter().values()

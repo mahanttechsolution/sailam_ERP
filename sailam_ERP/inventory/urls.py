@@ -25,4 +25,5 @@ urlpatterns = [
     path("getall/", views.getAll, name="getall_data"),
     path("allview/", views.allView, name="allview"),
     path("updateinventory/", views.updateInventory, name="updateinv"),
+    path("getStk/",views.retStk,name="getStk"),
 ]
