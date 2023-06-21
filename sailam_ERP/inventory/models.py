@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.db import connection
 
 # Create your models here.
 class inventory(models.Model):
@@ -28,8 +28,11 @@ class inventory(models.Model):
     MemoMade=models.BooleanField(default=False)
     InvoiceMade=models.BooleanField(default=False)
     IsHide=models.BooleanField(default=False)
+    TallyMade=models.BooleanField(default=False)
     Location=models.CharField(max_length=100,blank=True,null=True)
     Match=models.CharField(max_length=100,blank=True,null=True)
+    def __str__(self):
+        return "STK_ID: "+self.STK_ID+" Remark: "+self.REMARK+" Mesurement: "+self.MESUREMNT
     
 
 class ActivityLog(models.Model):
@@ -100,3 +103,18 @@ class Location(models.Model):
 
     def __str__(self):
         return self.Name
+
+class Tally(models.Model):
+    Id=models.BigAutoField(primary_key=True)
+    Name=models.CharField(max_length=500,blank=True,null=True)
+    CretedBy=models.ForeignKey("account.User", on_delete=models.CASCADE,related_name='tally_created_by')
+    CreatedOn=models.DateTimeField(auto_now_add=True)
+    DeletedBy=models.ForeignKey("account.User", on_delete=models.CASCADE,related_name='tally_deleted_by',blank=True,null=True)
+    DeletedOn=models.DateTimeField(blank=True,null=True)
+    Isdeleted=models.BooleanField(default=False)
+
+class TallyData(models.Model):
+    Id=models.BigAutoField(primary_key=True)
+    stk_no=models.ForeignKey("inventory.inventory", to_field='STK_ID', on_delete=models.CASCADE)
+    tally_no=models.ForeignKey("inventory.Tally", on_delete=models.CASCADE)
+    submitted=models.BooleanField(default=False)

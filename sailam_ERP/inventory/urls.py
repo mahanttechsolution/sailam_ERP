@@ -26,4 +26,10 @@ urlpatterns = [
     path("allview/", views.allView, name="allview"),
     path("updateinventory/", views.updateInventory, name="updateinv"),
     path("getStk/",views.retStk,name="getStk"),
+    path("getGroupView/",views.getGroupView,name="getgroupview"),
+    path("getGroup/",views.getGroupData,name="getgroup"),
+    path("getTally/<str:tally_id>/<str:tally_type>",views.getTallyData,name="get_tallydata"),
+    path("setTally/<str:tally_type>",views.setTally,name="settally"),
+    path("getTallyView/",views.getTallyView,name="gettallyview"),
+    path("getTally/",views.getTally,name="gettally"),
 ]

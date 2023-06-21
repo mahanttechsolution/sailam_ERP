@@ -1,6 +1,5 @@
 import datetime
-import io
-import os
+import sys
 from django.shortcuts import render
 from django.http import HttpResponse, FileResponse, JsonResponse
 import requests
@@ -8,7 +7,8 @@ import json
 from django.conf import settings
 
 from  message.format import saveMessage
-from .models import Invoice, InvoiceData, Location, inventory,Client,Memo,MemoData
+from  account.models import User
+from .models import Invoice, InvoiceData, Location, Tally, TallyData, inventory,Client,Memo,MemoData
 from .models import inventory, Video
 from .forms import VideoForm
 from .constant import authorization,urlendpoint
@@ -19,6 +19,7 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib import colors
 from reportlab.lib.units import inch
 import os
+from django.db import connection
 from num2words import num2words
 from io import BytesIO
 import qrcode
@@ -63,6 +64,67 @@ def compare_objects(old_obj, new_obj, allowkeys):
                         }
     return differences
 
+def trigfunction(stk_id,match_id):
+   c=connection.cursor()
+   try:
+      c.execute("BEGIN")
+      c.callproc("group_rows",(stk_id,match_id))
+      result=c.fetchall()
+      c.execute("COMMIT")
+   finally:
+      c.close()
+
+def trigGetDistinctGroup():
+   c=connection.cursor()
+   try:
+      c.execute("BEGIN")
+      c.callproc("get_distinct_grouped_ids")
+      result=c.fetchall()
+      c.execute("COMMIT")
+   finally:
+      c.close()
+   return result
+
+@login_required
+def getGroupView(request):
+    return render(request,"inventory/match.html")
+
+@login_required
+def getGroupData(request):
+    if request.method=="GET":
+        result=trigGetDistinctGroup()
+        data=[]
+        for tuples in result:
+            group={}
+            tuple=tuples[0]
+            ids=tuple.split(',')
+            size = len(ids)
+            if size==1:
+               continue
+            group["child_data"]=[]
+            for i in range(0,size):
+               inv={}
+               invobj=inventory.objects.filter(STK_ID=ids[i],InvoiceMade=False,IsHide=False).first()
+               if  i==0:
+                  group["stk_id"]=invobj.STK_ID
+                  group["gia"]=invobj.GIA_NO
+                  group["desc"]="<b>Shape:</b> "+invobj.SHAPE+", <b>Color:</b> "+invobj.COLOR+", <b>Clarity:</b> "+invobj.CLARITY
+                  group["weight"]=invobj.CRT
+                  group["measurement"]=invobj.MESUREMNT
+                  group["price"]=invobj.PRICE
+               else:
+                  inv["stk_id"]=invobj.STK_ID
+                  inv["gia"]=invobj.GIA_NO
+                  inv["desc"]="<b>Shape:</b> "+invobj.SHAPE+", <b>Color:</b> "+invobj.COLOR+", <b>Clarity:</b> "+invobj.CLARITY
+                  inv["weight"]=invobj.CRT
+                  inv["measurement"]=invobj.MESUREMNT
+                  inv["price"]=invobj.PRICE
+                  group["child_data"].append(inv)
+            data.append(group)
+        # print(data)
+    return HttpResponse(json.dumps(data))
+
+
 @login_required
 def insertDiamond(request):
     if request.method == "POST":
@@ -92,7 +154,7 @@ def insertDiamond(request):
         else:
             scan = encrypt(inventory.objects.last().Id)
         # print(scan)
-        exist = inventory.objects.filter(GIA_NO=giano).values()
+        exist = inventory.objects.filter(GIA_NO=giano,STK_ID=stkid).values()
         if not exist:
             stock = inventory.objects.create(
                 SHAPE=shape,
@@ -118,6 +180,10 @@ def insertDiamond(request):
             )
             Location.objects.get_or_create(Name=location)
             if stock:
+                if not matchid:
+                 trigfunction(stkid,stkid)
+                else:
+                 trigfunction(stkid,matchid)
                 saveMessage("inventory",user,"Inventory",stkid,"Inserted",user.get_username())
                 link = request.POST["link"]
                 if link:
@@ -234,7 +300,8 @@ def updateInventory(request):
            invobj.save()
            newobj=inventory.objects.filter(STK_ID=stk_id).first()
            diff=compare_objects(old_obj=prev,new_obj=newobj,allowkeys=allow)
-           saveMessage("inventory",user,"Inventory",invobj.STK_ID,"Updated",user.get_username(),**{'changes':str(diff)})
+           if len(diff)!=0:
+            saveMessage("inventory",user,"Inventory",invobj.STK_ID,"Updated",user.get_username(),**{'changes':str(diff)})
            return HttpResponse(json.dumps({'message':'success'}))
         else:
            return HttpResponse(json.dumps({'message':'fail'}))
@@ -367,7 +434,133 @@ def decrypt(data):
 
 @login_required
 def scanner(request):
-    return render(request,"inventory/scanner.html")
+    groupdata=Tally.objects.all()
+    result=[{'group':group.Name} for group in groupdata]
+    data=[i for i in {x['group']:x for x in result}.values()]
+    groupData = json.dumps(data)
+    return render(request,"inventory/scanner.html",{"groupdata":groupData})
+
+@login_required
+def getTallyData(request,tally_id,tally_type):
+    if tally_type=="insert":
+        data=inventory.objects.filter(Scan_Id=tally_id,InvoiceMade=False,IsHide=False,TallyMade=False).values()|inventory.objects.filter(GIA_NO=tally_id,InvoiceMade=False,IsHide=False,TallyMade=False).values()
+        if data:
+            result={
+                'stk_id':data[0]["STK_ID"],
+                'desc':'<b>color:</b>'+data[0]["COLOR"]+', <b>clarity:</b>'+data[0]["CLARITY"]+', <b>shape:</b>'+data[0]["SHAPE"],
+                'weight':data[0]["CRT"],
+                'remark':data[0]["REMARK"],
+                'price':data[0]["PRICE"]
+            }
+            return HttpResponse(json.dumps(result, indent = 4))
+        else :
+            result={
+                'stk_id':'null',
+            }
+            return HttpResponse(json.dumps(result, indent = 4))
+    elif tally_type=="remove":
+      data=inventory.objects.filter(Scan_Id=tally_id,TallyMade=True).values()|inventory.objects.filter(GIA_NO=tally_id,TallyMade=True).values()
+      if data:
+            result={
+                'stk_id':data[0]["STK_ID"],
+                'desc':'<b>color:</b>'+data[0]["COLOR"]+', <b>clarity:</b>'+data[0]["CLARITY"]+', <b>shape:</b>'+data[0]["SHAPE"],
+                'weight':data[0]["CRT"],
+                'remark':data[0]["REMARK"],
+                'price':data[0]["PRICE"]
+            }
+            return HttpResponse(json.dumps(result, indent = 4))
+      else :
+            result={
+                'stk_id':'null',
+            }
+            return HttpResponse(json.dumps(result, indent = 4))
+      
+
+@login_required
+def setTally(request,tally_type):
+   if request.method=="POST":
+      user=request.user
+      data=json.loads(request.body)
+      if tally_type=='insert':
+        donew=data['new']
+        group=data['group']
+        stk=data['stk_id']
+        if donew:
+            tally=Tally.objects.create(Name=group,CretedBy=user)
+            for id in stk:
+                inv=inventory.objects.filter(STK_ID=id).last()
+                TallyData.objects.create(stk_no=inv,tally_no=tally)
+                inv.TallyMade=True
+                inv.save()
+        else:
+            tally=Tally.objects.filter(Name=group).last()
+            if tally:
+                for id in stk:
+                    inv=inventory.objects.filter(STK_ID=id).last()
+                    obj,created=TallyData.objects.get_or_create(stk_no=inv,tally_no=tally)
+                    if not created:
+                       obj.submitted=False
+                       obj.save()
+                    inv.TallyMade=True
+                    inv.save()
+            else:
+                tally=Tally.objects.create(Name=group,CretedBy=user)
+                for id in stk:
+                    inv=inventory.objects.filter(STK_ID=id).last()
+                    TallyData.objects.create(stk_no=inv,tally_no=tally)
+                    inv.TallyMade=True
+                    inv.save()
+        return HttpResponse("Success") 
+      else:
+         stk=data['stk_id']
+         for id in stk:
+            inv=inventory.objects.filter(STK_ID=id).last()
+            tallydata=TallyData.objects.filter(stk_no=inv,submitted=False).last()
+            if tallydata:
+                tallydata.submitted=True
+                tallydata.save()
+            inv.TallyMade=False
+            inv.save()
+         return HttpResponse("Success")
+
+@login_required
+def getTallyView(request):
+    return render(request,'inventory/viewtally.html')
+
+
+@login_required
+def getTally(request):
+    result=[]
+    tallylist=Tally.objects.filter(Isdeleted=False).order_by('-CreatedOn').values()
+    # print(tallylist)
+    for tally in tallylist:
+       tallydic={}
+       tallydic['name']=tally['Name']
+       user=User.objects.filter(id=tally["CretedBy_id"]).first()
+       tallydic['createdby']=str(user.first_name)+" "+str(user.last_name)
+       tallydic['createdon']=datetime.datetime.strptime(str(tally['CreatedOn']), '%Y-%m-%d %H:%M:%S.%f%z')
+       tallydata=TallyData.objects.filter(tally_no=tally['Id']).values()
+       total=0
+       pending=0
+       tallydic['child_data']=[]
+       for data in tallydata:
+          total+=1
+          tallychild={}
+          inv=inventory.objects.filter(STK_ID=data['stk_no_id']).first()
+          tallychild['stk_id']=inv.STK_ID
+          tallychild['desc']='<b>color:</b>'+inv.COLOR+',<b> clarity:</b>'+inv.CLARITY+', <b>shape:</b>'+inv.SHAPE
+          tallychild['weight']=inv.CRT
+          tallychild['price']=inv.PRICE
+          if not data['submitted']:
+             pending+=1
+          tallychild['status']=data['submitted']
+          tallydic['child_data'].append(tallychild)
+          tallydic['total']=total
+          tallydic['pending']=pending
+       result.append(tallydic)
+    # print(result)
+    return JsonResponse(result, safe=False)
+
 
 @login_required
 def getMemoData(request,scanid):
@@ -375,7 +568,7 @@ def getMemoData(request,scanid):
    if data:
     result={
         'stk_id':data[0]["STK_ID"],
-        'desc':'color:'+data[0]["COLOR"]+', clarity:'+data[0]["CLARITY"]+', shape:'+data[0]["SHAPE"],
+        'desc':'<b>color:</b>'+data[0]["COLOR"]+',<b> clarity:</b>'+data[0]["CLARITY"]+', <b>shape:</b>'+data[0]["SHAPE"],
         'weight':data[0]["CRT"],
         'remark':data[0]["REMARK"],
         'price':data[0]["PRICE"]
@@ -400,7 +593,6 @@ def setMemoData(request):
 
         _client=Client.objects.filter(name=client_name,company=client_company).first()
         if not _client:
-         print("inside create")
          client=Client.objects.create(name=client_name,company=client_company,address=client_address)
          _client=client
         memo=Memo.objects.create(client=_client,CretedBy=user)

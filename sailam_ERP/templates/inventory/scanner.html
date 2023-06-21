@@ -68,9 +68,12 @@ Sailam QR Code Scanner
         <li class="nav-item">
           <a class="nav-link" id="tab3-tab" data-toggle="tab" href="#tab3" role="tab" aria-controls="tab3" aria-selected="false">Hide</a>
         </li>
-        {% comment %} <li class="nav-item">
-          <a class="nav-link" id="tab4-tab" data-toggle="tab" href="#tab4" role="tab" aria-controls="tab4" aria-selected="false">Sell</a>
-        </li> {% endcomment %}
+       <li class="nav-item">
+          <a class="nav-link" id="tab4-tab" data-toggle="tab" href="#tab4" role="tab" aria-controls="tab4" aria-selected="false">Add Tally</a>
+        </li> 
+        <li class="nav-item">
+          <a class="nav-link" id="tab5-tab" data-toggle="tab" href="#tab5" role="tab" aria-controls="tab5" aria-selected="false">Remove Tally</a>
+        </li> 
       </ul>
 
       <div class="tab-content" id="myTabContent">
@@ -138,25 +141,43 @@ Sailam QR Code Scanner
             <button class="btn btn-info" id="submithide" >Hide Data</button>
         </div>
 
-        {% comment %} <div class="tab-pane fade" id="tab4" role="tabpanel" aria-labelledby="tab4-tab">
-          <table id="sell_table" class="table table-striped table-hover" width="100%">
+        <div class="tab-pane fade" id="tab4" role="tabpanel" aria-labelledby="tab4-tab">
+          <table id="tally_table" class="table table-striped table-hover" width="100%">
             <thead class="thead-dark">
               <tr>
-                <th>NO.</th>
-                <th>DESCRIPTION</th>
-                <th>PCS.</th>
-                <th>CTS</th>
-                <th>CFR US $</th>
-                <th>TOTAL US$</th>
-                <th>Action</th>
+            <th>Stock Id</th>
+            <th>Description</th>
+            <th>Weight</th>
+            <th>Remark</th>
+            <th>Rate</th>
+            <th>Actions</th>
               </tr>
             </thead>
             <tbody></tbody>
             <tfoot>
           </tfoot>
           </table>
-          <button class="btn btn-info" id="submitsell" >Sell Diamonds</button>
-        </div> {% endcomment %}
+          <button class="btn btn-info" id="submittally" >Tally Diamonds</button>
+        </div> 
+
+        <div class="tab-pane fade" id="tab5" role="tabpanel" aria-labelledby="tab5-tab">
+          <table id="removetally_table" class="table table-striped table-hover" width="100%">
+            <thead class="thead-dark">
+              <tr>
+            <th>Stock Id</th>
+            <th>Description</th>
+            <th>Weight</th>
+            <th>Remark</th>
+            <th>Rate</th>
+            <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+          </tfoot>
+          </table>
+          <button class="btn btn-info" id="removetally" >Remove Tally</button>
+        </div> 
 
       </div>
     </div>
@@ -244,6 +265,31 @@ Sailam QR Code Scanner
     </div>
   </div>
   
+  <div class="modal fade" id="tallyModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Enter Tally Group Data</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <label for="desc-input">Group Name</label>
+          <input class="form-control  my-3" type="text" id="groupname" placeholder="Group Name"/>
+          <div id="suggestion-list" class="list-group"></div>
+          <div>
+            <input type="checkbox" id="donew" name="donew" value="new">
+            <label for="donew"> New Tally</label><br>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button id="tallydiam" class="btn btn-info">Tally Diamond</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script>
     var dataTable;
@@ -309,15 +355,15 @@ Sailam QR Code Scanner
         },
         ]});
 
-        {% comment %}
-         selltable = $('#sell_table').DataTable({
+
+         tallytable = $('#tally_table').DataTable({
           dom: 'lBfrtip',
           buttons: [
               {
                   extend: 'pdfHtml5',
                   download: 'open',
                   className:'btn btn-info mt-3',
-                  title: 'Sailam Sell Data',
+                  title: 'Sailam Tally Data',
                   footer:true,
               },
             {
@@ -326,7 +372,25 @@ Sailam QR Code Scanner
               className:'btn btn-info mt-3',
               footer:true,
           },
-          ]}); {% endcomment %}
+          ]}); 
+
+          removetallytable = $('#removetally_table').DataTable({
+            dom: 'lBfrtip',
+            buttons: [
+                {
+                    extend: 'pdfHtml5',
+                    download: 'open',
+                    className:'btn btn-info mt-3',
+                    title: 'Sailam Received Tally Data',
+                    footer:true,
+                },
+              {
+                extend: 'csvHtml5',
+                download: 'open',
+                className:'btn btn-info mt-3',
+                footer:true,
+            },
+            ]}); 
 
       //detect current active tab
       $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
@@ -350,7 +414,6 @@ Sailam QR Code Scanner
 
             if(target === "tab1-tab") 
             {
-              console.log('Inside tab1-tab')
                 var value= $('#gianum').val().split("=")
                 var request = new XMLHttpRequest();
                 var url = "{% url 'memo_data' scanid=0 %}".replace('0',value[1]!=undefined?value[1]:value[0])
@@ -365,7 +428,6 @@ Sailam QR Code Scanner
             }
             else if(target==="tab2-tab")
             {
-              console.log('Inside tab2-tab');
               var value= $('#gianum').val().split("=")
                 var request = new XMLHttpRequest();
                 var url = "{% url 'get_invoicedata' scanid=0 %}".replace('0', value[1]!=undefined?value[1]:value[0]);
@@ -392,21 +454,34 @@ Sailam QR Code Scanner
                   request.open("GET", url, true);
                   request.send();
             }
-            {% comment %} else if(target==="tab4-tab")
+            else if(target==="tab4-tab")
             {
-              console.log('Inside tab4-tab');
               var value= $('#gianum').val().split("=")
                 var request = new XMLHttpRequest();
-                var url = "{% url 'get_invoicedata' scanid=0 %}".replace('0', value[1]!=undefined?value[1]:value[0]);
+                var url = "{% url 'get_tallydata' tally_id=0 tally_type=1 %}".replace('1',"insert").replace('0', value[1]!=undefined?value[1]:value[0]);
                 request.onload = function() {
                   if ( request.readyState === 4 && request.status === 200 ) {
                     var JSONObject = JSON.parse(request.responseText);
-                    loadSellData(JSONObject);
+                    loadTallyData(JSONObject);
                   } else if(request.status == 400) { console.log("Error", request.status);}
                 };
                   request.open("GET", url, true);
                   request.send();
-            } {% endcomment %}
+            } 
+            else if(target==="tab5-tab")
+            {
+              var value= $('#gianum').val().split("=")
+                var request = new XMLHttpRequest();
+                var url = "{% url 'get_tallydata' tally_id=0 tally_type=1 %}".replace('1',"remove").replace('0', value[1]!=undefined?value[1]:value[0]);
+                request.onload = function() {
+                  if ( request.readyState === 4 && request.status === 200 ) {
+                    var JSONObject = JSON.parse(request.responseText);
+                    loadRemoveTallyData(JSONObject);
+                  } else if(request.status == 400) { console.log("Error", request.status);}
+                };
+                  request.open("GET", url, true);
+                  request.send();
+            }
             else{
               alert('Please Select One Tab From Below');
             }
@@ -416,24 +491,22 @@ Sailam QR Code Scanner
     });
   </script>
 
-  {% comment %}
    <script>
-    //script for sale
-
-    function loadSellData(newData) {
-      if(newData.NO != "null")
+    //script for tally remove
+    removetally
+    function loadRemoveTallyData(newData) {
+      if(newData.stk_id != "null")
         {
               var rowData = [];
-              rowData.push(newData.NO);
-              rowData.push(newData.DESCRIPTION);
-              rowData.push(newData.PCS);
-              rowData.push(newData.CTS);
-              rowData.push(newData.CFR_US_$);
-              rowData.push(caltotal(newData.CTS,newData.CFR_US_$));
+              rowData.push(newData.stk_id);
+              rowData.push(newData.desc);
+              rowData.push(newData.weight);
+              rowData.push(newData.remark);
+              rowData.push(newData.price);
               rowData.push('<button type="button"class="btn btn-danger btn-xs dt-delete" id="1"><span class="fe fe-trash-2 fe-16" aria-hidden="true"></span></button>');
-              if(!isRowExists(table,rowData) && !isRowExists(dataTable,rowData) && !isRowExists(hidetable,rowData) && !isRowExists(selltable,rowData))
+              if(!isRowExists(table,rowData) && !isRowExists(dataTable,rowData) && !isRowExists(hidetable,rowData) && !isRowExists(tallytable,rowData) && !isRowExists(removetallytable,rowData))
               {
-                  selltable.row.add(rowData).draw();
+                removetallytable.row.add(rowData).draw();
 
                   $('.dt-delete').off('click');
                   $('.dt-delete').each(function () {
@@ -441,7 +514,7 @@ Sailam QR Code Scanner
                     $this = $(this);
                     var dtRow = $this.parents('tr');
                    if(confirm("Are you sure to delete this row?")){
-                      selltable.row(dtRow[0].rowIndex-1).remove().draw( false );
+                    removetallytable.row(dtRow[0].rowIndex-1).remove().draw( false );
                    }
               });
             });
@@ -452,65 +525,168 @@ Sailam QR Code Scanner
               
         }
       else{
-        alert("Data For Given GIA Is Not Available Or Bill Is Already Prepared for this");
+        alert("Data For Given GIA Is Not Available Or Tally Is Not Done for this");
       }
     }
 
-    $(document).on("click","#submitsell",function(){
-      var data= selltable.rows().data();
+    $(document).on("click","#removetally",function(){
+      if(removetallytable.data().count()>0)
+       {
+        var data= removetallytable.rows().data();
+        var res={};
+        res['stk_id']=[];
+        for(var i=0;i<data.length;i++)
+        {
+          res['stk_id'].push(data[i][0]);
+        }
+        var resp=JSON.stringify(res);
+        sendremovetallydata(resp);
+        removetallytable.clear().draw(); 
+       }
+       else{
+        alert('Select At least Single Entry for Remove Tally');
+       }
+      
+  });
+
+  function sendremovetallydata(data){
+    $.ajax({
+      type: "POST",
+      headers: {'X-CSRFToken': document.getElementById('csrf').querySelector('input').value},
+      url: "{% url 'settally' tally_type=0%}".replace('0', "remove"),
+      data: data,
+      contentType: 'application/json',
+      success: function(response){
+        console.log("Tally Removed Successfull");
+      },
+    });
+  }
+   </script>
+
+   <script>
+    //script for tally
+    $(document).ready(function () {
+      var groupdata =JSON.parse("{{groupdata|escapejs}}");
+      var data=[];
+      for(var x in groupdata){
+        data.push(groupdata[x].group);
+    }
+      $('#groupname').on('input', function () {
+          var query = $(this).val();
+          showSuggestions(query);
+      });
+  
+      function showSuggestions(query) {
+          var suggestionList = $('#suggestion-list');
+          suggestionList.empty();
+  
+          if (query.length === 0) {
+              suggestionList.hide();
+              return;
+          }
+  
+          var matchingSuggestions = data.filter(function (suggestion) {
+              return suggestion.toLowerCase().includes(query.toLowerCase());
+          });
+  
+          matchingSuggestions.forEach(function (suggestion) {
+              var listItem = $('<a>').text(suggestion).addClass('list-group-item list-group-item-action');
+              suggestionList.append(listItem);
+          });
+  
+          suggestionList.show();
+      }
+  
+      $('#suggestion-list').on('click', '.list-group-item', function () {
+          var selectedSuggestion = $(this).text();
+          $('#groupname').val(selectedSuggestion);
+          $('#suggestion-list').hide();
+      });
+  
+      $(document).on('click', function (event) {
+          if (!$(event.target).closest('#groupname').length) {
+              $('#suggestion-list').hide();
+          }
+      });
+    });
+
+    var tallymodal = $('#tallyModal');
+    function loadTallyData(newData) {
+      if(newData.stk_id != "null")
+        {
+              var rowData = [];
+              rowData.push(newData.stk_id);
+              rowData.push(newData.desc);
+              rowData.push(newData.weight);
+              rowData.push(newData.remark);
+              rowData.push(newData.price);
+              rowData.push('<button type="button"class="btn btn-danger btn-xs dt-delete" id="1"><span class="fe fe-trash-2 fe-16" aria-hidden="true"></span></button>');
+              if(!isRowExists(table,rowData) && !isRowExists(dataTable,rowData) && !isRowExists(hidetable,rowData) && !isRowExists(tallytable,rowData)&& !isRowExists(removetallytable,rowData))
+              {
+                  tallytable.row.add(rowData).draw();
+
+                  $('.dt-delete').off('click');
+                  $('.dt-delete').each(function () {
+                    $(this).on('click', function(evt){
+                    $this = $(this);
+                    var dtRow = $this.parents('tr');
+                   if(confirm("Are you sure to delete this row?")){
+                      tallytable.row(dtRow[0].rowIndex-1).remove().draw( false );
+                   }
+              });
+            });
+              }
+              else{
+                alert('Data Already Exist in This or Other Tab');
+              }
+              
+        }
+      else{
+        alert("Data For Given GIA Is Not Available Or Tally Is Already Prepared for this");
+      }
+    }
+
+    $(document).on('click','#submittally',function(){
+       if(tallytable.data().count()>0)
+       {
+        tallymodal.modal({ show: true });
+       }
+       else{
+        alert('Select At least Single Entry for Add Tally')
+       }
+    });
+
+    $(document).on("click","#tallydiam",function(){
+      var data= tallytable.rows().data();
       var res={};
+      var gp=$('#groupname').val();
+      var donew=$('#donew').is(':checked');
+      res['group']=gp;
+      res['new']=donew;
       res['stk_id']=[];
       for(var i=0;i<data.length;i++)
       {
         res['stk_id'].push(data[i][0]);
       }
       var resp=JSON.stringify(res);
-      alert(resp);
-      selltable.clear().draw(); 
+      sendtallydata(resp);
+      tallymodal.modal('hide');
+      tallytable.clear().draw(); 
   });
 
-  $("#sell_table").on("click","tbody td:not(:nth-child(1), :last-child, :nth-last-child(2))",function() {
-    var cell = $(this);
-    var originalContent = cell.text();
-    var newContent;
-    var columnIndex=cell.index();
-    var row = cell.closest("tr");
-
-    var input = $("<input type='text'>");
-    input.val(originalContent);
-    
-    // Replace the cell's content with the input field
-    cell.html(input);
-    
-    // Focus on the input field 
-    input.focus();
-    
-    // Update the cell's content when the input field loses focus
-    input.blur(function() {
-      newContent = $(this).val();
-      cell.html(newContent);
-      updatecol(columnIndex,row);
+  function sendtallydata(data){
+    $.ajax({
+      type: "POST",
+      headers: {'X-CSRFToken': document.getElementById('csrf').querySelector('input').value},
+      url: "{% url 'settally' tally_type=0%}".replace('0', "insert"),
+      data: data,
+      contentType: 'application/json',
+      success: function(response){
+        console.log("Tally Successfull");
+      },
     });
-    
-    // Update the cell's content when the Enter key is pressed
-    input.keypress(function(e) {
-      if (e.which === 13) {
-        newContent = $(this).val();
-        cell.html(newContent);
-        updatecol(columnIndex,row);
-      }
-    });
-  });
-  function updatecol(index,row)
-  {
-    if (index === 3 || index === 4) {
-      var cts = row.find("td:nth-child(4)").text();
-      var cfrUs = row.find("td:nth-child(5)").text();
-      var totalUs = cts * cfrUs;
-      row.find("td:nth-child(6)").text(totalUs.toFixed(2));
-    }
   }
-  </script> {% endcomment %}
+  </script> 
 
   <script>
    //script for Hide
@@ -526,7 +702,7 @@ Sailam QR Code Scanner
           rowData.push(data.remark);
           rowData.push(data.price);
           rowData.push('<button type="button" class="btn btn-danger btn-xs dt-delete"><span class="fe fe-trash-2 fe-16" aria-hidden="true"></span></button>');
-          if(!isRowExists(hidetable,rowData) && !isRowExists(dataTable,rowData) && !isRowExists(table,rowData))
+          if(!isRowExists(hidetable,rowData) && !isRowExists(dataTable,rowData) && !isRowExists(table,rowData)&& !isRowExists(tallytable,rowData) && !isRowExists(removetallytable,rowData))
           {
               hidetable.row.add(rowData).draw();
 
@@ -658,7 +834,7 @@ function sendhidedata(data){
               rowData.push(newData.CFR_US_$);
               rowData.push(caltotal(newData.CTS,newData.CFR_US_$));
               rowData.push('<button type="button" onclick="ondelete(this)" class="btn btn-danger btn-xs bt-delete" id="1"><span class="fe fe-trash-2 fe-16" aria-hidden="true"></span></button>');
-              if(!isRowExists(table,rowData) && !isRowExists(dataTable,rowData) && !isRowExists(hidetable,rowData))
+              if(!isRowExists(table,rowData) && !isRowExists(dataTable,rowData) && !isRowExists(hidetable,rowData)&& !isRowExists(tallytable,rowData) && !isRowExists(removetallytable,rowData))
               {
                   table.row.add(rowData).draw();
                   updatefooter(rowData);
@@ -852,7 +1028,7 @@ function sendinvoicedata(data){
               rowData.push(data.remark);
               rowData.push(data.price);
               rowData.push('<button type="button" class="btn btn-primary btn-xs dt-edit mr-3" id="edit-button" ><span class="fe fe-edit fe-16" aria-hidden="true"></span></button><button type="button" class="btn btn-danger btn-xs dt-delete"><span class="fe fe-trash-2 fe-16" aria-hidden="true"></span></button>');
-              if(!isRowExists(dataTable,rowData) && !isRowExists(table,rowData) && !isRowExists(hidetable,rowData))
+              if(!isRowExists(dataTable,rowData) && !isRowExists(table,rowData) && !isRowExists(hidetable,rowData)&& !isRowExists(tallytable,rowData) && !isRowExists(removetallytable,rowData))
               {
                   dataTable.row.add(rowData).draw();
 
