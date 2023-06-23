@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "account",
     "inventory",
+    "parcels_jewellery",
+    "message",
 ]
 
 MIDDLEWARE = [
@@ -84,8 +86,8 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": "sailam",
-        "USER": "admin",
-        "PASSWORD": "Admin@321",
+        "USER": "postgres",
+        "PASSWORD": "Fenil@3241",
         "HOST": "localhost",
         "PORT": "5432",
     }
@@ -134,3 +136,4 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
+LOGIN_URL= "/"

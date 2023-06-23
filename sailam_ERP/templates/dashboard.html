@@ -1,12 +1,312 @@
-{% extends "base.html" %} {%load static%}{%block title %} Dashboard {%endblock title %}
+{% extends "base.html" %} 
+{%load static%}
+{%block title %} Dashboard {%endblock title %}
+
+{% block header_files%}
+<style>
+    #chart-container {
+        height: 300px; 
+        width: 100%;
+    }
+</style>
+{% endblock header_files%}
+
 {%block content %}
 
-<div class="main-panel">
-    <div class="d-flex">
-        <div>
-            <h2 class="main-content-title tx-24 mg-b-5">Welcome To Dashboard</h2>
+
+<div class="col-12">
+    <div class="row align-items-center mb-2">
+        <div class="col">
+           <h2 class="h5 page-title">Welcome! {{user.first_name}} {{user.last_name}}</h2>
         </div>
     </div>
 </div>
 
+<div class="row col-md-12 my-4">
+    <div class="col-md-4">
+      <div class="card shadow mb-4">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col">
+              <small class="text-muted mb-1">Total Diamond</small>
+              <h3 class="card-title mb-0">{{total_diam}}</h3>
+            </div>
+            <div class="col-4 text-right">
+              <span class="sparkline inlineline"></span>
+            </div>
+          </div>
+        </div> 
+      </div> 
+    </div> 
+    <div class="col-md-4">
+      <div class="card shadow mb-4">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col">
+              <small class="text-muted mb-1">Total Sell</small>
+              <h3 class="card-title mb-0">{{total_sell}}</h3>
+            </div>
+            <div class="col-4 text-right">
+              <span class="sparkline inlinepie"></span>
+            </div>
+          </div> 
+        </div> 
+      </div> 
+    </div> 
+    <div class="col-md-4">
+      <div class="card shadow mb-4">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col">
+              <small class="text-muted mb-1">Live Diamond Stock</small>
+              <h3 class="card-title mb-0">{{live_diam}}</h3>
+            </div>
+            <div class="col-4 text-right">
+              <span class="sparkline inlinebar"></span>
+            </div>
+          </div> 
+        </div> 
+      </div> 
+    </div> 
+</div>
+
+<div class="row col-md-12 my-4">
+    <div class="col-md-4">
+      <div class="card shadow mb-4">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col">
+              <small class="text-muted mb-1">Live Jewellery Stock</small>
+              <h3 class="card-title mb-0">{{live_jewelery}}</h3>
+            </div>
+            <div class="col-4 text-right">
+              <span class="discrete"></span>
+            </div>
+          </div> 
+        </div> 
+      </div> 
+    </div> 
+    <div class="col-md-4">
+      <div class="card shadow mb-4">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col">
+              <small class="text-muted mb-1">Live Parcel Stock</small>
+              <h3 class="card-title mb-0">{{live_parcel}}</h3>
+            </div>
+            <div class="col-4 text-right">
+              <span class="inlinesparkline">1,4,4,7,5,9,10</span>
+            </div>
+          </div> 
+        </div> 
+      </div> 
+    </div> 
+    <div class="col-md-4">
+      <div class="card shadow mb-4">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col">
+              <small class="text-muted mb-1">No. Of Inquries</small>
+              <h3 class="card-title mb-0">{{inquirey}}</h3>
+            </div>
+            <div class="col-4 text-right">
+              <span class="tristate"></span>
+            </div>
+          </div> 
+        </div> 
+      </div> 
+    </div> 
+</div>
+
+<div class="col-md-12">
+    <div class="card shadow">
+      <div class="card-body">
+        <div id="chart-container" class="col-md-12">
+            <canvas id="chart"></canvas>
+        </div>
+      </div>
+    </div>
+</div>
+
+<div class="row col-md-10 my-4">
+    <div class="col-md-5 mt-5">
+        <div class="card shadow">
+          <div class="card-body">
+            <h2 class="h5 page-title">Location Wise Buying Data(1 Year)</h2>
+            <div id="chart-container align-items-center">
+                <canvas id="piechart"></canvas>
+            </div>
+          </div>
+        </div>
+    </div>
+    <div class="col-md-5 mt-5">
+        <div class="card shadow">
+          <div class="card-body">
+            <h2 class="h5 page-title">Location Wise Selling Data(1 Year)</h2>
+            <div id="chart-container align-items-center">
+                <canvas id="piechart1"></canvas>
+            </div>
+          </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.onload = function() {
+        var ctx = document.getElementById('piechart').getContext('2d');
+        var labels = {{ labels|safe }};
+        labelsbuy = labels.map(function(label) {
+            return label + ' Buy';
+        });
+        var chart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: labelsbuy,
+                datasets: [{
+                    data: {{ bought_data|safe }},
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                }
+            }
+        });
+        
+        var ctx = document.getElementById('piechart1').getContext('2d');
+            labelssell = labels.map(function(label) {
+                return label + ' Sell';
+            });
+        var chart1 = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: labelssell,
+                datasets: [{
+                    data: {{ sold_data|safe }},
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    };
+</script>
+
+  <script src="{% static '/assets/js/simplebar.min.js' %}"></script>
+  <script src="{% static '/assets/js/daterangepicker.js' %}"></script>
+  <script src="{% static '/assets/js/jquery.stickOnScroll.js' %}"></script>
+  <script src="{% static '/assets/js/tinycolor-min.js' %}"></script>
+  <script src="{% static '/assets/js/config.js' %}"></script>
+  <script src="{% static '/assets/js/d3.min.js' %}"></script>
+  <script src="{% static '/assets/js/topojson.min.js' %}"></script>
+  <script src="{% static '/assets/js/datamaps.all.min.js' %}"></script>
+  <script src="{% static '/assets/js/datamaps-zoomto.js' %}"></script>
+  <script src="{% static '/assets/js/datamaps.custom.js' %}"></script>
+  <script src="{% static '/assets/js/Chart.min.js' %}"></script>
+  <script>
+    /* defind global options */
+    Chart.defaults.global.defaultFontFamily = base.defaultFontFamily;
+    Chart.defaults.global.defaultFontColor = colors.mutedColor;
+    $(function() {
+        var myvalues = [1,1,0,1,-1,-1,1,-1,0,0,1,1];
+        $('.inlinesparkline').sparkline();
+        $('.tristate').sparkline(myvalues,{type: 'tristate', barColor: 'green'});
+        $('.discrete').sparkline(myvalues,{type: 'discrete', barColor: 'green'});
+    });
+
+  </script>
+  <script src="{% static '/assets/js/gauge.min.js' %}"></script>
+  <script>
+    $(document).ready(function() {
+        var chartData = [];
+    
+        function fetchData() {
+            // Fetch data from the Django backend for the specified time range
+            $.ajax({
+                url: "{% url 'get_sells' %}",
+                method: 'GET',
+                success: function(response) {
+                    chartData = response;
+                    renderChart();
+                },
+                error: function() {
+                    console.error('Failed to fetch data from the backend.');
+                }
+            });
+        }
+    
+        function renderChart() {
+            // Extract the necessary data from the JSON response
+            var labels = chartData.x;
+            var buyCounts = chartData.buy;
+            var sellCounts = chartData.sell;
+    
+            // Set up the bar chart data
+            var data = {
+                labels: labels,
+                datasets: [{
+                    label: 'Buy',
+                    data: buyCounts,
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }, {
+                    label: 'Sell',
+                    data: sellCounts,
+                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            };
+    
+            // Set up the bar chart options
+            var options = {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Time Interval'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Diamond'
+                        }
+                    }
+
+                },
+                plugins: {
+                }
+            };
+            // Get the chart canvas element
+            var ctx = document.getElementById('chart').getContext('2d');
+            // Create the bar chart using Chart.js
+            new Chart(ctx, {
+                type: 'bar',
+                data: data,
+                options: options
+            });
+            
+        }
+    
+    
+        // Initial data fetch for the last 1 year
+        fetchData();
+    });
+    
+  </script>
 {%endblock content %}
