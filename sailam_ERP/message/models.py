@@ -9,3 +9,7 @@ class Message(models.Model):
     Time=models.DateTimeField(auto_now_add=True)
     Changes=models.TextField(null=True,blank=True)
     
+class Inquiry(models.Model):
+         id=models.BigAutoField(primary_key=True)
+         date=models.DateTimeField(auto_now_add=True)
+         inquiry=models.CharField(max_length=5000,null=True,blank=True)

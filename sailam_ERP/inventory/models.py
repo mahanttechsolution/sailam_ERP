@@ -32,16 +32,8 @@ class inventory(models.Model):
     Location=models.CharField(max_length=100,blank=True,null=True)
     Match=models.CharField(max_length=100,blank=True,null=True)
     def __str__(self):
-        return "STK_ID: "+self.STK_ID+" Remark: "+self.REMARK+" Mesurement: "+self.MESUREMNT
+        return "STK_ID: "+self.STK_ID+" CRT: "+str(self.CRT)+" Mesurement: "+self.MESUREMNT
     
-
-class ActivityLog(models.Model):
-    Log_Id = models.AutoField(primary_key=True)
-    User = models.ForeignKey("account.User", on_delete=models.CASCADE)
-    TimeStamp = models.DateTimeField(auto_now_add=True)
-    Log_message = models.TextField()
-    Notified = models.BooleanField(default=False)
-
 
 class Video(models.Model):
     id_inv = models.ForeignKey("inventory.inventory", on_delete=models.CASCADE)

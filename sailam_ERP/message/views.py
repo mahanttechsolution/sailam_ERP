@@ -25,7 +25,7 @@ def getMessage(requets):
 
 @login_required
 def getLog(request):
-    messObj=Message.objects.all().values()
+    messObj=Message.objects.all().order_by('-Time').values()
     messages=[]
     for obj in messObj:
        mess={}

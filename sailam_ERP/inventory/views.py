@@ -102,24 +102,27 @@ def getGroupData(request):
             if size==1:
                continue
             group["child_data"]=[]
+            cnt=0
             for i in range(0,size):
                inv={}
                invobj=inventory.objects.filter(STK_ID=ids[i],InvoiceMade=False,IsHide=False).first()
-               if  i==0:
-                  group["stk_id"]=invobj.STK_ID
-                  group["gia"]=invobj.GIA_NO
-                  group["desc"]="<b>Shape:</b> "+invobj.SHAPE+", <b>Color:</b> "+invobj.COLOR+", <b>Clarity:</b> "+invobj.CLARITY
-                  group["weight"]=invobj.CRT
-                  group["measurement"]=invobj.MESUREMNT
-                  group["price"]=invobj.PRICE
-               else:
-                  inv["stk_id"]=invobj.STK_ID
-                  inv["gia"]=invobj.GIA_NO
-                  inv["desc"]="<b>Shape:</b> "+invobj.SHAPE+", <b>Color:</b> "+invobj.COLOR+", <b>Clarity:</b> "+invobj.CLARITY
-                  inv["weight"]=invobj.CRT
-                  inv["measurement"]=invobj.MESUREMNT
-                  inv["price"]=invobj.PRICE
-                  group["child_data"].append(inv)
+               if invobj:
+                if  cnt==0:
+                    group["stk_id"]=invobj.STK_ID
+                    group["gia"]=invobj.GIA_NO
+                    group["desc"]="<b>Shape:</b> "+invobj.SHAPE+", <b>Color:</b> "+invobj.COLOR+", <b>Clarity:</b> "+invobj.CLARITY
+                    group["weight"]=invobj.CRT
+                    group["measurement"]=invobj.MESUREMNT
+                    group["price"]=invobj.PRICE
+                else:
+                    inv["stk_id"]=invobj.STK_ID
+                    inv["gia"]=invobj.GIA_NO
+                    inv["desc"]="<b>Shape:</b> "+invobj.SHAPE+", <b>Color:</b> "+invobj.COLOR+", <b>Clarity:</b> "+invobj.CLARITY
+                    inv["weight"]=invobj.CRT
+                    inv["measurement"]=invobj.MESUREMNT
+                    inv["price"]=invobj.PRICE
+                    group["child_data"].append(inv)
+                cnt+=1
             data.append(group)
         # print(data)
     return HttpResponse(json.dumps(data))
