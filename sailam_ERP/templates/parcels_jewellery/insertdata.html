@@ -57,6 +57,7 @@
             <div class="col-sm-4 mb-4">
               <label for="color">Color</label>
               <input type="text" class="form-control" id="color" name="color" value="">
+              <div id="suggestion-list" class="list-group"></div>
             </div>
           </div>
 
@@ -126,4 +127,51 @@
       </div>
     </form>
   </div>
+
+  <script>
+    $(document).ready(function () {
+      var colordata =JSON.parse("{{colordata|escapejs}}");
+      var data=[];
+      for(var x in colordata){
+        data.push(colordata[x].color);
+    }
+      $('#color').on('input', function () {
+          var query = $(this).val();
+          showSuggestions(query);
+      });
+
+      function showSuggestions(query) {
+          var suggestionList = $('#suggestion-list');
+          suggestionList.empty();
+
+          if (query.length === 0) {
+              suggestionList.hide();
+              return;
+          }
+
+          var matchingSuggestions = data.filter(function (suggestion) {
+              return suggestion.toLowerCase().includes(query.toLowerCase());
+          });
+
+          matchingSuggestions.forEach(function (suggestion) {
+              var listItem = $('<a>').text(suggestion).addClass('list-group-item list-group-item-action');
+              suggestionList.append(listItem);
+          });
+
+          suggestionList.show();
+      }
+
+      $('#suggestion-list').on('click', '.list-group-item', function () {
+          var selectedSuggestion = $(this).text();
+          $('#color').val(selectedSuggestion);
+          $('#suggestion-list').hide();
+      });
+
+      $(document).on('click', function (event) {
+          if (!$(event.target).closest('#color').length) {
+              $('#suggestion-list').hide();
+          }
+      });
+  });
+  </script>
 {% endblock content%}

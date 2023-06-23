@@ -39,3 +39,11 @@ class Type(models.Model):
     def __str__(self):
         return self.Name
     
+class Color(models.Model):
+    Id=models.BigAutoField(primary_key=True)
+    Name=models.CharField(max_length=100,unique=True)
+    CreatedOn=models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.Name
+    

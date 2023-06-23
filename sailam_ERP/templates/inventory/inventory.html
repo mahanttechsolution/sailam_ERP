@@ -56,6 +56,76 @@
       });
     });
   });
+  
+  $(document).ready(function () {
+    var locationdata =JSON.parse("{{locationdata|escapejs}}");
+    var data=[];
+    for(var x in locationdata){
+      data.push(locationdata[x].location);
+  }
+    $('#location').on('input', function () {
+        var query = $(this).val();
+        showSuggestions(query);
+    });
+
+    function showSuggestions(query) {
+        var suggestionList = $('#suggestion-list');
+        suggestionList.empty();
+
+        if (query.length === 0) {
+            suggestionList.hide();
+            return;
+        }
+
+        var matchingSuggestions = data.filter(function (suggestion) {
+            return suggestion.toLowerCase().includes(query.toLowerCase());
+        });
+
+        matchingSuggestions.forEach(function (suggestion) {
+            var listItem = $('<a>').text(suggestion).addClass('list-group-item list-group-item-action');
+            suggestionList.append(listItem);
+        });
+
+        suggestionList.show();
+    }
+
+    $('#suggestion-list').on('click', '.list-group-item', function () {
+        var selectedSuggestion = $(this).text();
+        $('#location').val(selectedSuggestion);
+        $('#suggestion-list').hide();
+    });
+
+    $(document).on('click', function (event) {
+        if (!$(event.target).closest('#location').length) {
+            $('#suggestion-list').hide();
+        }
+    });
+    $('#dohide').on('change', function() {
+      if ($(this).is(':checked')) {
+          $('#hidden-dropdown').show();
+      } else {
+          $('#hidden-dropdown').hide();
+      }
+
+      $.ajax({
+        url: "{% url 'getStk' %}",
+        method: 'GET',
+        success: function(data) {
+            var dropdown = $('#dropdown');
+            dropdown.empty();
+            respdata=JSON.parse(data)
+            respdata.forEach(function(stkId) {
+              dropdown.append('<option value="' + stkId + '">' + stkId + '</option>');
+          });
+        },
+        error: function() {
+            console.log('Error occurred while fetching data.');
+        }
+    });
+
+  });
+
+});
 
 
   function printImg(e) {
@@ -211,15 +281,30 @@ Diamond Data
         </div>
 
         <div class="form-row">
-          <div class="col-sm-12 mb-3">
+          <div class="col-sm-8 mb-8">
             <label for="formGroupExampleInput">Description</label>
             <input type="text" class="form-control" id="desc" name="desc" value="">
           </div>
-        </div>
-        <div class="d-flex justify-content-center">
-          <div style="margin-right:15px">
-            <button type="submit" class="btn btn-primary" id="namebutton">Upload Data</button>
+          <div class="col-sm-4 mb-4">
+            <label for="location">Location</label>
+            <input type="text" class="form-control" id="location" name="location" value="">
+            <div id="suggestion-list" class="list-group"></div>
           </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="col-sm-4 mb-4">
+          <label for="dohide" class="ml-3"> Is Matching Pair Exist?</label><br>
+          <input  type="checkbox" class="ml-3" id="dohide" name="dohide" value="Exist">
+        </div>
+        <div class="col-sm-4 mb-4" style="display: none;"  id="hidden-dropdown">
+          <label for="dropdown">Select Matching Id:</label>
+          <select name="dropdown" id="dropdown" class="form-control"></select>
+      </div>
+    </div>
+      <div class="d-flex justify-content-center">
+        <div style="margin-top:15px">
+          <button type="submit" class="btn btn-primary" id="namebutton">Upload Data</button>
         </div>
       </div>
   </form>

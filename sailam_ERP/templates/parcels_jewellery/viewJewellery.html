@@ -83,17 +83,30 @@
 
         // Delete the row
         $('#datatable').on('click', '.dt-delete', function () {
+            var button = $(this);
             var row = table.row($(this).closest('tr'));
             var row_data = row.data();
-            if(confirm("Are you sure to delete this row?")){
+            if(confirm("Are you sure to "+button.val()+" this row?")){
                 $.ajax({
                     headers: {'X-CSRFToken': document.getElementById('csrf').querySelector('input').value},
                     url: '{% url "jewellerydelete_data_endpoint" %}',
                     type: 'POST',
                     data: { 'id': row_data['Id'] },
                     success: function (response) {
-                        row.remove().draw();
-                        console.log('Data deleted successfully!');
+                        if(button.val()=="Hide")
+                        {
+                            button.removeClass('btn-danger').addClass('btn-primary');
+                            button.text('Show');
+                            button.val('Show');
+                        }
+                        else
+                        {
+                            button.removeClass('btn-primary').addClass('btn-danger');
+                            button.text('Hide');
+                            button.val('Hide');
+                        }
+                        row.draw();
+                        console.log('Data Hide/Show successfully!');
                     },
                     error: function (xhr, errmsg, err) {
                         console.log('Failed to delete data:', errmsg);
