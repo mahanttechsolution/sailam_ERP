@@ -762,6 +762,18 @@ def send_pdf_response(request, file_name):
     else:
         return HttpResponse("File not found.")
     
+def send_qr_response(request, file_name):
+    url = f'/media/qr/'+file_name
+    file_path = f'{BASE_DIR}{url}'
+    print(file_path)
+    if os.path.exists(file_path):
+        f = open(file_path, "rb")
+        response = FileResponse(f, content_type='application/pdf')
+        response['Content-Disposition'] = 'inline; filename="{}"'.format(file_name)
+        return response
+    else:
+        return HttpResponse("File not found.")
+    
 
 def preparedMemo(request):
    memoobj=Memo.objects.filter(is_deleted=False).values()

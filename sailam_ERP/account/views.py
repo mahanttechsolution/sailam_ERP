@@ -90,7 +90,6 @@ def login(request):
                 'bought_data': bought_data,
                 'sold_data': sold_data
             }
-        print(user.groups.all().values()[0]['name'])
         return render(request,'dashboard.html',context)
      else:
         return render(request,'account/login.html')
