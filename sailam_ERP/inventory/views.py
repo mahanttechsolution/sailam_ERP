@@ -648,6 +648,18 @@ def setMemoData(request):
         else:
             return HttpResponse("Error")
 
+def add_colored_text(canvas, text, font_colors):
+    canvas.saveState()
+    canvas.setFont("Helvetica", 12)  # Set the font and size
+
+    x, y = 100, 100  # Starting position of the text
+    for char, font_color in zip(text, font_colors):
+        canvas.setFillColor(font_color)  # Set the font color for each character
+        canvas.drawString(x, y, char)  # Draw the character at the desired position
+        x += canvas.stringWidth(char, "Helvetica", 12)  # Move the x-coordinate to the next character
+
+    canvas.restoreState()
+
 
 def gen_report(request,data,memo):
     file_name="memo_"+str(memo.id_memo)+".pdf"
@@ -673,13 +685,13 @@ def gen_report(request,data,memo):
 
     # Company details
     company_details = [
-        '<b><font size="15">SAILAM LIMITED</font></b>',
-        "ROOM 1721, BEVERELY COMMERCIAL CENTER,",
+        '<b><font size="15"><font color="#E12A05">S</font><font color="#6978EE">A</font><font color="#FB7B16">I</font><font color="#4FD51E">L</font><font color="#20238E">A</font><font color="#F7F912">M</font><font color="#065A0C"> L</font><font color="#DD1FD1">I</font><font color="#F26B18">M</font><font color="red">I</font><font color="#D42014">T</font><font color="#100E85">E</font><font color="#FA1D4B">D</font></font></b>',
+        'ROOM 1721, BEVERELY COMMERCIAL CENTER,',
         "87 CHATHAM ROAD SOUTH, TSIM SHA SUI HONGKONG",
-        "<b>TELEPHONE :</b> 852-24241425 , 852-24241427",
+        "<b>TELEPHONE: </b> 852-24241425 , 852-24241427",
         "<b>Wechat ID: </b>sailamsam",
-        "<b>Mobile :</b> 852 9122 4906",
-        "<b>email:</b> sailamltdhk@gmail.com",
+        "<b>Mobile: </b> 852 9122 4906",
+        "<b>email: </b> sailamltdhk@gmail.com",
         "<b>RAP NET ID</b> : 89199",
     ]
 
@@ -1022,7 +1034,7 @@ def gen_invoice(request, data, invoice):
     
     # Company details
     company_details = [
-        '<font size="15">SAILAM LIMITED</font>',
+        '<b><font size="15"><font color="#E12A05">S</font><font color="#6978EE">A</font><font color="#FB7B16">I</font><font color="#4FD51E">L</font><font color="#20238E">A</font><font color="#F7F912">M</font><font color="#065A0C"> L</font><font color="#DD1FD1">I</font><font color="#F26B18">M</font><font color="red">I</font><font color="#D42014">T</font><font color="#100E85">E</font><font color="#FA1D4B">D</font></font></b>',
         "ROOM 1721, BEVERELY COMMERCIAL CENTER,",
         "87 CHATHAM ROAD SOUTH, TSIM SHA SUI HONGKONG",
         "<b>TELEPHONE :</b> 852-24241425 , 852-24241427",
