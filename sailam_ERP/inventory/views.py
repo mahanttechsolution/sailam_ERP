@@ -5,7 +5,7 @@ from django.http import HttpResponse, FileResponse, JsonResponse
 import requests
 import json
 from django.conf import settings
-
+from django.db.models import Q
 from  message.format import saveMessage
 from  account.models import User
 from .models import Invoice, InvoiceData, Location, Tally, TallyData, inventory,Client,Memo,MemoData
@@ -166,7 +166,11 @@ def insertDiamond(request):
         else:
             scan = encrypt(inventory.objects.last().Id)
         # print(scan)
-        exist = inventory.objects.filter(GIA_NO=giano,STK_ID=stkid).values()
+        exist=None
+        if not giano:
+         exist = inventory.objects.filter(STK_ID=stkid).values()
+        else:
+         exist = inventory.objects.filter(Q(GIA_NO=giano) | Q(STK_ID=stkid)).values()
         if not exist:
             stock = inventory.objects.create(
                 SHAPE=shape,
@@ -210,7 +214,7 @@ def insertDiamond(request):
                 form = VideoForm(request.POST, request.FILES)
                 if form.is_valid():
                     #    saving video and image to media
-                    if form.data['image'] or form.data['file'] or form.data['link']:
+                    if "image" in request.FILES or "file" in request.FILES or link:
                         video = form.save(commit=False)
                         video.id_inv = stock
                         video.save()
