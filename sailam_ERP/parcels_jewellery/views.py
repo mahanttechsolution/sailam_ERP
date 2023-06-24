@@ -4,6 +4,8 @@ from django.conf import settings
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.core.files.storage import default_storage
+
+from message.format import saveMessage
 from .models import Color, Parcels,Jewellery, Type
 from django.contrib.auth.decorators import login_required
 
@@ -31,6 +33,7 @@ def inputView(request):
                     parcel=Parcels.objects.create(Stk_Id=stkid,Crt=crt,Clarity=clarity,Desc=desc,Price=price,Color=color,Image=file,Shape=shape,CretedBy=user)
                     Color.objects.get_or_create(Name=color)
                     if parcel:
+                        saveMessage("parcel",user,"Parcel",stkid,"Inserted",user.get_username())
                         return render(request,'parcels_jewellery/insertdata.html',{'message':'Parcel Inserted Successfully','dropdown_data':typeData,'colordata':colorData})
                     else:
                         return render(request,'parcels_jewellery/insertdata.html',{'errormessage':'Parcel Is Not Inserted','dropdown_data':typeData,'colordata':colorData})
@@ -47,6 +50,7 @@ def inputView(request):
                 print(desc,price,color,file,jewelType)
                 jewellery=Jewellery.objects.create(Desc=desc,Price=price,Color=color,Image=file,CretedBy=user,Type=jewelTypeObj)
                 if jewellery:
+                    saveMessage("parcel",user,"Jewellery",jewellery.Id,"Inserted",user.get_username())
                     return render(request,'parcels_jewellery/insertdata.html',{'message':'Jewellery Inserted Successfully','dropdown_data':typeData,'colordata':colorData})
                 else:
                     return render(request,'parcels_jewellery/insertdata.html',{'errormessage':'Jewellery Is Not Inserted','dropdown_data':typeData,'colordata':colorData})
@@ -115,15 +119,24 @@ def data_endpoint(request):
         
     return JsonResponse(data, safe=False)
 
+
 @login_required
 def update_data_endpoint(request):
     if request.method == 'POST':
+        user=request.user
         id = request.POST.get('id')
         column = request.POST.get('column')
         value = request.POST.get('value')
         parcelobj=Parcels.objects.get(Stk_Id=id)
+        old_value=getattr(parcelobj,column)
         setattr(parcelobj, column, value)
         parcelobj.save()
+        diff={}
+        diff[column]={
+                            'old_value': old_value,
+                            'new_value': value
+                     }
+        saveMessage("parcel",user,"Parcel",id,"Updated",user.get_username(),**{'changes':str(diff)})
         return JsonResponse({'success': True})
     return JsonResponse({'success': False})
 
@@ -135,8 +148,10 @@ def delete_data_endpoint(request):
         parcelobj=Parcels.objects.filter(Stk_Id=id).first()
         if parcelobj.Isdeleted==False:
             parcelobj.Isdeleted=True
+            saveMessage("parcel",user,"Parcel",id,"Hided",user.get_username())
         else: 
             parcelobj.Isdeleted=False
+            saveMessage("parcel",user,"Parcel",id,"Showed",user.get_username())
         parcelobj.UpdatedBy=user
         parcelobj.save()
         return JsonResponse({'success': True})
@@ -166,12 +181,20 @@ def jewellerydata_endpoint(request):
 @login_required
 def jewelleryupdate_data_endpoint(request):
     if request.method == 'POST':
+        user=request.user
         id = request.POST.get('id')
         column = request.POST.get('column')
         value = request.POST.get('value')
         jewelleryobj=Jewellery.objects.get(Id=id)
+        old_value=getattr(jewelleryobj,column)
         setattr(jewelleryobj, column, value)
         jewelleryobj.save()
+        diff={}
+        diff[column]={
+                            'old_value': old_value,
+                            'new_value': value
+                     }
+        saveMessage("parcel",user,"Jewellery",id,"Updated",user.get_username(),**{'changes':str(diff)})
         return JsonResponse({'success': True})
     return JsonResponse({'success': False})
 
@@ -183,8 +206,10 @@ def jewellerydelete_data_endpoint(request):
         jewelleryobj=Jewellery.objects.filter(Id=id).first()
         if jewelleryobj.Isdeleted==False:
             jewelleryobj.Isdeleted=True
+            saveMessage("parcel",user,"Jewellery",id,"Hided",user.get_username())
         else:
             jewelleryobj.Isdeleted=False
+            saveMessage("parcel",user,"Jewellery",id,"Showed",user.get_username())
         jewelleryobj.UpdatedBy=user
         jewelleryobj.save()
         return JsonResponse({'success': True})

@@ -29,6 +29,7 @@ class User(AbstractUser,PermissionsMixin):
     )
    username=None
    email=models.EmailField(('email address'),unique=True)
+   mobile=models.CharField(max_length=15,blank=True,null=True)
    USERNAME_FIELD='email'
    REQUIRED_FIELDS=['first_name','last_name']
    objects=UserManager()

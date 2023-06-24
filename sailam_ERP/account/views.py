@@ -5,7 +5,7 @@ from django.shortcuts import redirect, render
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib.auth import authenticate,login as auth_login,logout
-
+from django.contrib.auth.decorators import login_required
 from account.decorator import allowed_user
 from .models import User,role
 from django.db.models import Q
@@ -102,7 +102,8 @@ def register(request):
        confirmpassword=request.POST.get("inputPassword6")
        firstname=request.POST.get("firstname")
        lastname=request.POST.get("lastname")
-       print(email,firstname,lastname)
+       mobile=request.POST.get("mobile")
+    #    print(email,firstname,lastname)
        
        if User.objects.filter(email=email).exists():
           return render(request,'account/register.html',{"message":"User Already Exist"})
@@ -111,7 +112,7 @@ def register(request):
           if password!=confirmpassword:
              return render(request,'account/register.html',{"message":"Password and Confirm Password is not matching"})
           else:
-           created = User.objects.create_user(email=email,firstname=firstname,lastname=lastname,password=password)
+           created = User.objects.create_user(email=email,firstname=firstname,lastname=lastname,password=password,mobile=mobile)
            auth_login(request,created)
            user=request.user
            setData()
@@ -123,11 +124,15 @@ def register(request):
                 'live_jewelery':live_jewelery,
                 'live_parcel':live_parcel,
                 'inquirey':inquirey,
+                'labels': labels,
+                'bought_data': bought_data,
+                'sold_data': sold_data
             }
            return render(request,'dashboard.html',context)
     else:
      return render(request,'account/register.html')
 
+@login_required
 def logoutUser(request):
    logout(request)
    return redirect('login_account')
@@ -172,10 +177,12 @@ def fetch_data(request):
 
     return JsonResponse(data,safe=False)
 
+@login_required
 def getProfileView(request):
    return render(request,'account/profile.html')
 
 
+@login_required
 def getUsers(request):
    users=[]
    userobj=User.objects.all().values()
@@ -184,6 +191,7 @@ def getUsers(request):
       user["name"]=obj['first_name']+" "+obj['last_name']
       user['username']=obj['email']
       user['date']=str(obj['date_joined'].date())
+      user['mobile']=obj['mobile']
       user['role']=role.objects.filter(role_id=obj['role_id']).first().role_name
       user['isActive']=obj['is_active']
       users.append(user)
