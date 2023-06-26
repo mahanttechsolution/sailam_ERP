@@ -100,7 +100,18 @@
             $('#suggestion-list').hide();
         }
     });
-    $('#dohide').on('change', function() {
+    
+
+});
+
+
+  function printImg(e) {
+    window.open(e.value);
+  }
+</script>
+
+<script>
+  $('#dohide').on('change', function() {
       if ($(this).is(':checked')) {
           $('#hidden-dropdown').show();
       } else {
@@ -124,14 +135,8 @@
     });
 
   });
-
-});
-
-
-  function printImg(e) {
-    window.open(e.value);
-  }
-</script>
+  
+  </script>
 {%endblock footer_files%}
 
 {% block title%}

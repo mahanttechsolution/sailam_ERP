@@ -24,6 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('account.urls'),name='account'),
     path('inventory/',include('inventory.urls'),name='inventory'),
+    path('company/',include('company_website.urls'),name='company'),
     path('parcels/',include('parcels_jewellery.urls'),name='parcels_jewellery'),
     path('message/',include('message.urls'),name='message'),
 ]+static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

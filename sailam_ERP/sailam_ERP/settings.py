@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "inventory",
     "parcels_jewellery",
     "message",
+    "company_website",
 ]
 
 MIDDLEWARE = [
@@ -87,7 +88,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": "sailam",
         "USER": "postgres",
-        "PASSWORD": "Fenil@3241",
+        "PASSWORD": "Admin@321",
         "HOST": "localhost",
         "PORT": "5432",
     }
