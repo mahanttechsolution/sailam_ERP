@@ -1,56 +1,7 @@
+{% extends 'company/base.html' %}
 {% load static %}
-<!doctype html>
-<html lang="en">
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="icon" href="favicon.ico">
-    <title>Diamond Details</title>
-    <!-- Simple bar CSS -->
-    <link rel="stylesheet" href="{% static '/assets/css/simplebar.css' %}">
-    <!-- Fonts CSS -->
-    <link
-        href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,100;0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap"
-        rel="stylesheet">
-    <!-- Icons CSS -->
-    <link rel="stylesheet" href="{% static '/assets/css/feather.css' %}">
-    <!-- Date Range Picker CSS -->
-    <link rel="stylesheet" href="{% static '/assets/css/daterangepicker.css' %}">
-    <!-- App CSS -->
-    <link rel="stylesheet" href="{% static '/assets/css/app-light.css' %}" id="lightTheme">
-    <link rel="stylesheet" href="{% static '/assets/css/app-dark.css' %}" id="darkTheme" disabled>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-
-</head>
-
-<body style="overflow: hidden">
-    <nav class="topnav navbar navbar-light bg-white shadow">
-        <div class="container-fluid">
-            <ul class="nav">
-                <li class="nav-item">
-                    <div class="w-100 mb-1 d-flex my-2">
-                        <a class="navbar-brand mx-auto  flex-fill " href="http://127.0.0.1:8000/">
-                            <img src="{% static 'image/logo.png' %}" alt="" height="50px" width="50px">
-                            <b>SAILAM LTD.</b>
-                        </a>
-                    </div>
-                </li>
-            </ul>
-            <ul class="nav">
-                <li class="nav-item float-right">
-                    <h6>Email: sailam@contact.com {%if not user.is_authenticated%}<a href="{%url 'login' %}"
-                            style="margin-left:15px ;"><span
-                                style="text-decoration: underline; color: red">Login</span></a>{%endif%}</h6>
-                </li>
-            </ul>
-        </div>
-    </nav>
-
+{%block content %}
 
 
     <div class="card" style="padding-bottom: 50px;">
@@ -278,33 +229,5 @@
     </script>
 
 
-    <style>
-        .inq {
-            padding-left: 1190px;
-        }
-
-        .mainhr {
-            width: 1350px;
-        }
-
-        .righthr {
-            width: 700px;
-        }
-
-        .imgst {
-            border-radius: 15px;
-            margin-left: 8px;
-
-        }
-
-        .customheader {
-            background-color: #d95d2eb8;
-            color: white;
-        }
-
-        .botpad {
-            margin-bottom: 5px;
-            font-size: 15px;
-        }
-    </style>
-</body>
+    
+    {%endblock content %}

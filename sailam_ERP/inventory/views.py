@@ -358,49 +358,42 @@ def StockInfo(request):
             print("------------->", e)
             stocks = inventory.objects.all()
             context = {"stocks": stocks}
-            return render(request, "inventory/all_details.html", context)
+            return render(request, "company/all_details.html", context)
 
 
-@login_required
-def filter(request):
-    shape = request.POST.getlist("shape[]")
-    color = request.POST.getlist("color[]")
-    location = request.POST.getlist("location[]")
-    symmetry = request.POST.getlist("symmetry[]")
-    polish = request.POST.getlist("polish[]")
-    clarity = request.POST.getlist("clarity[]")
-    fancy = request.POST.getlist("fancy[]")
-    weight = request.POST.getlist("weight[]")
-    
-    data = inventory.objects.filter()
-    print(color)
-    context = {"status": "0"}
-    return JsonResponse(context)
+
     
 
 @login_required
 def DiamondInfo(request):
     if request.method == "GET":
         q = request.GET["q"]
+        pic_status=0
         try:
             info = inventory.objects.get(Scan_Id=q)
-            pics = Video.objects.get(id_inv=info.Id)
-            num = 0
-            if pics.link:
-                print(pics.link)
-                num = 2
-            if pics.image:
-                print(pics.image)
-                num += 1
-            if pics.file:
-                print(pics.file)
-                num += 1
-            print(num)
+            try:
+                pics = Video.objects.get(id_inv=info.Id)
+                pic_status = 1
+                if pics.link:
+                    print(pics.link)
+                    num = 2
+                if pics.image:
+                    print(pics.image)
+                    num += 1
+                if pics.file:
+                    print(pics.file)
+                    num += 1
+            except:
+                num = 1
+                pics = ""
+                
+            
         except:
+            num = 1
             info = ""
             pics = ""
-        context = {"info": info, "pics": pics,"count":range(num-1)}
-        return render(request, "inventory/diamond_details.html", context=context)
+        context = {"info": info, "pics": pics,"count":range(num-1),"pic_status":pic_status}
+        return render(request, "company/diamond_details.html", context=context)
 
 
 def generate_text(sid, weight, shape, color, purity):
@@ -1027,6 +1020,7 @@ def setInvoiceData(request):
           inv=inventory.objects.filter(STK_ID=stk_id).first()
           if inv:
             inv.InvoiceMade=True
+            inv.IsHide=True
             inv.save()
           InvoiceData.objects.create(invoice=invoice,stk_no=inv,desc=description,pcs=pcs,weight=weight,cfr=cfr,total=total)
         response=gen_invoice(request,data,invoice)

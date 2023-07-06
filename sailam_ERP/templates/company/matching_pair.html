@@ -1,0 +1,109 @@
+
+<div class="col-lg-12">
+<table class="table table-striped hover" id="datatable" style="width:100%">
+    <thead class="thead-dark">
+        <tr>
+          <th>No.</th>
+          <th>Stock ID</th>
+          <th>GIA</th>
+          <th>Description</th>
+          <th>Weight</th>
+          <th>Mesurement</th>
+          <th>Price</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+</table>
+</div>
+
+<script>
+    $(document).ready(function() {
+        var table = $('#datatable').DataTable({
+          responsive: true,
+          columnDefs: [
+            { "targets": "_all", "className": 'details-control', "defaultContent": "-", }
+          ]
+        });
+      
+        // AJAX request to retrieve data
+        $.ajax({
+          url: "{% url 'getgroup'%}", 
+          method: 'GET',
+          dataType: 'json',
+          success: function(data) {
+            populateDataTable(data);
+          },
+          error: function(xhr, status, error) {
+            console.error(error);
+          }
+        });
+      
+        // Function to populate DataTable with data
+        function populateDataTable(data) {
+            var pre=1
+          $.each(data, function(index, item) {
+            var row = [
+              pre,
+              item.stk_id,
+              item.gia,
+              item.desc,
+              item.weight,
+              item.measurement,
+              item.price,
+            ];
+            pre+=1;
+            // Add the row to the DataTable
+            var datatableRow = table.row.add(row).draw().node();
+      
+            // Store the child row data for expanding
+            $(datatableRow).data('child', item.child_data);
+          });
+        }
+        
+        // Handle expanding/collapsing child rows
+        $('#datatable tbody').on('click', 'td.details-control', function() {
+          var tr = $(this).closest('tr');
+          var row = table.row(tr);
+          var childData = tr.data('child');
+      
+          if (row.child.isShown()) {
+            // This row is already open - close it
+            row.child.hide();
+            tr.removeClass('shown');
+          } else {
+            // Open this row
+            row.child(formatChildData(childData)).show();
+            tr.addClass('shown');
+          }
+        });
+      
+        // Function to format child row data
+        function formatChildData(childData) {
+          var html = '<div class="col-lg-12"><table class="child-table table table-hover" style="width:100%">';
+          html += '<thead><tr>';
+          html += '<th>Stock ID</th>';
+          html += '<th>GIA</th>';
+          html += '<th>Description</th>';
+          html += '<th>Weight</th>';
+          html += '<th>Mesurement</th>';
+          html += '<th>Price</th>';
+          html += '</tr></thead>';
+          html += '<tbody>';
+      
+          $.each(childData, function(index, childItem) {
+            html += '<tr>';
+            html += '<td>' + childItem.stk_id + '</td>';
+            html += '<td>' + childItem.gia + '</td>';
+            html += '<td>' + childItem.desc + '</td>';
+            html += '<td>' + childItem.weight + '</td>';
+            html += '<td>' + childItem.measurement + '</td>';
+            html += '<td>' + childItem.price + '</td>';
+            html += '</tr>';
+          });
+      
+          html += '</tbody></table></div>';
+      
+          return html;
+        }
+    });
+</script>

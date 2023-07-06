@@ -1,0 +1,356 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon.ico">
+    <title>Diamond Details</title>
+    <!-- Simple bar CSS -->
+    <link rel="stylesheet" href="{% static '/assets/css/simplebar.css' %}">
+    <!-- Fonts CSS -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,100;0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+    <!-- Datatable -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap4.min.css"
+        integrity="sha512-PT0RvABaDhDQugEbpNMwgYBCnGCiTZMh9yOzUsJHDgl/dMhD9yjHAwoumnUk3JydV3QTcIkNDuN40CJxik5+WQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap4.min.js"
+        integrity="sha512-OQlawZneA7zzfI6B1n1tjUuo3C5mtYuAWpQdg+iI9mkDoo7iFzTqnQHf+K5ThOWNJ9AbXL4+ZDwH7ykySPQc+A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+    <!-- Icons CSS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="{% static '/assets/css/feather.css' %}">
+    <!-- Date Range Picker CSS -->
+    <link rel="stylesheet" href="{% static '/assets/css/daterangepicker.css' %}">
+    <!-- App CSS -->
+    <link rel="stylesheet" href="{% static '/assets/css/app-light.css' %}" id="lightTheme">
+    <link rel="stylesheet" href="{% static '/assets/css/app-dark.css' %}" id="darkTheme" disabled>
+
+    {% comment %} Style fot Navbar {% endcomment %}
+    <style>
+        .navbar-brand {
+            transform: translateX(-50%);
+            left: 50%;
+            position: absolute;
+        }
+
+        .navbar-brand {
+            padding: 0px;
+        }
+
+        .navbar-brand>img {
+            height: 100%;
+            width: auto;
+            padding: 7px 14px;
+        }
+
+        .nav-link {
+            font-size: large;
+        }
+
+        .sign-up-btn {
+            color: #fff;
+            background-color: #f8f9fa00;
+            border-color: white;
+        }
+
+        .me-2{
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+
+        @media (max-width: 991px) {
+            .navbar-brand {
+                display: none;
+            }
+
+            .social_icon {
+                margin-left: 10px;
+                height: 90%;
+                width: 90%;
+            }
+
+            .me-2 {
+                margin-top: 10px;
+            }
+
+            
+
+            .search-box {
+                justify-content: center;
+                text-align: center;
+            }
+
+            .navbar-nav {
+                align-items: center;
+            }
+
+            .navbar-collapse {
+                text-align: center;
+            }
+        }
+
+        @media (min-width: 992px) {
+            .navbar-brand-logo {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+
+
+
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="padding-top: 30px; padding-bottom: 30px;">
+        <div class="container-fluid">
+            <div class="navbar-brand-logo">
+                <span><a href="#" style="text-decoration: none;"><img src="{% static 'image/logo.png' %}"
+                            alt="Dispute Bills" height="50px" width="50px">
+                        <b class="text-light">SAILAM LTD.</b></a>
+
+                </span>
+            </div>
+            
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="fe fe-menu navbar-toggler-icon"></i>
+              </button>
+            
+            <div class="collapse navbar-collapse" id="navbarSupportedContent" >
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link text-light" aria-current="page" href="#">Home</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link text-light" aria-current="page" href="#">About</a>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a href="#" id="dashboardDropdown" class="dropdown-toggle nav-link" role="button"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="ml-lg-2">Products</span><span class="sr-only">(current)</span>
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="dashboardDropdown">
+                            <a class="nav-link pl-lg-2" href="./index.html"><span class="ml-1">Diamond</span></a>
+                            <a class="nav-link pl-lg-2" href="./dashboard-analytics.html"><span
+                                    class="ml-1">Jewelry</span></a>
+                            <a class="nav-link pl-lg-2" href="./dashboard-sales.html"><span class="ml-1">Paracel &
+                                    Layout</span></a>
+
+                        </div>
+                    </li>
+
+
+                    <li class="nav-item">
+                        <a class="nav-link text-light" href="#" tabindex="-1" aria-disabled="true">Contact</a>
+                    </li>
+                    <li class="nav-item d-flex">
+
+                        <a class="nav-link social_icon text-light" href="#" tabindex="-1"><img
+                                src="{% static 'image/fb.svg' %}" alt=""></a>
+                        <a class="nav-link social_icon text-light" href="#" tabindex="-1"><img
+                                src="{% static 'image/wp.svg' %}" alt=""></a>
+                        <a class="nav-link social_icon text-light" href="#" tabindex="-1"><img
+                                src="{% static 'image/insta.svg' %}" alt=""></a>
+                    </li>
+
+                </ul>
+                <div class="navbar-brand">
+                    <span><a href="#" style="text-decoration: none;"><img src="{% static 'image/logo.png' %}"
+                                alt="Dispute Bills" height="50px" width="50px">
+                            <b class="text-light">SAILAM LTD.</b></a>
+
+                    </span>
+                </div>
+                <form class="form-inline ml-md-auto  me-2 d-lg-flex searchform text-muted search-box">
+                    <input class="form-control" type="search" placeholder="Search"
+                        aria-label="Search">
+                </form>
+                <button class="btn btn-light sign-up-btn me-2" type="submit">Sign Up</button>
+                <button class="btn btn-light  me-2" type="submit">Sign In</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+
+    {%block content %} {%endblock content %}
+        </div>
+    </div>
+    
+
+
+    <script src="{% static '/assets/js/jquery.min.js' %}"></script>
+    <script src="{% static '/assets/js/popper.min.js' %}"></script>
+    <script src="{% static '/assets/js/moment.min.js' %}"></script>
+    <script src="{% static '/assets/js/bootstrap.min.js' %}"></script>
+    <script src="{% static '/assets/js/simplebar.min.js' %}"></script>
+    <script src="{% static '/assets/js/daterangepicker.js' %}"></script>
+    <script src="{% static '/assets/js/jquery.stickOnScroll.js' %}"></script>
+    <script src="{% static '/assets/js/tinycolor-min.js' %}"></script>
+    <script src="{% static '/assets/js/config.js' %}"></script>
+    <script src="{% static '/assets/js/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static '/assets/js/dataTables.bootstrap4.min.js' %}"></script>
+    <script src="{% static '/assets/js/apps.js' %}"></script>
+    <script>
+
+        $(window).resize(function(){
+        if($(window).width()<991){
+            $('.search-box').removeClass('searchform');
+            }
+        });
+
+        $('#submitBtn').click(function () {
+            var obj = { csrfmiddlewaretoken: '{{ csrf_token }}' };
+            obj.location = $('input[name=location]:checked').map(function () {
+                return this.value;
+            }).get();
+
+            obj.symmetry = $('input[name=symmetry]:checked').map(function () {
+                return this.value;
+            }).get();
+
+            obj.polish = $('input[name=polish]:checked').map(function () {
+                return this.value;
+            }).get();
+
+            obj.shape = $('input[name=shape]:checked').map(function () {
+                return this.value;
+            }).get();
+
+            obj.clarity = $('input[name=clarity]:checked').map(function () {
+                return this.value;
+            }).get();
+
+            obj.fancy = $('input[name=fancy]:checked').map(function () {
+                return this.value;
+            }).get();
+
+            obj.weight = $('input[name=weight]:checked').map(function () {
+                return this.value;
+            }).get();
+
+            obj.color = $('input[name=color]:checked').map(function () {
+                return this.value;
+            }).get();
+
+            console.log(obj);
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: "{% url 'filter' %}",
+                data: obj,
+                success: function (response) {
+                    if (response.status == "1") {
+                        var advance_filter_datatable = $('#advance_filter_datatable').DataTable();
+                        advance_filter_datatable.clear().draw();
+                        response.data.forEach(function (item, index) {
+                            console.log(item.Scan_Id)
+                            url = '<a href="{% url "diamondinfo" %}?q=' + item.Scan_Id + '">...</a>';
+                            advance_filter_datatable.row.add([item.GIA_NO, item.STK_ID, item.CRT, item.SHAPE, item.COLOR, item.PRICE, item.CLARITY, item.SYM, url]).draw();
+                        });
+                    }
+                }
+            })
+        });
+        function setactive(e) {
+            var parentComponent = $(e).closest('.btn');
+            if (parentComponent.hasClass('btn-outline-primary')) {
+                parentComponent.removeClass("btn-outline-primary")
+                parentComponent.addClass("btn-primary");
+            }
+            else {
+                parentComponent.removeClass("btn-primary")
+                parentComponent.addClass("btn-outline-primary");
+            }
+
+        }
+
+
+        $(document).ready(function () {
+            var non_gia_datatable = $('#non_gia_datatable').DataTable({
+                responsive: true,
+                columnDefs: [
+                    { "targets": "_all", "className": 'details-control', "defaultContent": "-", }
+                ]
+            });
+
+
+
+            var advance_filter_datatable = $('#advance_filter_datatable').DataTable({
+                dom: 'lBfrtip',
+                buttons: [
+                    {
+                        extend: 'pdfHtml5',
+                        download: 'open',
+                        className: 'btn btn-info mt-3',
+                        title: 'Sailam Memo',
+                    },
+                    {
+                        extend: 'csvHtml5',
+                        download: 'open',
+                        className: 'btn btn-info mt-3',
+
+                    },
+                ]
+            });
+
+
+        });
+
+        function getnongia(e) {
+            var non_gia_datatable = $('#non_gia_datatable').DataTable();
+            $.ajax({
+                type: 'GET',
+                dataType: 'json',
+                url: "{% url 'stocks' %}?flag=non-gia",
+                success: function (data) {
+                    data.stocks.forEach(function (item, index) {
+
+                        non_gia_datatable.row.add([item.STK_ID, item.CRT, item.SHAPE, item.COLOR, item.PRICE, item.CLARITY, item.SYM]).draw();
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                }
+            })
+        }
+
+        function populateDataTable(data) {
+            var pre = 1
+            $.each(data, function (index, item) {
+                var row = [
+                    pre,
+                    item.stk_id,
+                    item.gia,
+                    item.desc,
+                    item.weight,
+                    item.measurement,
+                    item.price,
+                ];
+                pre += 1;
+                // Add the row to the DataTable
+                var datatableRow = table.row.add(row).draw().node();
+
+                // Store the child row data for expanding
+
+            });
+        }
+
+
+
+    </script>
+</body>
