@@ -6,182 +6,177 @@ Jewellery
 {% endblock title%}
 
 {% block header_files%}
-  <style>
-    .disabled-card {
-      opacity: 0.6;
-      pointer-events: none;
-    }
-  </style>
-  <style>
-    .card-front,
-.card-back {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  transition: transform 1s;
-}
+<style>
+  .disabled-card {
+    opacity: 0.6;
+    pointer-events: none;
+  }
 
-.card-front {
-  transform: rotateY(0);
-  backface-visibility: hidden;
-}
+  .card-front,
+  .card-back {
+    width: 100%;
+    height: 100%;
+    transition: transform 1s;
+  }
 
-.card-back {
-  transform: rotateY(180deg);
-  backface-visibility: hidden;
-  background-color: #f8f8fb; 
-}
+  .card-front {
+    transform: rotateY(0);
+    backface-visibility: hidden;
+  }
 
-.card:hover .card-front {
-  transform: rotateY(-180deg);
-}
+  .card-back {
+    backface-visibility: hidden;
+    background-color: #f8f8fb;
+  }
 
-.card:hover .card-back {
-  transform: rotateY(0);
-}
+  .card:hover .card-front {
+    /* transform: rotateY(-180deg); */
+  }
 
-.card .card-img-top {
-      max-height: 300px;
-      object-fit: cover;
-      border-radius:20px;
-    }
-    
-  </style>
+  .card:hover .card-back {
+    /* transform: rotateY(0); */
+  }
+
+  .card .card-img-top {
+    max-height: 300px;
+    object-fit: cover;
+    border-radius: 20px;
+  }
+</style>
 {% endblock header_files%}
 
 {% block content%}
 <div class="d-flex justify-content-center">
-    <h3>Our Jewellery & Layouts</h3>
+  <h3>Our Jewellery & Layouts</h3>
 </div>
 <div class="container mt-4">
-    <p><b>Filters:</b></p>
-    <div id="checkboxContainer"></div>
-    <hr>
-    <div class="row" id="cardContainer"></div>
-  </div>
+  <p><b>Filters:</b></p>
+  <div id="checkboxContainer"></div>
+  <hr>
+  <div class="row" id="cardContainer"></div>
+</div>
+ 
 
 
-    
-  <script>
-    $(document).ready(function() {
-     
-        $.ajax({
-            url: "{% url 'getjewellery_data'%}", 
-            method: 'GET',
-            dataType: 'json',
-            success: function(data) {
-                console.log(data);
-                renderCheckboxes(data);
-                renderGridView(data);
-            },
-            error: function(xhr, status, error) {
-              console.error(error);
-            }
-          });
+<script>
+  $(document).ready(function () {
 
-      
-          function getAvailableTypes(data) {
-            var types = [];
-            types.push("all");
-            data.forEach(function(item) {
-              var type = item.type
-              if (type && !types.includes(type)) {
-                types.push(type);
-              }
-            });
-            return types;
+    $.ajax({
+      url: "{% url 'getjewellery_data'%}",
+      method: 'GET',
+      dataType: 'json',
+      success: function (data) {
+        console.log(data);
+        renderCheckboxes(data);
+        renderGridView(data);
+      },
+      error: function (xhr, status, error) {
+        console.error(error);
+      }
+    });
+
+
+    function getAvailableTypes(data) {
+      var types = [];
+      types.push("all");
+      data.forEach(function (item) {
+        var type = item.type
+        if (type && !types.includes(type)) {
+          types.push(type);
+        }
+      });
+      return types;
+    }
+
+    // Function to render checkboxes for available types
+    function renderCheckboxes(data) {
+      var checkboxContainer = $('#checkboxContainer');
+      checkboxContainer.empty();
+
+      var types = getAvailableTypes(data);
+      types.forEach(function (type) {
+        var checkboxId = type + 'Checkbox';
+        var checkboxLabel = type.charAt(0).toUpperCase() + type.slice(1);
+        var checkbox = $('<div class="form-check form-check-inline"></div>');
+        var input = $('<input class="form-check-input" type="checkbox" id="' + checkboxId + '" value="' + type + '">');
+        var label = $('<label class="form-check-label" for="' + checkboxId + '">' + checkboxLabel + '</label>');
+        checkbox.append(input, label);
+        checkboxContainer.append(checkbox);
+      });
+    }
+
+    // Function to render the grid view
+    function renderGridView(data) {
+      var cardContainer = $('#cardContainer');
+      cardContainer.empty();
+
+      var selectedTypes = [];
+      $('.form-check-input:checked').each(function () {
+        selectedTypes.push($(this).val());
+      });
+
+      data.forEach(function (item) {
+        var type = item.type;
+        var isCardDisabled = selectedTypes.length > 0 && !selectedTypes.includes(type);
+
+        var card = $('<div class="col-md-4 mb-3"></div>');
+        var cardInner = $('<div class="card h-100 "></div>');
+        var cardFront = $('<div class="card-front"></div>');
+        var cardImage = $('<img class="card-img-top" src="/media/' + item.image + '">');
+        var cardBack = $('<div class="card-back"></div>');
+        var cardDiv = $('<div class="card-text"></div>');
+        var cardTable = $('<table cellpadding="10"  border="0"></table>');
+        var rowDescription = $('<tr><td><b>Description: </b></td><td>' + item.description + '</td></tr>');
+        var rowColor = $('<tr><td><b>Color: </b></td><td>' + item.color + '</td></tr>');
+        var rowPrice = $('<tr><td><b>Price: </b></td><td>' + item.price + '</td></tr>');
+        var rowType = $('<tr><td><b>Type: </b></td><td>' + item.type + '</td></tr>');
+        card.attr('data-type', type);
+        if (isCardDisabled) {
+          card.addClass('disabled-card');
+        }
+        cardFront.append(cardImage);
+        cardTable.append(rowColor);
+        cardTable.append(rowPrice);
+        cardTable.append(rowType);
+        cardTable.append(rowDescription);
+        cardDiv.append(cardTable);
+        cardBack.append(cardDiv);
+        cardInner.append(cardFront, cardBack);
+        card.append(cardInner);
+        cardContainer.append(card);
+      });
+    }
+
+
+
+
+    // Event handler for checkbox click
+    $(document).on('click', '.form-check-input', function () {
+      $('#cardContainer .col-md-4').each(function () {
+        var cardType = $(this).attr('data-type');
+        var isCardDisabled = true;
+
+        $('.form-check-input:checked').each(function () {
+          var selectedType = $(this).val();
+          if (selectedType === 'all') {
+            isCardDisabled = false;
+            return false;
           }
-    
-          // Function to render checkboxes for available types
-          function renderCheckboxes(data) {
-            var checkboxContainer = $('#checkboxContainer');
-            checkboxContainer.empty();
-    
-            var types = getAvailableTypes(data);
-            types.forEach(function(type) {
-                var checkboxId = type + 'Checkbox';
-                var checkboxLabel = type.charAt(0).toUpperCase() + type.slice(1);
-                var checkbox = $('<div class="form-check form-check-inline"></div>');
-                var input = $('<input class="form-check-input" type="checkbox" id="' + checkboxId + '" value="' + type + '">');
-                var label = $('<label class="form-check-label" for="' + checkboxId + '">' + checkboxLabel + '</label>');
-                checkbox.append(input, label);
-                checkboxContainer.append(checkbox);
-              });
+          if (cardType === selectedType) {
+            isCardDisabled = false;
+            return false; // exit the loop
           }
-    
-          // Function to render the grid view
-          function renderGridView(data) {
-            var cardContainer = $('#cardContainer');
-            cardContainer.empty();
-    
-            var selectedTypes = [];
-            $('.form-check-input:checked').each(function() {
-              selectedTypes.push($(this).val());
-            });
-    
-            data.forEach(function(item) {
-                var type =item.type;
-                var isCardDisabled = selectedTypes.length > 0 && !selectedTypes.includes(type);
-            
-                var card = $('<div class="col-md-4 mb-3"></div>');
-                var cardInner = $('<div class="card h-100 "></div>');
-                var cardFront = $('<div class="card-front"></div>');
-                var cardImage = $('<img class="card-img-top" src="/media/' + item.image + '">');
-                var cardBack = $('<div class="card-back"></div>');
-                var cardDiv =$('<div class="card-text"></div>');
-                var cardTable =$('<table cellpadding="10"  border="0"></table>');
-                var rowDescription = $('<tr><td><b>Description: </b></td><td>'+ item.description + '</td></tr>');
-                var rowColor = $('<tr><td><b>Color: </b></td><td>'+ item.color +'</td></tr>');
-                var rowPrice = $('<tr><td><b>Price: </b></td><td>'+ item.price +'</td></tr>');
-                var rowType = $('<tr><td><b>Type: </b></td><td>' + item.type +'</td></tr>');
-                card.attr('data-type', type);
-                if (isCardDisabled) {
-                  card.addClass('disabled-card');
-                }
-                cardFront.append(cardImage);
-                cardTable.append(rowColor);
-                cardTable.append(rowPrice);
-                cardTable.append(rowType);
-                cardTable.append(rowDescription);
-                cardDiv.append(cardTable);
-                cardBack.append(cardDiv);
-                cardInner.append(cardFront, cardBack);
-                card.append(cardInner);
-                cardContainer.append(card);
-              });
-          }
-    
-          
-    
-    
-          // Event handler for checkbox click
-          $(document).on('click', '.form-check-input', function() {
-            $('#cardContainer .col-md-4').each(function() {
-              var cardType = $(this).attr('data-type');
-              var isCardDisabled = true;
-    
-              $('.form-check-input:checked').each(function() {
-                var selectedType = $(this).val();
-                if(selectedType==='all')
-                {
-                    isCardDisabled = false;
-                    return false;
-                }
-                if (cardType === selectedType) {
-                  isCardDisabled = false;
-                  return false; // exit the loop
-                }
-              });
-    
-              if (isCardDisabled) {
-                $(this).addClass('disabled-card');
-                $(this).hide();
-              } else {
-                $(this).removeClass('disabled-card');
-                $(this).show();
-              }
-            });
-          });
-        });    
-  </script>
+        });
+
+        if (isCardDisabled) {
+          $(this).addClass('disabled-card');
+          $(this).hide();
+        } else {
+          $(this).removeClass('disabled-card');
+          $(this).show();
+        }
+      });
+    });
+  });    
+</script>
 {% endblock content%}

@@ -1,0 +1,216 @@
+@font-face {
+    font-family: 'Glamor Cond';
+    src: url('../glamor/Glamor-BoldCondensed.woff2') format('woff2'),
+        url('../glamor/Glamor-BoldCondensed.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Glamor Cond';
+    src: url('../glamor/Glamor-BoldCondensedItalic.woff2') format('woff2'),
+        url('../glamor/Glamor-BoldCondensedItalic.woff') format('woff');
+    font-weight: bold;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Glamor';
+    src: url('../glamor/Glamor-Bold.woff2') format('woff2'),
+        url('../glamor/Glamor-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Glamor Ext';
+    src: url('../glamor/Glamor-BoldExtended.woff2') format('woff2'),
+        url('../glamor/Glamor-BoldExtended.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Glamor Cond';
+    src: url('../glamor/Glamor-Condensed.woff2') format('woff2'),
+        url('../glamor/Glamor-Condensed.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Glamor Cond';
+    src: url('../glamor/Glamor-CondensedItalic.woff2') format('woff2'),
+        url('../glamor/Glamor-CondensedItalic.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Glamor';
+    src: url('../glamor/Glamor-Italic.woff2') format('woff2'),
+        url('../glamor/Glamor-Italic.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Glamor Ext';
+    src: url('../glamor/Glamor-BoldExtendedItalic.woff2') format('woff2'),
+        url('../glamor/Glamor-BoldExtendedItalic.woff') format('woff');
+    font-weight: bold;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Glamor';
+    src: url('../glamor/Glamor-BoldItalic.woff2') format('woff2'),
+        url('../glamor/Glamor-BoldItalic.woff') format('woff');
+    font-weight: bold;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Glamor Ext';
+    src: url('../glamor/Glamor-Extended.woff2') format('woff2'),
+        url('../glamor/Glamor-Extended.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Glamor Ext';
+    src: url('../glamor/Glamor-ExtendedItalic.woff2') format('woff2'),
+        url('../glamor/Glamor-ExtendedItalic.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Glamor';
+    src: url('../glamor/Glamor-Light.woff2') format('woff2'),
+        url('../glamor/Glamor-Light.woff') format('woff');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Glamor Light Ext';
+    src: url('../glamor/Glamor-LightExtendedItalic.woff2') format('woff2'),
+        url('../glamor/Glamor-LightExtendedItalic.woff') format('woff');
+    font-weight: 300;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Glamor Med';
+    src: url('../glamor/Glamor-Medium.woff2') format('woff2'),
+        url('../glamor/Glamor-Medium.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Glamor Light Cond';
+    src: url('../glamor/Glamor-LightCondensedItalic.woff2') format('woff2'),
+        url('../glamor/Glamor-LightCondensedItalic.woff') format('woff');
+    font-weight: 300;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Glamor Light Cond';
+    src: url('../glamor/Glamor-LightCondensed.woff2') format('woff2'),
+        url('../glamor/Glamor-LightCondensed.woff') format('woff');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Glamor Light Ext';
+    src: url('../glamor/Glamor-LightExtended.woff2') format('woff2'),
+        url('../glamor/Glamor-LightExtended.woff') format('woff');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Glamor Med Cond';
+    src: url('../glamor/Glamor-MediumCondensed.woff2') format('woff2'),
+        url('../glamor/Glamor-MediumCondensed.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Glamor Med Ext';
+    src: url('../glamor/Glamor-MediumExtended.woff2') format('woff2'),
+        url('../glamor/Glamor-MediumExtended.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Glamor Med Cond';
+    src: url('../glamor/Glamor-MediumCondensedItalic.woff2') format('woff2'),
+        url('../glamor/Glamor-MediumCondensedItalic.woff') format('woff');
+    font-weight: 500;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Glamor';
+    src: url('../glamor/Glamor-LightItalic.woff2') format('woff2'),
+        url('../glamor/Glamor-LightItalic.woff') format('woff');
+    font-weight: 300;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Glamor Med Ext';
+    src: url('../glamor/Glamor-MediumExtendedItalic.woff2') format('woff2'),
+        url('../glamor/Glamor-MediumExtendedItalic.woff') format('woff');
+    font-weight: 500;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Glamor Med';
+    src: url('../glamor/Glamor-MediumItalic.woff2') format('woff2'),
+        url('../glamor/Glamor-MediumItalic.woff') format('woff');
+    font-weight: 500;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Glamor';
+    src: url('../glamor/Glamor-Regular.woff2') format('woff2'),
+        url('../glamor/Glamor-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+

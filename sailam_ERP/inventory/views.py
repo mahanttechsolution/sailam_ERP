@@ -38,7 +38,8 @@ from django.contrib.auth.decorators import login_required
 
 BASE_DIR = settings.BASE_DIR
 
-
+def dashboard(request):
+    return render(request,"dashboard.html")
 def loadGiaData(request):
     if request.method == "POST":
         url_end_point = "https://api.reportresults.gia.edu/"
@@ -364,7 +365,7 @@ def StockInfo(request):
 
     
 
-@login_required
+
 def DiamondInfo(request):
     if request.method == "GET":
         q = request.GET["q"]
@@ -383,12 +384,14 @@ def DiamondInfo(request):
                 if pics.file:
                     print(pics.file)
                     num += 1
-            except:
+            except Exception as e:
+                print(e)
                 num = 1
                 pics = ""
                 
             
-        except:
+        except Exception as e:
+            print(e)
             num = 1
             info = ""
             pics = ""

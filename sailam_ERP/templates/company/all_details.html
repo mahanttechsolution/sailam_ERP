@@ -1,294 +1,206 @@
+{% extends 'company/base.html' %}
 {% load static %}
-<!doctype html>
-<html lang="en">
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="icon" href="favicon.ico">
-    <title>Diamond Details</title>
-    <!-- Simple bar CSS -->
-    <link rel="stylesheet" href="{% static '/assets/css/simplebar.css' %}">
-    <!-- Fonts CSS -->
-    <link
-        href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,100;0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap"
-        rel="stylesheet">
-    <!-- Datatable -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap4.min.css" integrity="sha512-PT0RvABaDhDQugEbpNMwgYBCnGCiTZMh9yOzUsJHDgl/dMhD9yjHAwoumnUk3JydV3QTcIkNDuN40CJxik5+WQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/dataTables.bootstrap4.min.js" integrity="sha512-OQlawZneA7zzfI6B1n1tjUuo3C5mtYuAWpQdg+iI9mkDoo7iFzTqnQHf+K5ThOWNJ9AbXL4+ZDwH7ykySPQc+A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
-    <!-- Icons CSS -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <link rel="stylesheet" href="{% static '/assets/css/feather.css' %}">
-    <!-- Date Range Picker CSS -->
-    <link rel="stylesheet" href="{% static '/assets/css/daterangepicker.css' %}">
-    <!-- App CSS -->
-    <link rel="stylesheet" href="{% static '/assets/css/app-light.css' %}" id="lightTheme">
-    <link rel="stylesheet" href="{% static '/assets/css/app-dark.css' %}" id="darkTheme" disabled>
+{%block title %}
+Stocks{%endblock title %}
 
-</head>
+{%block headercontent %}
+<style>
+    input[type="checkbox"] {
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        cursor: pointer;
+    }
+</style>
+{%endblock headercontent %}
 
-<body>
+{%block content %}
+<div class="card ">
+    <div class="card-body">
+        <!-- <form method="post" id="filterform"> -->
+        <h4 class="card-title">Filter</h4>
+        {% csrf_token %}
 
 
-    <nav class="topnav navbar navbar-light bg-white shadow mb-4">
-        <div class="container-fluid">
-            <ul class="nav">
-                <li class="nav-item"></li>
-                <li class="nav-item"></li>
-                <li class="nav-item"></li>
-                <li class="nav-item"></li>
-                <li class="nav-item">
-                    <div class="w-100  d-flex my-2">
-                        <a class="navbar-brand mx-auto mt-2 flex-fill " href="http://127.0.0.1:8000/">
-                            <img src="{% static 'image/logo.png' %}" alt="" height="50px" width="50px">
-                            <b>SAILAM</b>
-                        </a>
-                    </div>
-                </li>
-            </ul>
-            <ul class="nav">
-                <li class="nav-item ">
-                    <h5>GIA REPORT : 1234567890</h5>
-                </li>
-            </ul>
-            <div class="col-sm-4">
-                <ul class="nav">
-                    <li class="nav-item">
 
-                    </li>
-                </ul>
+
+        <ul class="nav nav-pills nav-fill mb-3" id="pills-tab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="advance-filter-tab" data-toggle="pill" href="#advance-filter" role="tab"
+                    aria-controls="advance-filter" aria-selected="false" onclick="applyfilter(this)">Advance Filter</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="matching-pair-tab" data-toggle="pill" href="#matching-pair" role="tab"
+                    aria-controls="matching-pair" aria-selected="true">Matching Pair</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="nogia-tab" data-toggle="pill" href="#nogia" role="tab" aria-controls="nogia"
+                    aria-selected="false" onclick="getnongia(this)">Non-Gia</a>
+            </li>
+            {% comment %} <li class="nav-item">
+                <a class="nav-link" id="nogia-tab" data-toggle="pill" href="#excel-download" role="tab"
+                    aria-controls="excel-download" aria-selected="false">Download Excel</a>
+            </li> {% endcomment %}
+        </ul>
+
+        <div class="tab-content mb-1" id="pills-tabContent">
+            <div class="tab-pane fade active show" id="advance-filter" role="tabpanel"
+                aria-labelledby="advance-filter-tab">
+                {% include  "company/advance_filter.html" %}
+            </div>
+            <div class="tab-pane fade" id="matching-pair" role="tabpanel"
+                aria-labelledby="matching-pair-tab"> 
+                {% include  "company/matching_pair.html" %}
+            </div>
+            <div class="tab-pane fade" id="nogia" role="tabpanel"
+                aria-labelledby="nogia-tab"> 
+                {% include  "company/non-gia.html" %}
             </div>
         </div>
-    </nav>
 
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card shadow mb-4">
-                    <div class="card-body">
-                        <!-- <form method="post" id="filterform"> -->
-                        <h4 class="card-title">Filter</h4>
-                        {% csrf_token %}
-                        <div class="form-group row">
-
-
-                            <div class="card-body">
-                                <ul class="nav nav-pills nav-fill mb-3" id="pills-tab" role="tablist">
-                                    <li class="nav-item">
-                                        <a class="nav-link active" id="advance-filter-tab" data-toggle="pill"
-                                            href="#advance-filter" role="tab" aria-controls="advance-filter"
-                                            aria-selected="false" onclick="applyfilter(this)">Advance Filter</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" id="matching-pair-tab" data-toggle="pill"
-                                            href="#matching-pair" role="tab" aria-controls="matching-pair"
-                                            aria-selected="true">Matching Pair</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" id="nogia-tab" data-toggle="pill"
-                                            href="#nogia" role="tab" aria-controls="nogia"
-                                            aria-selected="false" onclick="getnongia(this)">Non-Gia</a>
-                                    </li>
-                                    {% comment %} <li class="nav-item">
-                                        <a class="nav-link" id="nogia-tab" data-toggle="pill"
-                                            href="#excel-download" role="tab" aria-controls="excel-download"
-                                            aria-selected="false">Download Excel</a>
-                                    </li> {% endcomment %}
-                                </ul>
-                                <div class="tab-content mb-1" id="pills-tabContent">
-                                    <div class="tab-pane fade active show" id="advance-filter" role="tabpanel"
-                                        aria-labelledby="advance-filter-tab">
-                                        {% include  "company/advance_filter.html" %}
-                                    </div>
-                                    <div class="tab-pane fade" id="matching-pair" role="tabpanel"
-                                        aria-labelledby="matching-pair-tab"> 
-                                        {% include  "company/matching_pair.html" %}
-                                    </div>
-                                    <div class="tab-pane fade" id="nogia" role="tabpanel"
-                                        aria-labelledby="nogia-tab"> 
-                                        {% include  "company/non-gia.html" %}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- </form> -->
-                    </div>
-                    
-                </div>
-            </div>
-
-
-
-        </div>
 
     </div>
+</div>
+{%endblock content %}
 
-    <style>
-        input[type="checkbox"] {
-            position: absolute;
-            top: 0;
-            left: 0;
-            opacity: 0;
-            cursor: pointer;
-        }
-    </style>
+{%block footercontent %} 
 
+$('#submitBtn').click(function () {
+    var obj = { csrfmiddlewaretoken: '{{ csrf_token }}' };
+    obj.location = $('input[name=location]:checked').map(function () {
+        return this.value;
+    }).get();
 
-    <script src="{% static '/assets/js/jquery.min.js' %}"></script>
-    <script src="{% static '/assets/js/popper.min.js' %}"></script>
-    <script src="{% static '/assets/js/moment.min.js' %}"></script>
-    <script src="{% static '/assets/js/bootstrap.min.js' %}"></script>
-    <script src="{% static '/assets/js/simplebar.min.js' %}"></script>
-    <script src="{% static '/assets/js/daterangepicker.js' %}"></script>
-    <script src="{% static '/assets/js/jquery.stickOnScroll.js' %}"></script>
-    <script src="{% static '/assets/js/tinycolor-min.js' %}"></script>
-    <script src="{% static '/assets/js/config.js' %}"></script>
-    <script src="{% static '/assets/js/jquery.dataTables.min.js' %}"></script>
-    <script src="{% static '/assets/js/dataTables.bootstrap4.min.js' %}"></script>
-    <script src="{% static '/assets/js/apps.js' %}"></script>
-    <script>
-        $('#submitBtn').click(function () {
-            var obj = {csrfmiddlewaretoken: '{{ csrf_token }}'};
-            obj.location = $('input[name=location]:checked').map(function () {
-                return this.value;
-            }).get();
+    obj.symmetry = $('input[name=symmetry]:checked').map(function () {
+        return this.value;
+    }).get();
 
-            obj.symmetry = $('input[name=symmetry]:checked').map(function () {
-                return this.value;
-            }).get();
+    obj.polish = $('input[name=polish]:checked').map(function () {
+        return this.value;
+    }).get();
 
-            obj.polish = $('input[name=polish]:checked').map(function () {
-                return this.value;
-            }).get(); 
-            
-            obj.shape = $('input[name=shape]:checked').map(function () {
-                return this.value;
-            }).get();
+    obj.shape = $('input[name=shape]:checked').map(function () {
+        return this.value;
+    }).get();
 
-            obj.clarity = $('input[name=clarity]:checked').map(function () {
-                return this.value;
-            }).get();
+    obj.clarity = $('input[name=clarity]:checked').map(function () {
+        return this.value;
+    }).get();
 
-            obj.fancy = $('input[name=fancy]:checked').map(function () {
-                return this.value;
-            }).get();
+    obj.fancy = $('input[name=fancy]:checked').map(function () {
+        return this.value;
+    }).get();
 
-            obj.weight = $('input[name=weight]:checked').map(function () {
-                return this.value;
-            }).get();
-            
-            obj.color = $('input[name=color]:checked').map(function () {
-                return this.value;
-            }).get();
+    obj.weight = $('input[name=weight]:checked').map(function () {
+        return this.value;
+    }).get();
 
-            console.log(obj);
-            $.ajax({
-                type: 'POST',
-                dataType: 'json',
-                url: "{% url 'filter' %}",
-                data: obj,
-                success: function (response) {
-                    if (response.status == "1") {
-                        var advance_filter_datatable = $('#advance_filter_datatable').DataTable();
-                        advance_filter_datatable.clear().draw();
-                        response.data.forEach(function(item,index){
-                            console.log(item.Scan_Id)
-                            url='<a href="{% url "diamondinfo" %}?q='+item.Scan_Id+'">...</a>';
-                            advance_filter_datatable.row.add([item.GIA_NO,item.STK_ID,item.CRT,item.SHAPE,item.COLOR,item.PRICE,item.CLARITY,item.SYM,url]).draw();
-                        });
-                    }
-                }
-            })
-        });
-        function setactive(e) {
-            var parentComponent = $(e).closest('.btn');
-            if (parentComponent.hasClass('btn-outline-primary')) {
-                parentComponent.removeClass("btn-outline-primary")
-                parentComponent.addClass("btn-primary");
+    obj.color = $('input[name=color]:checked').map(function () {
+        return this.value;
+    }).get();
+
+    console.log(obj);
+    $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        url: "{% url 'filter' %}",
+        data: obj,
+        success: function (response) {
+            if (response.status == "1") {
+                var advance_filter_datatable = $('#advance_filter_datatable').DataTable();
+                advance_filter_datatable.clear().draw();
+                response.data.forEach(function (item, index) {
+                    console.log(item.Scan_Id)
+                    url = '<a href="{% url "diamondinfo" %}?q=' + item.Scan_Id + '">...</a>';
+                    advance_filter_datatable.row.add([item.GIA_NO, item.STK_ID, item.CRT, item.SHAPE, item.COLOR,  item.CLARITY, item.SYM, url]).draw();
+                });
             }
-            else {
-                parentComponent.removeClass("btn-primary")
-                parentComponent.addClass("btn-outline-primary");
-            }
-
         }
-        
+    })
+});
+function setactive(e) {
+    var parentComponent = $(e).closest('.btn');
+    if (parentComponent.hasClass('btn-outline-secondary')) {
+        parentComponent.removeClass("btn-outline-secondary")
+        parentComponent.addClass("btn-secondary");
+    }
+    else {
+        parentComponent.removeClass("btn-secondary")
+        parentComponent.addClass("btn-outline-secondary");
+    }
 
-        $(document).ready(function() {
-            var non_gia_datatable = $('#non_gia_datatable').DataTable({
-              responsive: true,
-              columnDefs: [
-                { "targets": "_all", "className": 'details-control', "defaultContent": "-", }
-              ]
+}
+
+
+$(document).ready(function () {
+    var non_gia_datatable = $('#non_gia_datatable').DataTable({
+        responsive: true,
+        columnDefs: [
+            { "targets": "_all", "className": 'details-control', "defaultContent": "-", }
+        ]
+    });
+
+
+
+    var advance_filter_datatable = $('#advance_filter_datatable').DataTable({
+        dom: 'lBfrtip',
+        buttons: [
+            {
+                extend: 'pdfHtml5',
+                download: 'open',
+                className: 'btn btn-info mt-3',
+                title: 'Sailam Memo',
+            },
+            {
+                extend: 'csvHtml5',
+                download: 'open',
+                className: 'btn btn-info mt-3',
+
+            },
+        ]
+    });
+
+
+});
+
+function getnongia(e) {
+    var non_gia_datatable = $('#non_gia_datatable').DataTable();
+    $.ajax({
+        type: 'GET',
+        dataType: 'json',
+        url: "{% url 'stocks' %}?flag=non-gia",
+        success: function (data) {
+            data.stocks.forEach(function (item, index) {
+
+                non_gia_datatable.row.add([item.STK_ID, item.CRT, item.SHAPE, item.COLOR, item.PRICE, item.CLARITY, item.SYM]).draw();
             });
-            
-            
-            
-            var advance_filter_datatable = $('#advance_filter_datatable').DataTable({
-                dom: 'lBfrtip',
-              buttons: [
-                  {
-                      extend: 'pdfHtml5',
-                      download: 'open',
-                      className:'btn btn-info mt-3',
-                      title: 'Sailam Memo',
-                  },
-                {
-                  extend: 'csvHtml5',
-                  download: 'open',
-                  className:'btn btn-info mt-3',
-        
-              },
-              ]});
-           
-    
-        });
-
-        function getnongia(e) {
-            var non_gia_datatable = $('#non_gia_datatable').DataTable();
-            $.ajax({
-                type: 'GET',
-                dataType: 'json',
-                url: "{% url 'stocks' %}?flag=non-gia",
-                success: function(data) {
-                    data.stocks.forEach(function(item,index){
-                        
-                        non_gia_datatable.row.add([item.STK_ID,item.CRT,item.SHAPE,item.COLOR,item.PRICE,item.CLARITY,item.SYM]).draw();
-                    });
-                  },
-                  error: function(xhr, status, error) {
-                    console.error(error);
-                  }
-            })
+        },
+        error: function (xhr, status, error) {
+            console.error(error);
         }
+    })
+}
 
-        function populateDataTable(data) {
-            var pre=1
-          $.each(data, function(index, item) {
-            var row = [
-              pre,
-              item.stk_id,
-              item.gia,
-              item.desc,
-              item.weight,
-              item.measurement,
-              item.price,
-            ];
-            pre+=1;
-            // Add the row to the DataTable
-            var datatableRow = table.row.add(row).draw().node();
-      
-            // Store the child row data for expanding
-           
-          });
-        }
+function populateDataTable(data) {
+    var pre = 1
+    $.each(data, function (index, item) {
+        var row = [
+            pre,
+            item.stk_id,
+            item.gia,
+            item.desc,
+            item.weight,
+            item.measurement,
+            item.price,
+        ];
+        pre += 1;
+        // Add the row to the DataTable
+        var datatableRow = table.row.add(row).draw().node();
 
-       
-        
-    </script>
-</body>
+        // Store the child row data for expanding
+
+    });
+}
+{%endblock footercontent %}

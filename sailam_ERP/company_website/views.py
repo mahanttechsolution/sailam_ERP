@@ -107,3 +107,16 @@ def filter_data(request):
  
     context = {"status": "1","data":list(data)}
     return JsonResponse(context)
+
+def index(request):
+    return render(request, "company/index.html")
+
+def jewelry(request):
+    return render(request, "company/jewelry.html")
+
+
+def parcel(request):
+    return render(request, "company/parcel.html")
+
+
+

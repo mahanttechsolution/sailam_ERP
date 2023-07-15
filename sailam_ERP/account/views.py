@@ -13,6 +13,7 @@ from inventory.models import inventory,InvoiceData
 from parcels_jewellery.models import Jewellery,Parcels
 from message.models import Inquiry
 from account.forms import loginForm
+from django.contrib.auth.decorators import login_required
 
 total_diam=0
 total_sell=0
@@ -46,6 +47,28 @@ def setData():
    global sold_data
    sold_data = [entry['count'] for entry in data1]
 
+def index(request):
+    return render(request,'company/index.html')
+
+@login_required
+def dashboard(request):
+    user =request.user
+    setData()
+    context={
+        'user':user,
+        'total_diam':total_diam,
+        'total_sell':total_sell,
+        'live_diam':live_diam,
+        'live_jewelery':live_jewelery,
+        'live_parcel':live_parcel,
+        'inquirey':inquirey,
+        'labels': labels,
+        'bought_data': bought_data,
+        'sold_data': sold_data
+        }
+    return render(request,'dashboard.html',context)
+
+
 def login(request):
     if request.method=="POST":
       form=loginForm(request.POST)
@@ -56,7 +79,7 @@ def login(request):
         if user is not None:
             print("Login done")
             auth_login(request,user)
-            print(user.groups.all().values()[0]['name'])
+            # print(user.groups.all().values()[0]['name'])
             # write logic for rendering different users view
             setData()
             context={
@@ -71,7 +94,7 @@ def login(request):
                 'bought_data': bought_data,
                 'sold_data': sold_data
             }
-            return render(request,'dashboard.html',context)
+            return redirect('dashboard')
         else:
             return render(request,'account/login.html',{'message':"Username Or Password Is Incorrect"})
     else:
@@ -90,7 +113,7 @@ def login(request):
                 'bought_data': bought_data,
                 'sold_data': sold_data
             }
-        return render(request,'dashboard.html',context)
+        return redirect('dashboard')
      else:
         return render(request,'account/login.html')
 

@@ -7,45 +7,8 @@
 
 {% block header_files%}
   <style>
-    .disabled-card {
-      opacity: 0.6;
-      pointer-events: none;
-    }
-  </style>
-  <style>
-    .card-front,
-.card-back {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  transition: transform 1s;
-}
-
-.card-front {
-  transform: rotateY(0);
-  backface-visibility: hidden;
-}
-
-.card-back {
-  transform: rotateY(180deg);
-  backface-visibility: hidden;
-  background-color: #f8f8fb; 
-}
-
-.card:hover .card-front {
-  transform: rotateY(-180deg);
-}
-
-.card:hover .card-back {
-  transform: rotateY(0);
-}
-
-.card .card-img-top {
-      max-height: 300px;
-      object-fit: fill;
-      border-radius:20px;
-    }
     
+
   </style>
 {% endblock header_files%}
 

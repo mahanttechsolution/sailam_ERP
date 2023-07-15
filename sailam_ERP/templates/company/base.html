@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="favicon.ico">
-    <title>Diamond Details</title>
+    <title>{%block title %}{%endblock title %}</title>
     <!-- Simple bar CSS -->
     <link rel="stylesheet" href="{% static '/assets/css/simplebar.css' %}">
     <!-- Fonts CSS -->
@@ -105,6 +105,7 @@
             }
         }
     </style>
+    {%block headercontent %} {%endblock headercontent %}
 </head>
 
 <body>
@@ -130,11 +131,11 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent" >
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link text-light" aria-current="page" href="#">Home</a>
+                        <a class="nav-link text-light" aria-current="page" href="{% url 'index' %}">Home</a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link text-light" aria-current="page" href="#">About</a>
+                        <a class="nav-link text-light" aria-current="page" href="{% url 'index' %}#about">About</a>
                     </li>
 
                     <li class="nav-item dropdown">
@@ -143,10 +144,10 @@
                             <span class="ml-lg-2">Products</span><span class="sr-only">(current)</span>
                         </a>
                         <div class="dropdown-menu" aria-labelledby="dashboardDropdown">
-                            <a class="nav-link pl-lg-2" href="./index.html"><span class="ml-1">Diamond</span></a>
-                            <a class="nav-link pl-lg-2" href="./dashboard-analytics.html"><span
+                            <a class="nav-link pl-lg-2" href="{% url 'stocks' %}"><span class="ml-1">Diamond</span></a>
+                            <a class="nav-link pl-lg-2" href="{% url 'jewelry' %}"><span
                                     class="ml-1">Jewelry</span></a>
-                            <a class="nav-link pl-lg-2" href="./dashboard-sales.html"><span class="ml-1">Paracel &
+                            <a class="nav-link pl-lg-2" href="{% url 'parcel' %}"><span class="ml-1">Paracel &
                                     Layout</span></a>
 
                         </div>
@@ -154,7 +155,7 @@
 
 
                     <li class="nav-item">
-                        <a class="nav-link text-light" href="#" tabindex="-1" aria-disabled="true">Contact</a>
+                        <a class="nav-link text-light" href="{% url 'index' %}#contact" tabindex="-1" aria-disabled="true">Contact</a>
                     </li>
                     <li class="nav-item d-flex">
 
@@ -184,12 +185,19 @@
         </div>
     </nav>
 
-    <div class="container-fluid">
-        <div class="row justify-content-center">
+    <div class="wrapper">
+    
+        <main role="main" class="main-content">
+            <div class="container-fluid">
 
     {%block content %} {%endblock content %}
-        </div>
+
+            </div>
+        </main>
     </div>
+    
+ 
+    
     
 
 
@@ -212,143 +220,9 @@
             $('.search-box').removeClass('searchform');
             }
         });
+        {%block footercontent %}  {%endblock footercontent %}
 
-        $('#submitBtn').click(function () {
-            var obj = { csrfmiddlewaretoken: '{{ csrf_token }}' };
-            obj.location = $('input[name=location]:checked').map(function () {
-                return this.value;
-            }).get();
-
-            obj.symmetry = $('input[name=symmetry]:checked').map(function () {
-                return this.value;
-            }).get();
-
-            obj.polish = $('input[name=polish]:checked').map(function () {
-                return this.value;
-            }).get();
-
-            obj.shape = $('input[name=shape]:checked').map(function () {
-                return this.value;
-            }).get();
-
-            obj.clarity = $('input[name=clarity]:checked').map(function () {
-                return this.value;
-            }).get();
-
-            obj.fancy = $('input[name=fancy]:checked').map(function () {
-                return this.value;
-            }).get();
-
-            obj.weight = $('input[name=weight]:checked').map(function () {
-                return this.value;
-            }).get();
-
-            obj.color = $('input[name=color]:checked').map(function () {
-                return this.value;
-            }).get();
-
-            console.log(obj);
-            $.ajax({
-                type: 'POST',
-                dataType: 'json',
-                url: "{% url 'filter' %}",
-                data: obj,
-                success: function (response) {
-                    if (response.status == "1") {
-                        var advance_filter_datatable = $('#advance_filter_datatable').DataTable();
-                        advance_filter_datatable.clear().draw();
-                        response.data.forEach(function (item, index) {
-                            console.log(item.Scan_Id)
-                            url = '<a href="{% url "diamondinfo" %}?q=' + item.Scan_Id + '">...</a>';
-                            advance_filter_datatable.row.add([item.GIA_NO, item.STK_ID, item.CRT, item.SHAPE, item.COLOR, item.PRICE, item.CLARITY, item.SYM, url]).draw();
-                        });
-                    }
-                }
-            })
-        });
-        function setactive(e) {
-            var parentComponent = $(e).closest('.btn');
-            if (parentComponent.hasClass('btn-outline-primary')) {
-                parentComponent.removeClass("btn-outline-primary")
-                parentComponent.addClass("btn-primary");
-            }
-            else {
-                parentComponent.removeClass("btn-primary")
-                parentComponent.addClass("btn-outline-primary");
-            }
-
-        }
-
-
-        $(document).ready(function () {
-            var non_gia_datatable = $('#non_gia_datatable').DataTable({
-                responsive: true,
-                columnDefs: [
-                    { "targets": "_all", "className": 'details-control', "defaultContent": "-", }
-                ]
-            });
-
-
-
-            var advance_filter_datatable = $('#advance_filter_datatable').DataTable({
-                dom: 'lBfrtip',
-                buttons: [
-                    {
-                        extend: 'pdfHtml5',
-                        download: 'open',
-                        className: 'btn btn-info mt-3',
-                        title: 'Sailam Memo',
-                    },
-                    {
-                        extend: 'csvHtml5',
-                        download: 'open',
-                        className: 'btn btn-info mt-3',
-
-                    },
-                ]
-            });
-
-
-        });
-
-        function getnongia(e) {
-            var non_gia_datatable = $('#non_gia_datatable').DataTable();
-            $.ajax({
-                type: 'GET',
-                dataType: 'json',
-                url: "{% url 'stocks' %}?flag=non-gia",
-                success: function (data) {
-                    data.stocks.forEach(function (item, index) {
-
-                        non_gia_datatable.row.add([item.STK_ID, item.CRT, item.SHAPE, item.COLOR, item.PRICE, item.CLARITY, item.SYM]).draw();
-                    });
-                },
-                error: function (xhr, status, error) {
-                    console.error(error);
-                }
-            })
-        }
-
-        function populateDataTable(data) {
-            var pre = 1
-            $.each(data, function (index, item) {
-                var row = [
-                    pre,
-                    item.stk_id,
-                    item.gia,
-                    item.desc,
-                    item.weight,
-                    item.measurement,
-                    item.price,
-                ];
-                pre += 1;
-                // Add the row to the DataTable
-                var datatableRow = table.row.add(row).draw().node();
-
-                // Store the child row data for expanding
-
-            });
-        }
+        
 
 
 
