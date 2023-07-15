@@ -50,7 +50,8 @@ def setData():
 def index(request):
     return render(request,'company/index.html')
 
-@login_required
+@login_required(login_url='login_account')
+@allowed_user(allowed_roles= ['admin','manager','salesmen'])
 def dashboard(request):
     user =request.user
     setData()
@@ -94,7 +95,11 @@ def login(request):
                 'bought_data': bought_data,
                 'sold_data': sold_data
             }
-            return redirect('dashboard')
+            role = User.objects.get(email=user)
+            if str(role.role) == 'user':
+                return redirect('stocks')
+            else:
+                return redirect('dashboard')
         else:
             return render(request,'account/login.html',{'message':"Username Or Password Is Incorrect"})
     else:
@@ -113,7 +118,11 @@ def login(request):
                 'bought_data': bought_data,
                 'sold_data': sold_data
             }
-        return redirect('dashboard')
+        if user.role == "user":
+            return redirect('stocks')
+        else:
+            return render(request,'dashboard.html',context)
+    
      else:
         return render(request,'account/login.html')
 
@@ -151,7 +160,10 @@ def register(request):
                 'bought_data': bought_data,
                 'sold_data': sold_data
             }
-           return render(request,'dashboard.html',context)
+           if user.role == "user":
+                return redirect('stocks')
+           else:
+                return render(request,'dashboard.html',context)
     else:
      return render(request,'account/register.html')
 

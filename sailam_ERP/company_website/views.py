@@ -10,17 +10,21 @@ def stocks(request):
 
     else:
         try:
+            if str(request.user) == "AnonymousUser":
+                login_flag = 0
+            else:
+                login_flag = 1
             flag = request.GET["flag"]
             if flag == "non-gia":
                 stocks = inventory.objects.filter(IsHide=False).exclude(Q(GIA_NO__isnull=False)|Q(GIA_NO__exact='')| Q(GIA_NO='None')).values('STK_ID','CRT','SHAPE','COLOR','PRICE','CLARITY','SYM')
                 print(stocks)
-                context = {"status": "0", "stocks": list(stocks)}
+                context = {"status": "0", "stocks": list(stocks),"flag":login_flag}
                 # print(context)
                 return JsonResponse(context)
         except Exception as e:
             print("------------->", e)
             stocks = inventory.objects.filter(IsHide=False)
-            context = {"stocks": stocks}
+            context = {"stocks": stocks,"flag":login_flag}
             return render(request, "company/all_details.html", context)
 
 def filter_data(request):

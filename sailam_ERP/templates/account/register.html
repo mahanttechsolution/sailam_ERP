@@ -26,7 +26,7 @@
         <form class="col-lg-6 col-md-8 col-10 mx-auto" method="POST">
           {% csrf_token %}
           <div class="mx-auto text-center my-4">
-            <a class="navbar-brand mx-auto mt-2 flex-fill text-center" href="./index.html">
+            <a class="navbar-brand mx-auto mt-2 flex-fill text-center" href="{% url 'index'%}">
               <img src="{% static 'image/logo.png' %}"
                                 alt="Dispute Bills" height="50px" width="50px"><b class="text-dark">   SAILAM LTD.</b>
             </a>

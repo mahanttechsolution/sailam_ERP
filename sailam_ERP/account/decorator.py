@@ -4,13 +4,14 @@ from django.shortcuts import redirect
 def allowed_user(allowed_roles=[]):
     def decorator(view_func):
         def wrapper_func(request,*args,**kwargs):
-            group=None
-            if request.user.groups.exists():
-                group=request.user.groups.all()[0].name
+            # group=None
+            # if request.user.groups.exists():
+            #     group=request.user.groups.all()[0].name
+            group = request.user.role
             
-            if group in allowed_roles:
+            if str(group) in allowed_roles:
                 return view_func(request,*args,**kwargs)
             else:
-                return HttpResponse('You Are Not Authenticated to View Contact Your Admin for permission')
+                return redirect('stocks')
         return wrapper_func
     return decorator 
