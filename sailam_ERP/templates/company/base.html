@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="favicon.ico">
+    <link rel="icon" type="image/x-icon" href="{% static '/company/image/whiteCapa.png' %}">
     <title>{%block title %}{%endblock title %}</title>
     <!-- Simple bar CSS -->
     <link rel="stylesheet" href="{% static '/assets/css/simplebar.css' %}">
@@ -179,8 +179,8 @@
                     <input class="form-control" type="search" placeholder="Search"
                         aria-label="Search">
                 </form>
-                <button class="btn btn-light sign-up-btn me-2" type="submit">Sign Up</button>
-                <button class="btn btn-light  me-2" type="submit">Sign In</button>
+                <a class="nav-link social_icon text-light" href="{%url 'register' %}" tabindex="-1"><button class="btn btn-light sign-up-btn me-2" type="submit">Sign Up</button>
+                <a class="nav-link social_icon text-light" href="{%url 'login_account' %}" tabindex="-1"><button class="btn btn-light  me-2" type="submit">Sign In</button></a>
             </div>
         </div>
     </nav>
