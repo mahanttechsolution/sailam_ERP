@@ -118,10 +118,11 @@ def login(request):
                 'bought_data': bought_data,
                 'sold_data': sold_data
             }
-        if user.role == "user":
+        role = User.objects.get(email=user)
+        if str(role.role) == 'user':
             return redirect('stocks')
         else:
-            return render(request,'dashboard.html',context)
+            return redirect('dashboard')
     
      else:
         return render(request,'account/login.html')
