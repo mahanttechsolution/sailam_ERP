@@ -47,15 +47,21 @@ def loadGiaData(request):
         file1 = open("static/query/master.txt")
         content = file1.read()
         query = {"query": content, "variables": {"reportNumber": report_number}}
-
+        Authorization = "64112d47-a247-4259-a9d0-a402e186f4a8" 
         headers = {
             "Accept": "application/json",
             "Content-Type": "application/json",
-            "Authorization": "64112d47-a247-4259-a9d0-a402e186f4a8",
+            "Authorization": Authorization,
         }
 
         response = requests.post(urlendpoint, data=json.dumps(query), headers=headers)
         data = response.json()
+        
+        if data['data']['getReport'] == None:
+            headers['Authorization'] = "fdc920a2-17dc-495a-9500-867dad4d874a"
+            response = requests.post(urlendpoint, data=json.dumps(query), headers=headers)
+            data = response.json()
+        
     return HttpResponse(json.dumps(data), content_type="application/json")
 
 
