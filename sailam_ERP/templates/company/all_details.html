@@ -13,6 +13,61 @@ Stocks{%endblock title %}
         opacity: 0;
         cursor: pointer;
     }
+
+    
+
+    .nav-tabs .nav-link.active {
+        color: #ffffff;
+        border-color: #ffffff;
+        font-family: emoji;
+    }
+    
+    .nav-tabs .nav-link {
+        color: #000000;
+        text-transform: capitalize;
+    }
+
+    .nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
+        color: #ffffff;
+        background-color: #7A0532;
+        border-color: #ffffff;
+        border-radius: 15px;
+        padding-left: 35px;
+        padding-right: 35px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        text-transform: capitalize;
+    }
+
+    .btn-secondary{
+        background-color: #7a0532;
+        color: white;
+    }
+
+    .btn-outline-secondary:hover {
+        color: #000000 !important;
+        background-color: #ffffff !important;
+        border-color: #7A0532 !important;
+    }
+
+    .btn-outline-secondary {
+        color: #000000 !important;
+        background-color: #ffffff !important;
+        border-color: #7A0532 !important;
+    }
+
+    .table .thead-dark th {
+        color: #ffffff;
+        background-color: #7A0532;
+        border-color: #454d55;
+    }
+    .page-item.active .page-link {
+        
+        color: #f8f9fa;
+        background-color: #7A0532;
+        border-color: #ffffff;
+        border-radius: 7px;
+    }
 </style>
 {%endblock headercontent %}
 
@@ -20,13 +75,10 @@ Stocks{%endblock title %}
 <div class="card ">
     <div class="card-body">
         <!-- <form method="post" id="filterform"> -->
-        <h4 class="card-title">Filter</h4>
+        <h2 class="card-title">Filter</h1>
         {% csrf_token %}
 
-
-
-
-        <ul class="nav nav-pills nav-fill mb-3" id="pills-tab" role="tablist">
+        <ul class="nav nav-tabs mb-3" id="myTab" role="tablist" style="colo">
             <li class="nav-item">
                 <a class="nav-link active" id="advance-filter-tab" data-toggle="pill" href="#advance-filter" role="tab"
                     aria-controls="advance-filter" aria-selected="false" onclick="applyfilter(this)">Advance Filter</a>

@@ -32,11 +32,31 @@
     <!-- Date Range Picker CSS -->
     <link rel="stylesheet" href="{% static '/assets/css/daterangepicker.css' %}">
     <!-- App CSS -->
+    <link rel="stylesheet" href="{% static '/assets/css/product.css' %}" >
     <link rel="stylesheet" href="{% static '/assets/css/app-light.css' %}" id="lightTheme">
     <link rel="stylesheet" href="{% static '/assets/css/app-dark.css' %}" id="darkTheme" disabled>
 
     {% comment %} Style fot Navbar {% endcomment %}
     <style>
+        :root{
+            --inter-font: 'Inter';
+            --playfairdisplay-font: 'Playfair Display';
+            --glamor-font: 'Glamor Med Ext';
+            --white-color: #ffffff;
+            --primary-color: #9C1137;
+            --secondry-color: #FFF6F8;
+            --black-color: #000000;
+            --text-color: #555;
+        }
+
+        .navbar {
+            background-color: #7A0532;
+        }
+
+        .navbar-expand-lg .navbar-nav .dropdown-menu {
+            position: absolute;
+            background: rgb(122 5 50 / 89%);
+        }
         .navbar-brand {
             transform: translateX(-50%);
             left: 50%;
@@ -53,7 +73,7 @@
             padding: 7px 14px;
         }
 
-        .nav-link {
+        .navbar .nav-link {
             font-size: large;
         }
 
@@ -104,6 +124,29 @@
                 display: none;
             }
         }
+
+        .nav-link{
+            
+            font-family: var(--inter-font);
+            font-size: 18px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 30.6px;
+            text-transform: uppercase;
+            padding:0px
+        }
+
+        .heading_text{
+            color: #9C1137;
+            text-align: center;
+            font-family: Playfair Display;
+            font-size: 42px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: normal;
+            letter-spacing: 4.2px;
+            text-transform: uppercase;
+          }
     </style>
     {%block headercontent %} {%endblock headercontent %}
 </head>
@@ -114,7 +157,7 @@
 
 
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="padding-top: 30px; padding-bottom: 30px;">
+    <nav class="navbar navbar-expand-lg  navbar-dark" style="padding-top: 30px; padding-bottom: 30px;">
         <div class="container-fluid">
             <div class="navbar-brand-logo">
                 <span><a href="#" style="text-decoration: none;"><img src="{% static 'image/logo.png' %}"

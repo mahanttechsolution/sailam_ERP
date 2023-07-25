@@ -1,0 +1,28 @@
+    sudo systemctl restart gunicorn
+    sudo systemctl daemon-reload
+    sudo systemctl restart gunicorn.socket gunicorn.service
+    sudo nginx -t && sudo systemctl restart nginx
+
+/home/sailam/sailam_ERP/sailam_ERP
+
+server {
+    listen 80;
+    server_name 165.232.177.130;
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location /static/ {
+        root /home/sailam/sailam_ERP/sailam_ERP;
+    }
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/run/gunicorn.sock;
+    }
+}
+
+sudo usermod -a -G sailam www-data
+Mahant@143@Sailam
+
+git remote set-url origin https://mahanttechsolution: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@github.com/mahanttechsolution/sailam_ERP.git
+
+psql -h 165.232.177.130 -U sailam -d sailam
