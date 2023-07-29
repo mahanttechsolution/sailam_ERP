@@ -119,7 +119,7 @@ Stocks{%endblock title %}
 
 {%block footercontent %} 
 
-$('#submitBtn').click(function () {
+function get_selected_value(){
     var obj = { csrfmiddlewaretoken: '{{ csrf_token }}' };
     obj.location = $('input[name=location]:checked').map(function () {
         return this.value;
@@ -152,8 +152,12 @@ $('#submitBtn').click(function () {
     obj.color = $('input[name=color]:checked').map(function () {
         return this.value;
     }).get();
+    return obj;
+}
 
-    console.log(obj);
+$('#submitBtn').click(function () {
+    var obj = get_selected_value();
+
     $.ajax({
         type: 'POST',
         dataType: 'json',
@@ -166,7 +170,7 @@ $('#submitBtn').click(function () {
                 response.data.forEach(function (item, index) {
                     console.log(item.Scan_Id)
                     url = '<a href="{% url "diamondinfo" %}?q=' + item.Scan_Id + '">...</a>';
-                    advance_filter_datatable.row.add([item.GIA_NO, item.STK_ID, item.CRT, item.SHAPE, item.COLOR,  item.CLARITY, item.SYM, url]).draw();
+                    advance_filter_datatable.row.add([item.GIA_NO, item.STK_ID, item.CRT, item.SHAPE, item.COLOR,  item.CLARITY,item.POL, item.SYM, url]).draw();
                 });
             }
         }
@@ -174,13 +178,36 @@ $('#submitBtn').click(function () {
 });
 function setactive(e) {
     var parentComponent = $(e).closest('.btn');
+    
     if (parentComponent.hasClass('btn-outline-secondary')) {
         parentComponent.removeClass("btn-outline-secondary")
         parentComponent.addClass("btn-secondary");
+        
+        if (parentComponent.hasClass('all')){
+            var all_btn = $(e).closest('.btn');
+            
+            $('input[name='+e.name+']').closest('.btn').removeClass("btn-secondary")
+            $('input[name='+e.name+']').closest('.btn').addClass("btn-outline-secondary")
+            $('input[name='+e.name+']').prop('checked', false);
+            all_btn.removeClass("btn-outline-secondary")
+            all_btn.addClass("btn-secondary");
+            $(e).prop('checked', true);
+
+            
+        }
+        else{
+            console.log(($('input[name='+e.name+']').first().closest('.btn')));
+            console.log(typeof($('input[name='+e.name+']').first().closest('.btn')));
+            $('input[name='+e.name+']').first().closest('.btn').removeClass("btn-secondary");
+            $('input[name='+e.name+']').first().closest('.btn').addClass("btn-outline-secondary");
+            $('input[name='+e.name+']').first().prop('checked', false);
+
+        } 
     }
     else {
         parentComponent.removeClass("btn-secondary")
         parentComponent.addClass("btn-outline-secondary");
+        
     }
 
 }
@@ -254,5 +281,22 @@ function populateDataTable(data) {
         // Store the child row data for expanding
 
     });
+}
+
+function download_excel(){
+
+    var obj = get_selected_value();
+
+    $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        url: "{% url 'download' %}",
+        data: obj,
+        success: function (response) {
+            window.location.href = window.location.origin +response.file_url;
+
+        }
+    })
+
 }
 {%endblock footercontent %}

@@ -43,7 +43,7 @@
               <li class="nav-item">
                 <a class="nav-link" href="#contact">CONTACT</a>
               </li>
-              <div class="d-flex align-items-center justify-content-center gap-2">
+              {% comment %} <div class="d-flex align-items-center justify-content-center gap-2">
                 <li class="nav-item">
                     <a class="nav-link" href="#"><img src="{% static '/company/image/fb.png' %}" alt="" width="100%"></a>
                   </li>
@@ -53,7 +53,7 @@
                   <li class="nav-item">
                     <a class="nav-link" href="#"><img src="{% static '/company/image/Frame.png' %}" alt="" width="100%"></a>
                   </li>
-              </div>
+              </div> {% endcomment %}
             </ul>
             <a class="navbar-brand me-auto" href="#"><img src="{% static '/company/image/LOGO.png' %}" alt=""></a>
             <form class="d-flex align-items-center nav_searchbar">
@@ -111,7 +111,7 @@
             <div class="sail_headding">
                 <img src="{% static '/company/image/Capa_1.png' %}" alt="" width="27px">
                 <h2>Our values</h2>
-                <p>100% recycled gold and silver & responsiblemanufacturing</p>
+                <p>100% recycled gold and silver & responsible manufacturing</p>
             </div>
             <div class="d-lg-flex align-items-center justify-content-between">
                 <div class="col-12 col-lg-3 p-3">
@@ -121,7 +121,7 @@
                             <p class="number">01</p>
                         </div>
                         <h2>Faith</h2>
-                        <p>We will always approach every decision and action with absolute and unwavering faith. Infused with faith.</p>
+                        <p>We keep our promises, has an alliance to duty, and honors our customers</p>
                     </div>
                 </div>
                 <div class="col-12 col-lg-3 p-3">
@@ -131,7 +131,7 @@
                             <p class="number">02</p>
                         </div>
                         <h2>Innovation</h2>
-                        <p>We will always approach every decision and action with absolute and unwavering faith. Infused with faith.</p>
+                        <p>Always changing & trying out new ideas and offering new  products and we know how best to serve it</p>
                     </div>
                 </div>
                 <div class="col-12 col-lg-3 p-3">
@@ -141,7 +141,7 @@
                             <p class="number">03</p>
                         </div>
                         <h2>Togetherness</h2>
-                        <p>We will always approach every decision and action with absolute and unwavering faith. Infused with faith.</p>
+                        <p>we always approach every decision and action with all faith, research and teamwork</p>
                     </div>
                 </div>
                 <div class="col-12 col-lg-3 p-3">
@@ -150,8 +150,8 @@
                             <img src="{% static '/company/image/icon.png' %}" alt="">
                             <p class="number">04</p>
                         </div>
-                        <h2>Aptitude</h2>
-                        <p>We will always approach every decision and action with absolute and unwavering faith. Infused with faith.</p>
+                        <h2>Accountability</h2>
+                        <p>Be willing to detect bottlenecks and proclaim them and willing to provide best assistance</p>
                     </div>
                 </div>
             </div>
@@ -259,7 +259,7 @@
                   <img src="{% static '/company/image/icon-expo-1.png' %}" alt="" width="20%">
                   <h2>diamonds</h2>
                   <p>Lorem Ipsum has been the industry's standard dummy..</p>
-                  <a href="#">View More <i class="fa-solid fa-arrow-right-long"></i></a>
+                  <a href="{% url 'stocks' %}">View More <i class="fa-solid fa-arrow-right-long"></i></a>
                 </div>
               </div>
               <div class="col-12 col-md-4 p-3 text-center text-md-start  mt-3 mt-md-0">
@@ -267,7 +267,7 @@
                   <img src="{% static '/company/image/necklessstand.png' %}" alt="" width="20%">
                   <h2>jewelry</h2>
                   <p>Lorem Ipsum has been the industry's standard dummy..</p>
-                  <a href="#">View More <i class="fa-solid fa-arrow-right-long"></i></a>
+                  <a href="{% url 'jewelry' %}">View More <i class="fa-solid fa-arrow-right-long"></i></a>
                 </div>
               </div>
               <div class="col-12 col-md-4 p-3 text-center text-md-start  mt-3 mt-md-0">
@@ -275,7 +275,7 @@
                   <img src="{% static '/company/image/nakeless.png' %}" alt="" width="20%">
                   <h2>parcel inviter</h2>
                   <p>Lorem Ipsum has been the industry's standard dummy..</p>
-                  <a href="#">View More <i class="fa-solid fa-arrow-right-long"></i></a>
+                  <a href="{% url 'parcel' %}">View More <i class="fa-solid fa-arrow-right-long"></i></a>
                 </div>
               </div>
             </div>
@@ -334,16 +334,18 @@
                 <label for="validationDefault02" class="form-label">EMAIL ADDRESS</label>
                 <input type="text" class="form-control" id="validationDefault02" placeholder="Email" required>
               </div>
-              <div class="col-md-12">
+              <br><br><br>
+              <br><br><br>
+              {% comment %} <div class="col-md-12">
                 <label for="validationDefault03" class="form-label">SUBJECT</label>
                 <input type="text" class="form-control" id="validationDefault03" placeholder="Subject" required>
-              </div>
+              </div> {% endcomment %}
               <div class="col-md-12">
                 <label for="floatingTextarea2">MESSAGE</label>
                 <textarea class="form-control" placeholder="Message" id="floatingTextarea2" style="height: 100px"></textarea>
               </div>
               <div class="col-12">
-                <button class="btn btn-primary" type="submit">Submit form</button>
+                <button class="btn btn-primary" type="submit">Submit</button>
               </div>
             </form>
 
