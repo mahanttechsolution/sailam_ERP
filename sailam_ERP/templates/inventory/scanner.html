@@ -1190,11 +1190,11 @@ function sendinvoicedata(data){
 
     function stopCamera() {
       Instascan.Camera.getCameras().then(function (cameras) {
-      if (cameras.length > 1) {
-        scanner.stop(cameras[1]);
+      if (cameras.length > 0) {
+        scanner.stop(cameras[0]);
       }
-      else if(cameras.length > 0){
-       scanner.stop(cameras[0]);
+      else if(cameras.length > 1){
+       scanner.stop(cameras[1]);
       }
     });
         isCameraOn = false;
