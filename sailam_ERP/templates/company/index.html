@@ -35,7 +35,7 @@
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                   <li><a class="dropdown-item" href="{% url 'stocks' %}">Diamonds</a></li>
-                  <li><a class="dropdown-item" href="{% url 'jewelry' %}">jewelry</a></li>
+                  <li><a class="dropdown-item" href="{% url 'jewelry' %}">Jewelry</a></li>
                   <li><a class="dropdown-item" href="{% url 'parcel' %}">Parcel & Layout</a></li>
                   
                 </ul>
@@ -61,8 +61,14 @@
               <input class="form-control me-5" type="search" placeholder="Search" aria-label="Search">
             </form>
             <div class="d-flex align-items-center justify-content-center gap-3 mt-2 mt-lg-0 pb-3 pb-lg-0">
+                {% if is_login == "True" %}
+                <a><div class="circle">{{name}}</div></a>
+                <button class="nav_button"><a href="{%url 'logout' %}">logout</a></button>
+                {% else %}
                 <button class="nav_button"><a href="{%url 'register' %}">Sign Up</a></button>
                 <button class="nav_button"><a href="{%url 'dashboard' %}">Sign in</a></button>
+                {% endif %}
+                
             </div>
           </div>
         </div>

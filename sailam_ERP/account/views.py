@@ -48,7 +48,15 @@ def setData():
    sold_data = [entry['count'] for entry in data1]
 
 def index(request):
-    return render(request,'company/index.html')
+    login = "False"
+    name = ""
+    print( request.user)
+    if not str(request.user) == "AnonymousUser":
+        login = "True"
+        name = (User.objects.get(email=request.user).first_name)
+        name = str(name)[0]
+
+    return render(request,'company/index.html',{"is_login" : login,"name" :name})
 
 @login_required(login_url='login_account')
 @allowed_user(allowed_roles= ['admin','manager','salesmen'])

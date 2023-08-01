@@ -22,6 +22,20 @@ p{
     margin-bottom: 0px !important;
 }
 
+.circle {
+    width: 40px;
+    height: 40px;
+    line-height: 35px;
+    border-radius: 50%;
+    font-size: 24px;
+    color: #000;
+    text-align: center;
+    background: #fafafa;
+    text-transform: uppercase;
+}
+
+
+
 /* section-1 start  */
 .navbar{
     position: fixed !important;

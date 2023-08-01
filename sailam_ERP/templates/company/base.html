@@ -147,6 +147,18 @@
             letter-spacing: 4.2px;
             text-transform: uppercase;
           }
+
+          .circle {
+            width: 40px;
+            height: 40px;
+            line-height: 35px;
+            border-radius: 50%;
+            font-size: 24px;
+            color: #000;
+            justify-content: center;
+            background: #fafafa;
+            text-transform: uppercase;
+        }
     </style>
     {%block headercontent %} {%endblock headercontent %}
 </head>
@@ -223,7 +235,8 @@
                         aria-label="Search">
                 </form>
                 {% if flag == 1 %}
-                <a class="nav-link social_icon text-light" href="{%url 'logout' %}" tabindex="-1"><button class="btn btn-light sign-up-btn me-2" type="submit">Logout</button>
+                <div class="circle">{{name}}</div>
+                <a class="nav-link social_icon text-light" href="{%url 'logout' %}" tabindex="-1"><button class="btn btn-light sign-up-btn me-2" type="submit">Logout</button></a>
 
                 {% else %}
                 <a class="nav-link social_icon text-light" href="{%url 'register' %}" tabindex="-1"><button class="btn btn-light sign-up-btn me-2" type="submit">Sign Up</button>

@@ -5,7 +5,8 @@ from django.db.models import Q
 import pandas as pd
 import datetime
 from django.conf import settings
-
+from account.models import User
+from inventory.models import Location
 
 BASE_DIR = settings.BASE_DIR
 # Create your views here.
@@ -19,18 +20,21 @@ def stocks(request):
                 login_flag = 0
             else:
                 login_flag = 1
+                name = (User.objects.get(email=request.user).first_name)
+                name = str(name)[0]
             flag = request.GET["flag"]
             if flag == "non-gia":
                 stocks = inventory.objects.filter(IsHide=False).exclude(Q(GIA_NO__isnull=False)|Q(GIA_NO__exact='')| Q(GIA_NO='None')).values('STK_ID','CRT','SHAPE','COLOR','PRICE','CLARITY','POL','SYM')
                 print(stocks)
-                context = {"status": "0", "stocks": list(stocks),"flag":login_flag}
+                context = {"status": "0", "stocks": list(stocks),"flag":login_flag,"name":name}
                 # print(context)
                 return JsonResponse(context)
         except Exception as e:
             print("------------->", e)
-            stocks = inventory.objects.filter(IsHide=False)
-            context = {"stocks": stocks,"flag":login_flag}
-            return render(request, "company/all_details.html", context)
+        stocks = inventory.objects.filter(IsHide=False)
+        location = Location.objects.all()
+        context = {"stocks": stocks,"flag":login_flag,"name":name,"location":location}
+        return render(request, "company/all_details.html", context)
 
 def filter_data(request):
     shape = request.POST.getlist("shape[]")
@@ -214,11 +218,25 @@ def index(request):
     return render(request, "company/index.html")
 
 def jewelry(request):
-    return render(request, "company/jewelry.html")
+    if str(request.user) == "AnonymousUser":
+        name=""
+        login_flag = 0
+    else:
+        login_flag = 1
+        name = (User.objects.get(email=request.user).first_name)
+        name = str(name)[0]
+    return render(request, "company/jewelry.html",{"flag":login_flag,"name":name})
 
 
 def parcel(request):
-    return render(request, "company/parcel.html")
+    if str(request.user) == "AnonymousUser":
+        login_flag = 0
+        name=""
+    else:
+        login_flag = 1
+        name = (User.objects.get(email=request.user).first_name)
+        name = str(name)[0]
+    return render(request, "company/parcel.html",{"flag":login_flag,"name":name})
 
 
 

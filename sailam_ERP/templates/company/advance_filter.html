@@ -512,27 +512,13 @@
                                                         name="location" value="ALL" onclick="setactive(this)"
                                                         checked><span>ALL</span>
                                         </label>
+                                        {% for x in location  %}
                                         <label class="btn mb-1 btn-block btn-outline-secondary">
-                                                <input type="checkbox" name="location" value="mumbai"
-                                                        onclick="setactive(this)"><span>MUMBAI</span>
+                                                <input type="checkbox" name="location" value="{{x}}"
+                                                        onclick="setactive(this)"><span>{{x | upper}}</span>
                                         </label>
-                                        <label class="btn mb-1 btn-block btn-outline-secondary">
-                                                <input type="checkbox" name="location" value="honkkong"
-                                                        onclick="setactive(this)"><span>HONG
-                                                        KONG</span>
-                                        </label>
-                                        <label class="btn mb-1 btn-block btn-outline-secondary">
-                                                <input type="checkbox" name="location" onclick="setactive(this)"
-                                                        value="taiwan"><span>TAIWAN</span>
-                                        </label>
-                                        <label class="btn mb-1 btn-block btn-outline-secondary">
-                                                <input type="checkbox" name="location" onclick="setactive(this)"
-                                                        value="surat"><span>SURAT</span>
-                                        </label>
-                                        <label class="btn mb-1 btn-block btn-outline-secondary">
-                                                <input type="checkbox" name="location" onclick="setactive(this)"
-                                                        value="bangkok"><span>BANGKOK</span>
-                                        </label>
+                                        {% endfor %}
+                                        
 
                                 </div>
                         </div>
