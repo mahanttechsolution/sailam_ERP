@@ -1158,47 +1158,43 @@ function sendinvoicedata(data){
   
   <script>
     var scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
-    var isCameraOn = false;
-    scanner.addListener('scan', function (content) {
-      document.getElementById("gianum").value=content;
-   });
+var isCameraOn = false;
+var selectedCamera = null; // To store the selected camera.
 
-    document.getElementById('toggleButton').addEventListener('click', function() {
-        if (!isCameraOn) {
-            startCamera();
-        } else {
-            stopCamera();
-        }
-    });
+scanner.addListener('scan', function (content) {
+  document.getElementById("gianum").value = content;
+});
 
-    function startCamera() {
-     Instascan.Camera.getCameras().then(function (cameras) {
-       if (cameras.length > 0) {
-         scanner.start(cameras[1]);
-       }
-       else if(cameras.length > 1){
-        scanner.start(cameras[1]);
-       } else {
-         console.error('No cameras found.');
-       }
-        isCameraOn = true;
-        document.getElementById('toggleButton').textContent = 'Stop Camera';
-        }).catch(function(e) {
-            console.error(e);
-        });
+document.getElementById('toggleButton').addEventListener('click', function () {
+  if (!isCameraOn) {
+    startCamera();
+  } else {
+    stopCamera();
+  }
+});
+
+function startCamera() {
+  Instascan.Camera.getCameras().then(function (cameras) {
+    if (cameras.length > 0) {
+      // Check if the back camera is available, otherwise use the first camera available.
+      selectedCamera = cameras.find((camera) => camera.name.toLowerCase().includes('back')) || cameras[0];
+      scanner.start(selectedCamera);
+    } else {
+      console.error('No cameras found.');
     }
+    isCameraOn = true;
+    document.getElementById('toggleButton').textContent = 'Stop Camera';
+  }).catch(function (e) {
+    console.error(e);
+  });
+}
 
-    function stopCamera() {
-      Instascan.Camera.getCameras().then(function (cameras) {
-      if (cameras.length > 0) {
-        scanner.stop(cameras[1]);
-      }
-      else if(cameras.length > 1){
-       scanner.stop(cameras[1]);
-      }
-    });
-        isCameraOn = false;
-        document.getElementById('toggleButton').textContent = 'Start Camera';
-    }
+function stopCamera() {
+  if (selectedCamera) {
+    scanner.stop(selectedCamera);
+  }
+  isCameraOn = false;
+  document.getElementById('toggleButton').textContent = 'Start Camera';
+}
   </script>
 {%endblock content%}
