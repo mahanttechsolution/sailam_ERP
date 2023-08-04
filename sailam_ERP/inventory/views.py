@@ -376,6 +376,7 @@ def DiamondInfo(request):
     if request.method == "GET":
         q = request.GET["q"]
         pic_status=0
+        num=0
         try:
             info = inventory.objects.get(Scan_Id=q)
             try:
