@@ -18,6 +18,7 @@ def stocks(request):
         try:
             if str(request.user) == "AnonymousUser":
                 login_flag = 0
+                name = "A"
             else:
                 login_flag = 1
                 name = (User.objects.get(email=request.user).first_name)
