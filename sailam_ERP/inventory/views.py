@@ -271,8 +271,22 @@ def insertDiamond(request):
         form = VideoForm()
         return render(request, "inventory/inventory.html", {'form': form,'locationdata':locationData})
 
+def update_qr():
+    stocks = inventory.objects.all()
+    for x in stocks:
+        path = generate_sticker(
+                        x.Scan_Id,
+                       x.STK_ID,
+                        x.CRT,
+                        x.SHAPE,
+                        x.COLOR,
+                        x.CLARITY,
+                        x.GIA_NO,
+                    )
+
 @login_required
 def viewStock(request):
+    update_qr()
     stocks = inventory.objects.filter(IsHide=False, InvoiceMade=False)
     context = {"stocks": stocks}
     return render(request, "inventory/viewinventory.html", context)
@@ -457,7 +471,7 @@ def generate_qr_code(data):
         box_size=10,
         border=4,
     )
-    qr.add_data(f"http://127.0.0.1:8000/inventory/diamond?q={data}")
+    qr.add_data(f"https://sailam.co/inventory/diamond?q={data}")
     qr.make(fit=True)
     qr_image = qr.make_image(fill_color="black", back_color="white")
     url = f"/media/qr/" + str(data) + ".png"
