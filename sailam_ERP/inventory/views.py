@@ -286,7 +286,6 @@ def update_qr():
 
 @login_required
 def viewStock(request):
-    update_qr()
     stocks = inventory.objects.filter(IsHide=False, InvoiceMade=False)
     context = {"stocks": stocks}
     return render(request, "inventory/viewinventory.html", context)
