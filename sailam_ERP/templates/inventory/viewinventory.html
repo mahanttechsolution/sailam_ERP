@@ -36,6 +36,8 @@ Diamond Stock
             aria-hidden="true"></span></button>
         <a href="/media/qr/{{stock.Scan_Id}}.png" download="qr"><button type="button" class="btn btn-info"><span class="fe fe-download fe-16"
           aria-hidden="true"></span></button></a>
+          <button type="button" class="btn btn-danger btn-xs dt-trash" id="delete" ><span class="fe fe-trash fe-16"
+            aria-hidden="true"></span></button>
       </td>
     </tr>
     <tr id="collap-{{stock.Id}}" class="collapse in p-3 bg-light">
@@ -86,6 +88,29 @@ Diamond Stock
 </div>
 
 
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Alert</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger" id="delete_btn">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Edit Modal -->
 <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
   aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
@@ -138,8 +163,40 @@ Diamond Stock
 
    var selrow;
    var selchild;
+   var del_stk_id;
+   var del_row;
+   $(document).on("click", "#delete", function () {
+  
+    del_row = $(this).closest('tr');
+    del_stk_id = del_row.find("td:eq(1)").text()
+    var modal = $('#deleteModal');
+    modal.modal({ show: true });
+   });
+
+
+$(document).on("click", "#delete_btn", function () {
+  $.ajax({
+        type: "POST",
+        global: false, 
+        async:false,
+        headers: {'X-CSRFToken': document.getElementById('csrf').querySelector('input').value},
+        url: "{% url 'deleteinv' %}",
+        data: JSON.stringify({"data": del_stk_id}),
+        contentType: 'application/json',
+        success: function(response){
+          del_stk_id = "None";
+          del_row.next('tr').remove();
+          del_row.remove();
+          $('#deleteModal').modal('hide');
+          return response;
+        },
+      })
+});
+
+
   $(document).on("click", "#edit", function () {
     var row = $(this).closest('tr');
+    console.log(row)
     selrow=row;
     var child = $(this).closest('tr').next('tr');
     selchild=child;

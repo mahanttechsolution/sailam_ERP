@@ -26,6 +26,7 @@ urlpatterns = [
     path("getall/", views.getAll, name="getall_data"),
     path("allview/", views.allView, name="allview"),
     path("updateinventory/", views.updateInventory, name="updateinv"),
+    path("deleteInventory/", views.deleteInventory, name="deleteinv"),
     path("getStk/",views.retStk,name="getStk"),
     path("getGroupView/",views.getGroupView,name="getgroupview"),
     path("getGroup/",views.getGroupData,name="getgroup"),

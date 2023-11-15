@@ -299,6 +299,16 @@ def retStk(request):
     return HttpResponse(json.dumps(data))
 
 @login_required
+def deleteInventory(request):
+    if request.method=="POST":
+        user=request.user
+        stk_id=json.loads(request.body)['data']
+        invobj=inventory.objects.filter(STK_ID=stk_id).delete()
+        saveMessage("inventory",user,"Inventory",stk_id,"Deleted",user.get_username())
+        return JsonResponse({"status": 1})
+        
+    
+@login_required
 def updateInventory(request):
     if request.method=="POST":
         user=request.user

@@ -1,0 +1,90 @@
+CREATE OR REPLACE FUNCTION public.get_distinct_grouped_ids()
+    RETURNS TABLE(grouped_id character varying)
+    LANGUAGE 'plpgsql'
+    VOLATILE
+    PARALLEL UNSAFE
+    COST 100    ROWS 1000 
+    
+AS $BODY$
+BEGIN
+  RETURN QUERY SELECT DISTINCT grouped_ids FROM group_data;
+END;
+$BODY$;
+
+
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+CREATE OR REPLACE FUNCTION public.group_rows(IN new_stk_id integer,IN new_match integer)
+    RETURNS void
+    LANGUAGE 'plpgsql'
+    VOLATILE
+    PARALLEL UNSAFE
+    COST 100
+    
+AS $BODY$
+DECLARE
+  previous_group TEXT;
+  previous_stk TEXT;
+BEGIN
+  
+  SELECT grouped_ids || ',' || new_stk_id
+  INTO previous_stk
+  FROM group_data
+  WHERE root_id = new_stk_id;
+  
+
+IF previous_stk IS NULL THEN
+   INSERT INTO group_data (root_id,grouped_ids)
+    VALUES (new_stk_id,new_match);
+END IF;    
+
+SELECT grouped_ids || ',' || new_stk_id
+  INTO previous_group
+  FROM group_data
+  WHERE root_id = new_match;
+    
+  -- Update the previous row's group
+  IF previous_group IS NULL THEN
+    SELECT grouped_ids || ',' || new_stk_id
+    INTO previous_group
+    FROM group_data
+    WHERE grouped_ids LIKE '%'||new_match||'%';
+    
+    INSERT INTO group_data (root_id, grouped_ids)
+    VALUES (new_match, previous_group::TEXT);
+    
+    UPDATE group_data
+    SET grouped_ids = previous_group
+    WHERE grouped_ids LIKE '%'||new_match||'%';
+  
+  ELSE
+   IF previous_group NOT LIKE new_stk_id||','||new_stk_id THEN
+    UPDATE group_data
+    SET grouped_ids = previous_group
+    WHERE grouped_ids LIKE '%'||new_match||'%';
+   END IF;
+  END IF;
+	
+RETURN;
+END;
+$BODY$;
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+-- Table: public.group_data
+
+-- DROP TABLE IF EXISTS public.group_data;
+
+CREATE TABLE IF NOT EXISTS public.group_data
+(
+    root_id integer,
+    grouped_ids character varying(50000) COLLATE pg_catalog."default"
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.group_data
+    OWNER to postgres;
