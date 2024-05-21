@@ -85,12 +85,8 @@ WSGI_APPLICATION = "sailam_ERP.wsgi.application"
 
 # DATABASES = {
 #     "default": {
-#         "ENGINE": "django.db.backends.postgresql_psycopg2",
-#         "NAME": "sailam",
-#         "USER": "sailam",
-#         "PASSWORD": "SuperAdmin@321",
-#         "HOST": "localhost",
-#         "PORT": "5432",
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
 #     }
 # }
 
@@ -98,12 +94,23 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": "sailam",
-        "USER": "postgres",
-        "PASSWORD": "9638",
+        "USER": "sailam",
+        "PASSWORD": "SuperAdmin@321",
         "HOST": "localhost",
         "PORT": "5432",
     }
 }
+
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql_psycopg2",
+#         "NAME": "sailam",
+#         "USER": "postgres",
+#         "PASSWORD": "9638",
+#         "HOST": "localhost",
+#         "PORT": "5432",
+#     }
+# }
 
 
 # Password validation
