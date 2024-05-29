@@ -117,7 +117,7 @@ def filter_data(request):
         else:
             filter_location |= Q(Location__icontains=value)
 
-    data = inventory.objects.filter(filter_shape,filter_weight,filter_color,filter_clarity,filter_symmetry,filter_polish,filter_location,IsHide=False).values('GIA_NO','STK_ID','CRT','SHAPE','COLOR','PRICE','CLARITY','POL','SYM','Scan_Id')
+    data = inventory.objects.filter(filter_shape,filter_weight,filter_color,filter_clarity,filter_fancy,filter_symmetry,filter_polish,filter_location,IsHide=False).values('GIA_NO','STK_ID','CRT','SHAPE','COLOR','PRICE','CLARITY','POL','SYM','Scan_Id')
  
     context = {"status": "1","data":list(data)}
     return JsonResponse(context)
