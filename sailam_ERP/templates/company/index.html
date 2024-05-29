@@ -13,12 +13,25 @@
     <link rel="stylesheet" href="{% static '/company/bootstrap/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.css">
     <title>Sailam</title>
+    <style>
+      @media (min-width: 992px) {
+        #logo_nav {
+            display: none;
+        }
+    }
+    </style>
 </head>
 <body>
     <!-- section-1 start  -->
     <nav class="navbar navbar-expand-lg">
         <div class="container add_class" id="nav">
+          <span id="logo_nav"><a href="#" style="text-decoration: none;"><img src="{% static 'image/logo.png' %}"
+            alt="Dispute Bills" height="50px" width="50px">
+          <b class="text-light">SAILAM LTD.</b></a>
+
+        </span>
           <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            
             <span class="navbar-toggler-icon"><i class="fa-solid fa-bars-staggered"></i></span>
           </button>
           <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
@@ -56,7 +69,7 @@
               </div> {% endcomment %}
             </ul>
             <a class="navbar-brand me-auto" href="#"><img src="{% static '/company/image/LOGO.png' %}" alt=""></a>
-            <form class="d-flex align-items-center nav_searchbar">
+            <form class="d-flex align-items-center nav_searchbar" style="margin-left: 50px;">
                 <i class="fa-solid fa-magnifying-glass"></i>
               <input class="form-control me-5" type="search" placeholder="Search" aria-label="Search">
             </form>
@@ -252,8 +265,8 @@
           <div class="col-12 col-lg-4">
             <div class="sail_headding">
               <img src="{% static '/company/image/Capa_1.png' %}" alt="" width="27px">
-              <h2>explor our inventry</h2>
-              <p>Lorem Ipsum is simply dummy text of the printing and typesetting.</p>
+              <h2>Explore our Inventory</h2>
+              <p>Our diamonds range in a variety of cuts, carat weights, colors, and clarities, catering to diverse tastes and preferences.</p>
             </div>
           </div>
           <div class="col-12 col-lg-8">
@@ -262,7 +275,7 @@
                 <div class="inventry_card p-3">
                   <img src="{% static '/company/image/icon-expo-1.png' %}" alt="" width="20%">
                   <h2>diamonds</h2>
-                  <p>Lorem Ipsum has been the industry's standard dummy..</p>
+                  <p>Discover the Radiance: Explore our Exquisite Diamond Collection.</p>
                   <a href="{% url 'stocks' %}">View More <i class="fa-solid fa-arrow-right-long"></i></a>
                 </div>
               </div>
@@ -270,7 +283,7 @@
                 <div class="inventry_card p-3">
                   <img src="{% static '/company/image/necklessstand.png' %}" alt="" width="20%">
                   <h2>jewelry</h2>
-                  <p>Lorem Ipsum has been the industry's standard dummy..</p>
+                  <p>Timeless Elegance: Browse Our Stunning Jewelry Selection.</p>
                   <a href="{% url 'jewelry' %}">View More <i class="fa-solid fa-arrow-right-long"></i></a>
                 </div>
               </div>
@@ -278,7 +291,7 @@
                 <div class="inventry_card p-3">
                   <img src="{% static '/company/image/nakeless.png' %}" alt="" width="20%">
                   <h2>parcel inviter</h2>
-                  <p>Lorem Ipsum has been the industry's standard dummy..</p>
+                  <p>Exclusive Offers: Discover Our Parcel Inviter Collection with best price.</p>
                   <a href="{% url 'parcel' %}">View More <i class="fa-solid fa-arrow-right-long"></i></a>
                 </div>
               </div>
